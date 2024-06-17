@@ -65,11 +65,10 @@ export class EngineService {
      * @returns {Promise<void>}
      */
     async generateContainer(containerParsingContext) {
+        Logger.debug(`Trying to Generate Container`);
         const deploymentPath = Utils.getDeploymentPath(containerParsingContext);
         if (!fs.existsSync(deploymentPath)) {
-            Logger.debug(
-                `Trying to create deployment folder in path: ${deploymentPath}`,
-            );
+            Logger.debug(`Trying to create deployment folder in path: ${deploymentPath}`);
             Shell.mkdir(deploymentPath);
         }
 
@@ -78,14 +77,17 @@ export class EngineService {
         //     throw new Error('Cannot generate container, no model found');
         // }
         if(containerParsingContext.includePersistenceModule){
+            Logger.info(`Generating module persistence`);
             this.GenerateModule(deploymentPath, "persistence");
         }
 
         if(containerParsingContext.includeGalaxyModule){
+            Logger.info(`Generating module Galaxy`);
             this.GenerateModule(deploymentPath, "galaxy");
         }
 
         if(containerParsingContext.includeWebModule){
+            Logger.info(`Generating module web`);
             this.GenerateModule(deploymentPath, "web");
         }
 

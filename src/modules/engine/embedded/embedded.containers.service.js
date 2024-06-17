@@ -2,11 +2,11 @@ import {EmbeddedContainerModel} from "./embedded.container.model.js";
 import utils, {Utils} from "../../../utils/utils.js";
 import path from "path";
 import fs from "fs";
-import forever from "forever";
 import {Config} from "../../../config/config.js";
 
 import {AndromedaLogger} from "../../../config/andromeda-logger.js";
 import http from "http";
+import {EmbeddedLauncher} from "./embedded-launcher.js";
 const Logger = new AndromedaLogger();
 
 export class EmbeddedContainerService {
@@ -63,7 +63,12 @@ export class EmbeddedContainerService {
         }
     }
 
-
+    /**
+     *
+     * @param deploymentId
+     * @param options
+     * @returns {Promise<*|number>}
+     */
     static async startEmbeddedContainer(deploymentId, options) {
         let allocatedPort = await this.allocatePort(options);
 
@@ -77,34 +82,37 @@ export class EmbeddedContainerService {
         let args = []
         executor = path.join(process.cwd(), "deployments", deploymentId, "/bootstrap.js")
         try {
-            childProcess = forever.start(executor, {
+            const embeddedLauncher = new EmbeddedLauncher();
+            childProcess = await embeddedLauncher.start(executor, {
                 max: 1,
                 silent: false,
                 killTree: true,
                 env: {
                     port: String(allocatedPort),
-                    mongoDbUri: Config.getInstance().mongoDbUri,
+                    DB_URI: Config.getInstance().dbURI,
                     deploymentId: deploymentId
                 },
-                cwd: deploymentPath,
+                cwd: path.join(process.cwd(), deploymentPath),
                 args: args
             });
+            if (!childProcess || !childProcess.pid) {
+                throw new Error(`cannot start child process`);
+            }
 
         } catch (e) {
             Logger.error(e)
+            throw e;
         }
 
 
-        if (!childProcess || !childProcess.child || !childProcess.child.pid) {
-            throw new Error(`cannot start child process`);
-        }
-
-        Logger.trace(`storing PID= ${childProcess.child.pid}, for process ${deploymentId}, on port ${allocatedPort}`)
-        EmbeddedContainerService.containers.push({deploymentId, model: new EmbeddedContainerModel(childProcess.child.pid, allocatedPort, deploymentId)});
+        const pid = childProcess.pid
+        Logger.trace(`storing PID= ${pid}, for process ${deploymentId}, on port ${allocatedPort}`)
+        EmbeddedContainerService.containers.push({deploymentId, model: new EmbeddedContainerModel(pid, allocatedPort, deploymentId)});
 
         if (Config.getInstance().isLocalMode) {
             const daemon = await import("../embedded/embedded.sidecar.daemon.service.js");
-            daemon.EmbeddedSidecarDaemonService.watchContainer(childProcess.child.pid)
+
+            daemon.EmbeddedSidecarDaemonService.watchContainer(pid)
         }
 
         await this.waitForEmbeddedContainerStart(deploymentPath, deploymentId, allocatedPort);
@@ -174,11 +182,12 @@ export class EmbeddedContainerService {
             throw new Error(`to stop embedded container port must not specified `)
         }
         Logger.debug(`stopEmbeddedContainer :: ${deploymentId}`)
+        const embeddedLauncher = new EmbeddedLauncher();
         EmbeddedContainerService.containers.forEach(e=>{
             if(e.model.deploymentId === deploymentId){
                 Logger.debug(`stopEmbeddedContainer :: with pid ${e.model.pid}`)
                 EmbeddedContainerService.deleteEmbeddedContainerPidFile(deploymentId, port);
-                forever.kill(e.model.pid)
+                embeddedLauncher.killProcessTree(e.model.pid)
             }
         });
     }

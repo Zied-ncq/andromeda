@@ -21,6 +21,7 @@ export class WebModule {
     port
 
     constructor(host, port) {
+        this.name = "WEB"
         this.host=host
         this.port=port
         const __filename = fileURLToPath(import.meta.url);
@@ -85,5 +86,9 @@ export class WebModule {
                 reject(err)
             }
         }))
+    }
+
+    dispose(){
+        Logger.info(`Web module is stopping`)
     }
 }

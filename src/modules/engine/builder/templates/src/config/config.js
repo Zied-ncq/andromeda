@@ -4,13 +4,14 @@ let config;
 import {config as LoadDotEnvConfig}  from 'dotenv';
 import path from 'path'
 import {fileURLToPath} from 'url';
+import { get } from "env-var";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 LoadDotEnvConfig({path: path.join(__dirname, '../../..', '.env' )});
 const Logger = new AndromedaLogger();
 export class Config {
-    mongoDbUri;
+    dbUrl;
     tempPath;
 
     host
@@ -25,11 +26,16 @@ export class Config {
     }
 
     constructor() {
-        Logger.trace(`Loading Config values...`)
-        this.mongoDbUri = process.env.MONGODB_URI;
-        this.tempPath = process.env.tempPath || "temp";
-        this.host= process.env.host || "127.0.0.1";
-        this.port = process.env.port || 10000;
+        try {
+            Logger.trace(`Loading Container ${process.env.APP} Config values...`)
+            this.dbURI = get('DB_URI').required().asString();
+            this.tempPath = get("TEMP_PATH").default("temp").asString();
+            this.host = get("host").default("127.0.0.1").asString();
+            this.port = get("port").default("5000").asString();
+        }catch (e) {
+            Logger.error(e)
+        }
+
     }
 }
 

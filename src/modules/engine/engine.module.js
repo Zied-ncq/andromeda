@@ -10,7 +10,7 @@ export class EngineModule {
 
 
     constructor() {
-
+        this.name='ENGINE'
     }
 
 
@@ -27,6 +27,10 @@ export class EngineModule {
                 reject(err)
             }
         }));
+    }
+
+    dispose(){
+        Logger.info(`Engine is stopping`)
     }
 
 }

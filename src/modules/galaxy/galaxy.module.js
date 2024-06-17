@@ -9,6 +9,7 @@ export class GalaxyModule {
 
 
     constructor(host, port) {
+        this.name = 'Galaxy'
         // this.host=host
         // this.port=port
         // const __filename = fileURLToPath(import.meta.url);
@@ -25,8 +26,8 @@ export class GalaxyModule {
 
     }
 
-    getSpec(){
-
+    dispose(){
+        Logger.info(`Galaxy is stopping`)
     }
 
 }

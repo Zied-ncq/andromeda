@@ -19,15 +19,17 @@ export class App {
 
     async  executePromisesSequentially(modulePromisesArr) {
         for (let i=0; i < modulePromisesArr.length; i++) {
-            await modulePromisesArr[i]();
+            modulePromisesArr[i].start();
             this.loadedModules = this.loadedModules +1;
         }
     }
 
     async  initPersistenceModule() {
         try {
+            Logger.info(`INIT Persistence MODULE`);
             const Persistence = await import('./src/modules/persistence/persistence.module.js')
-            this.modules.push(Persistence.PersistenceModule.init)
+            const persistence = new Persistence.PersistenceModule();
+            this.modules.push(persistence)
         } catch (e) {
             Logger.error(e)
         }
@@ -37,7 +39,7 @@ export class App {
         try {
             const ContainerModulePromise = await import ('./src/modules/container/container.module.js')
             let containerModule = new ContainerModulePromise.ContainerModule();
-            this.modules.push(containerModule.start.bind(containerModule));
+            this.modules.push(containerModule);
         } catch (e) {
             Logger.error(e)
         }
@@ -47,7 +49,7 @@ export class App {
         try {
             let web = await import ('./src/modules/web/web.module.js')
             let webModule = new web.WebModule(this.host, this.port);
-            this.modules.push(webModule.start.bind(webModule));
+            this.modules.push(webModule);
         } catch (e) {
             Logger.error(e)
         }
@@ -57,6 +59,7 @@ export class App {
         await this.initPersistenceModule();
         await this.initContainerModule();
         await this.initWebModule();
+        Logger.info(`INIT (${this.modules.length}) MODULES `)
         await this.executePromisesSequentially(this.modules);
     }
 

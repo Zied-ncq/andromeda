@@ -1,7 +1,7 @@
 import path from "path";
 import ipc from "node-ipc";
-import {AndromedaLogger} from "../../../config/andromeda-logger.js";
-import {Config} from "../../../config/config.js";
+import { AndromedaLogger } from "../../../config/andromeda-logger.js";
+import { Config } from "../../../config/config.js";
 
 const Logger = new AndromedaLogger();
 
@@ -20,20 +20,13 @@ export class EmbeddedSidecarDaemonService {
         ipc.config.retry = 5000;
         ipc.config.stopRetrying = true;
 
-        function initEngine(socket) {
-            ipc.of.andromeda_daemon.on(
-                'connect',
-                function () {
-                    ipc.of.andromeda_daemon.emit(
-                        'watch_engine_pid',
-                        {
-                            message: process.pid
-                        }
-                    );
-                    ipc.disconnect('andromeda_engine');
-                }
-            );
-
+        function initEngine() {
+            ipc.of.andromeda_daemon.on('connect', function () {
+                ipc.of.andromeda_daemon.emit('watch_engine_pid', {
+                    message: process.pid
+                });
+                ipc.disconnect('andromeda_engine');
+            });
         }
 
         import('child_process').then(childProcess => {
@@ -46,49 +39,48 @@ export class EmbeddedSidecarDaemonService {
             child.stderr.on('data', data => {
                 console.log(`${data}`);
             });
-        })
+        });
 
-        setTimeout(
-            function () {
-                ipc.connectTo(
-                    'andromeda_daemon',
-                    EmbeddedSidecarDaemonService.socketPath,
-                    initEngine
-                );
-            }.bind(this),
-            2000
-        );
+        setTimeout(() => {
+            ipc.connectTo('andromeda_daemon', EmbeddedSidecarDaemonService.socketPath, initEngine);
+        }, 2000);
     }
 
     static watchContainer(pid) {
         try {
-            ipc.of.andromeda_daemon.emit(
-                'watch_container_pid',
-                {
-                    message: pid
-                }
-            );
+            if (!ipc.of.andromeda_daemon) {
+                throw new Error('IPC connection to andromeda_daemon is not established.');
+            }
+            ipc.of.andromeda_daemon.emit('watch_container_pid', {
+                message: pid
+            });
         } catch (e) {
             Logger.warn(e);
         }
     }
 
-
     static unwatchContainerPid(pid) {
         try {
-            ipc.of.andromeda_daemon.emit(
-                'unwatch_container_pid',
-                {
-                    message: pid
-                }
-            );
+            if (!ipc.of.andromeda_daemon) {
+                throw new Error('IPC connection to andromeda_daemon is not established.');
+            }
+            ipc.of.andromeda_daemon.emit('unwatch_container_pid', {
+                message: pid
+            });
         } catch (e) {
-            Logger.warn(e)
+            Logger.warn(e);
         }
     }
 
     static shutdownDaemon() {
-        Logger.warn(`Signal to shutdown the daemon was received`);
-        ipc.of.andromeda_daemon.emit('shutdown', {});
+        try {
+            if (!ipc.of.andromeda_daemon) {
+                throw new Error('IPC connection to andromeda_daemon is not established.');
+            }
+            Logger.warn(`Signal to shutdown the daemon was received`);
+            ipc.of.andromeda_daemon.emit('shutdown', {});
+        } catch (e) {
+            Logger.warn(e);
+        }
     }
 }

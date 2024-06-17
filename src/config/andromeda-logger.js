@@ -79,5 +79,3 @@ export class AndromedaLogger {
 
 
 }
-
-export  default  AndromedaLogger;

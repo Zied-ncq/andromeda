@@ -1,7 +1,7 @@
 import {Config} from "../config/config.js";
 
-import  ContainerParsingContext from "../model/parsing/container.parsing.context.js"
-import  WorkflowParsingContext  from "../model/parsing/workflow.parsing.context.js";
+import {ContainerParsingContext} from "../model/parsing/container.parsing.context.js"
+import  {WorkflowParsingContext}  from "../model/parsing/workflow.parsing.context.js";
 import BPMNModdle from "bpmn-moddle";
 import {AndromedaLogger} from "../config/andromeda-logger.js";
 import path from "path";
@@ -35,10 +35,18 @@ export class Utils{
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    /**
+     *
+     * @param filesContent
+     * @param deploymentId :string
+     * @returns {Promise<ContainerParsingContext>}
+     */
     static async prepareContainerContext(filesContent, deploymentId) {
         const ctx = new ContainerParsingContext({
             isTestContainer: false,
+            filesContent
         });
+        ctx.port
         for(let index in filesContent){
             const workflowParsingContext = new WorkflowParsingContext()
             workflowParsingContext.bpmnContent = filesContent[index]
