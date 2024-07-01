@@ -73,14 +73,14 @@ export class EmbeddedContainerService {
         let allocatedPort = await this.allocatePort(options);
 
         Logger.info(`starting container on port ${allocatedPort}`)
-        let deploymentPath = `./deployments/${deploymentId}`;
+        let deploymentPath = `./${Config.getInstance().deploymentFolder}/${deploymentId}`;
 
         this.deleteEmbeddedContainerPidFile(deploymentPath, allocatedPort);
 
         let childProcess;
         let executor = '';
         let args = []
-        executor = path.join(process.cwd(), "deployments", deploymentId, "/bootstrap.js")
+        executor = path.join(process.cwd(), Config.getInstance().deploymentFolder, deploymentId, "/bootstrap.js")
         try {
             const embeddedLauncher = new EmbeddedLauncher();
             childProcess = await embeddedLauncher.start(executor, {
@@ -88,7 +88,7 @@ export class EmbeddedContainerService {
                 silent: false,
                 killTree: true,
                 env: {
-                    port: String(allocatedPort),
+                    HTTP_PORT: String(allocatedPort),
                     DB_URI: Config.getInstance().dbURI,
                     deploymentId: deploymentId
                 },
@@ -109,7 +109,7 @@ export class EmbeddedContainerService {
         Logger.trace(`storing PID= ${pid}, for process ${deploymentId}, on port ${allocatedPort}`)
         EmbeddedContainerService.containers.push({deploymentId, model: new EmbeddedContainerModel(pid, allocatedPort, deploymentId)});
 
-        if (Config.getInstance().isLocalMode) {
+        if (Config.getInstance().isLocalMode && !Config.getInstance().isTestMode) {
             const daemon = await import("../embedded/embedded.sidecar.daemon.service.js");
 
             daemon.EmbeddedSidecarDaemonService.watchContainer(pid)
@@ -120,7 +120,7 @@ export class EmbeddedContainerService {
     }
 
     static deleteEmbeddedContainerPidFile(deploymentPath, port) {
-        const basePath = path.join(process.cwd(), "deployments", deploymentPath)
+        const basePath = path.join(process.cwd(), Config.getInstance().deploymentFolder, deploymentPath)
         const pidPath= path.join(basePath , `.pid_${port}`)
         if (fs.existsSync(pidPath)) {
             Logger.debug(`deleteEmbeddedContainerPidFile:: Found pid file`)
@@ -136,8 +136,8 @@ export class EmbeddedContainerService {
     }
 
     static async allocatePort(options) {
-        if (options && options.port) {
-            return options.port
+        if (options && options.HTTP_PORT) {
+            return options.HTTP_PORT
         } else {
             return await EmbeddedContainerService.AllocatePortInRange();
         }

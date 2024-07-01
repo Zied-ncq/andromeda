@@ -1,12 +1,11 @@
 import  {AndromedaLogger} from "../config/andromeda-logger.js";
 const Logger = new AndromedaLogger();
-import {v4} from "uuid";
 import {ProcessInstanceContext} from "./{{ ProcessDef.toLowerCase() }}.process-instance-context.js";
 
 class {{ServiceClassName}} {
 
     processInstanceId
-    _context = new {{ ProcessDef }}ProcessInstanceContext();
+    // _context = new {{ ProcessDef }}ProcessInstanceContext();
 
     bootstrap(){
     }
@@ -18,7 +17,7 @@ class {{ServiceClassName}} {
             this.processInstanceId = processInstanceId;
             // this.flowService = new TestFlowService(this.id);
         } else {
-            this.processInstanceId = v4();
+            this.processInstanceId = crypto.randomUUID();
             // this.flowService = new TestFlowService(this.id);
         }
 
@@ -27,7 +26,9 @@ class {{ServiceClassName}} {
     static createInstance(processInstanceId)
     {
         const instance = new BasicScenarioProcessInstanceService(processInstanceId)
-        ContainerService.getInstance().lock(instance)
+        // ContainerService.getInstance().lock(instance)
+
+        return instance;
 
     }
 

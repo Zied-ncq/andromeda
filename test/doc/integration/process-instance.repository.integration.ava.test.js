@@ -28,9 +28,9 @@ test('create new Process instances',
      * @returns {Promise<void>}
      */
     async (t) => {
-        const id = v4();
+        const id = crypto.randomUUID();
         const processInstanceRepository = new ProcessInstanceRepository();
-        const containerId = v4();
+        const containerId = crypto.randomUUID();
         await processInstanceRepository.createNewProcessInstance(id, "deploymentID", "processDef", containerId)
         const processInstanceCollection = db.collection('ProcessInstance');
         const res = await processInstanceCollection.findOne({_id: id})
@@ -48,9 +48,9 @@ test('remove Process instances lock',
      */
     async (t) => {
         // given
-        const id = v4();
+        const id = crypto.randomUUID();
         const processInstanceRepository = new ProcessInstanceRepository();
-        const containerId = v4();
+        const containerId = crypto.randomUUID();
         await processInstanceRepository.createNewProcessInstance(id, "deploymentID", "processDef", containerId)
         // when
         await processInstanceRepository.removeLock(id)

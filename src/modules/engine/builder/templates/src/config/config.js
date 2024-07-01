@@ -1,25 +1,21 @@
 import  {AndromedaLogger} from "./andromeda-logger.js";
 
 let config;
-import {config as LoadDotEnvConfig}  from 'dotenv';
-import path from 'path'
-import {fileURLToPath} from 'url';
 import { get } from "env-var";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-LoadDotEnvConfig({path: path.join(__dirname, '../../..', '.env' )});
 const Logger = new AndromedaLogger();
 export class Config {
-    dbUrl;
-    tempPath;
 
+    dbURI;
+    tempPath;
+    mode
     host
     port
+    env
 
     static getInstance() {
         if (!config) {
-           Logger.info(`creating new Config instance`)
+            Logger.info(`creating new Config instance`)
             config = new Config();
         }
         return config;
@@ -30,8 +26,10 @@ export class Config {
             Logger.trace(`Loading Container ${process.env.APP} Config values...`)
             this.dbURI = get('DB_URI').required().asString();
             this.tempPath = get("TEMP_PATH").default("temp").asString();
-            this.host = get("host").default("127.0.0.1").asString();
-            this.port = get("port").default("5000").asString();
+            this.host = get("HTTP_HOST").default("127.0.0.1").asString();
+            this.port = get("HTTP_PORT").default("5000").asString();
+            this.mode = get("CONTAINER_MODE").default("local").asString();
+            this.env = get("ENV").default("local").asString();
         }catch (e) {
             Logger.error(e)
         }

@@ -19,8 +19,8 @@ export class PersistenceModule  {
             try {
                 Logger.info(`Mongoose trying to connect...`)
                 await mongoose.connect(Config.getInstance().dbURI, {
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true,
+                    // useNewUrlParser: true,
+                    // useUnifiedTopology: true,
                     // useFindAndModify: false,
                     // useCreateIndex: true,
                     // reconnectTries: 30,
@@ -28,6 +28,7 @@ export class PersistenceModule  {
                     //poolSize: 30,
 
                 });
+                mongoose.set('strictQuery', false);
                 Logger.info(`Mongoose connected`)
                 this.registerStreams();
                 resolve();

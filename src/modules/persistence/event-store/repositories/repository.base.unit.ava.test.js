@@ -23,7 +23,7 @@
 //             let repo = new FakeRepositoryBase(ProcessInstanceModel);
 //             const count =await repo.count()
 //             t.is(count, 0)
-//             await repo.create({_id: v4()})
+//             await repo.create({_id: crypto.randomUUID()})
 //             t.is(await repo.count(), 1)
 //             t.pass()
 //         }catch (e) {

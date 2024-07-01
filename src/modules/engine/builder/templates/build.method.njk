@@ -1,14 +1,14 @@
 async fn_{{nodeContext.id}} (flowModel) {
 
   let __localMethodContext = {
-    nodeSession: v4(),
+    nodeSession: crypto.randomUUID(),
     nodeId: '{{ nodeContext.id }}',
     nodeName: '{{ nodeContext.name }}',
     type: '{{ nodeContext.type }}',
     incomingFlowId: flowModel?.id
   }
 
-  Logger.verbose(`visiting node {{ nodeContext.id }}, session: ${__localMethodContext.nodeSession}`);
+  Logger.debug(`visiting node {{ nodeContext.id }}, session: ${__localMethodContext.nodeSession}`);
 
   try {
     {% if nodeContext.args and nodeContext.args.executeBody !== null  %}
@@ -16,7 +16,7 @@ async fn_{{nodeContext.id}} (flowModel) {
       {% endif %}
 
       {{ nodeContext.body }}
-      this._context.saveContext();
+      // this._context.saveContext();
       {% if nodeContext.args and nodeContext.args.resumeExecution !== null  %}
       if(flowModel.resumeExecution){
         {% endif %}

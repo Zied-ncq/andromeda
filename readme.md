@@ -92,7 +92,7 @@ this mechanism makes possible to generate routes for each module without modify 
 - Web module
 - Galaxy module (depend on persistence)
 
-Some functional use cases need some modules to be activated, for example, for a small application that need a basic
+Some functional use doc.cases need some modules to be activated, for example, for a small application that need a basic
 validation process, we don't need to have a separate galaxy application deployed by itself since we will have only
 a small number of workflows. this of it as a combo, the app will expose routes to create new process instances and in the same time
 will expose other endpoints to query the list of process instances, the status of each process instance...  
@@ -111,3 +111,9 @@ In this case you can start using the product with minimum effort, you can genera
 
 
 # DRAIN CONTAINER
+
+
+# CODE STANDERS
+
+- Env variables are all capital case separated by underscore `_`
+- 

@@ -25,6 +25,11 @@ export class Config {
     deploymentPath;
 
     /**
+     * @type {string} The deployment folder.
+     */
+    deploymentFolder;
+
+    /**
      * @type {string} The temporary path.
      */
     tempPath;
@@ -37,7 +42,7 @@ export class Config {
     /**
      * @type {string} The environment.
      */
-    environment;
+    env;
 
     /**
      * @type {string} The host.
@@ -57,7 +62,7 @@ export class Config {
     /**
      * @type {boolean} Indicates if the environment is unit test mode.
      */
-    isUnitTestMode;
+    isTestMode;
 
     /**
      * Gets the singleton instance of the Config class.
@@ -80,14 +85,15 @@ export class Config {
         try {
             Logger.trace(`Loading Config values...`);
             this.dbURI = get('DB_URI').asString();
-            this.deploymentPath = get('DEPLOYMENT_PATH').default(path.join(process.cwd(), "deployments")).asString();
+            this.deploymentFolder = get('DEPLOYMENT_FOLDER').default("containers").asString();
+            this.deploymentPath = get('DEPLOYMENT_PATH').default(path.join(process.cwd(), this.deploymentFolder)).asString();
             this.tempPath = get("TEMP_PATH").default("temp").asString();
             this.activateModules = get("ACTIVE_MODULES").asString().split(',').map(e => e.trim());
-            this.environment = get("ENV").default("local").asString();
-            this.isLocalMode = get("ENV").asString() === "local";
-            this.isUnitTestMode = get("isUnitTestMode").asString() === "true";
-            this.host = get("host").default("127.0.0.1").asString();
-            this.port = get("port").default("5000").asString();
+            this.env = get("ENV").default("local").asString();
+            this.isLocalMode = this.env === "local";
+            this.isTestMode = get("PROFILE").asString() === "test";
+            this.host = get("HTTP_HOST").default("127.0.0.1").asString();
+            this.port = get("HTTP_PORT").default("5000").asString();
         }catch (e) {
             Logger.error(e)
         }

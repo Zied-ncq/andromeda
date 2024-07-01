@@ -17,14 +17,17 @@ class {{ ControllerClassName }} {
                 });
             }
             const processInstance = await {{ startMethod.name }}ProcessInstanceService.createInstance();
-            processInstance.bootstrap(variables);
-            res.json({id: processInstance.id})
+            await processInstance.bootstrap(variables);
+            res.status(200)
+            res.send({id: processInstance.id})
 
         } catch (err) {
             const returnError = new Error();
             returnError.statusCode = 500;
             returnError.message = err;
             returnError.stack=err;
+            res.status(500)
+            res.send(returnError)
             throw returnError;
         }
     }

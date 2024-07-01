@@ -5,7 +5,7 @@ const Logger = new AndromedaLogger();
 let instance;
 class ContainerService{
 
-    static containerId = v4();
+    static containerId = crypto.randomUUID();
     processInstances= {}
 
     constructor() {

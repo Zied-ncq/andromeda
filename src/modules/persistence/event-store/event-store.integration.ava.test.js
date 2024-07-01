@@ -25,31 +25,31 @@
 //     async (t) => {
 //         await PersistenceModule.init();
 //         await EventStore.apply({
-//             id: v4(),
+//             id: crypto.randomUUID(),
 //             streamId: "PROCESS_INSTANCE",
 //             type: "CREATE_PROCESS_INSTANCE",
 //             streamPosition: 0,
 //             data:{
-//                 id: v4(),
+//                 id: crypto.randomUUID(),
 //                 deploymentId: "deploymentId",
 //                 processDef: "processDef",
 //                 status: 0,
-//                 containerId: v4()
+//                 containerId: crypto.randomUUID()
 //             },
 //             timestamp: new Date().toString()
 //         });
 //
 //         await EventStore.apply({
-//             id: v4(),
+//             id: crypto.randomUUID(),
 //             streamId: "PROCESS_INSTANCE",
 //             type: "CREATE_PROCESS_INSTANCE",
 //             streamPosition: 0,
 //             data:{
-//                 id: v4(),
+//                 id: crypto.randomUUID(),
 //                 deploymentId: "deploymentId",
 //                 processDef: "processDef",
 //                 status: 0,
-//                 containerId: v4()
+//                 containerId: crypto.randomUUID()
 //             },
 //             timestamp: new Date().toString()
 //         });
@@ -67,9 +67,9 @@
 //      */
 //     async (t) => {
 //         await PersistenceModule.init();
-//         const processInstancesId= v4();
+//         const processInstancesId= crypto.randomUUID();
 //         await EventStore.apply({
-//             id:  v4(),
+//             id:  crypto.randomUUID(),
 //             streamId: "PROCESS_INSTANCE",
 //             type: "CREATE_PROCESS_INSTANCE",
 //             streamPosition: 0,
@@ -78,19 +78,19 @@
 //                 deploymentId: "deploymentId",
 //                 processDef: "processDef",
 //                 status: 0,
-//                 containerId: v4()
+//                 containerId: crypto.randomUUID()
 //             },
 //             timestamp: new Date().toString()
 //         });
 //
 //         await EventStore.apply({
-//             id:  v4(),
+//             id:  crypto.randomUUID(),
 //             streamId: "PROCESS_INSTANCE",
 //             type: "CLOSE_PROCESS_INSTANCE",
 //             streamPosition: 0,
 //             data:{
 //                 id: processInstancesId,
-//                 containerId: v4()
+//                 containerId: crypto.randomUUID()
 //             },
 //             timestamp: new Date().toString()
 //         });

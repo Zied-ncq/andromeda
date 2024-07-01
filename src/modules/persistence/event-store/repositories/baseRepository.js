@@ -69,7 +69,7 @@ class BaseRepository {
       new: true,
     };
     if (!item._id) {
-      item['$setOnInsert'] = { _id: v4() };
+      item['$setOnInsert'] = { _id: crypto.randomUUID() };
     }
     return  this._model.findOneAndUpdate(cond, item, options);
   }

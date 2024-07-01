@@ -75,10 +75,10 @@ export class WebModule {
         let startTime = new Date().getUTCMilliseconds();
         return new Promise((async (resolve, reject) => {
             try {
-                await this.app.listen(this.port, this.host)
+                await this.app.listen({port: this.port, host: this.host})
                 this.app.swagger()
                 let startCompleted = new Date().getUTCMilliseconds();
-                Logger.info(`Engine started in ${startCompleted - startTime} ms, (${Config.getInstance().environment} mode)`)
+                Logger.info(`Engine started in ${startCompleted - startTime} ms, (${Config.getInstance().env} mode)`)
                 this.gracefulServer.setReady()
                 resolve(this.app);
             } catch (err) {

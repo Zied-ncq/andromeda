@@ -15,7 +15,7 @@ export class EventStoreRepository {
     repo;
 
     constructor() {
-        if(Config.getInstance().isUnitTestMode){
+        if(Config.getInstance().isTestMode){
             this.repo = new FakeRepositoryBase(EventStoreModel)
         }else {
             this.repo = new BaseRepository(EventStoreModel)

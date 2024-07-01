@@ -7,7 +7,7 @@ import {v4} from "uuid";
 const testModelSchema = new mongoose.Schema({
     _id: {
         type: String,
-        default: v4()
+        default: crypto.randomUUID()
     },
 
     value: {

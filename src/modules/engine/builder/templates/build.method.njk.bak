@@ -1,7 +1,7 @@
 async fn_{{nodeContext.id}} (flowModel) {
 
   let __localMethodContext = {
-    nodeSession: v4(),
+    nodeSession: crypto.randomUUID(),
     nodeId: '{{ nodeContext.id }}',
     nodeName: '{{ nodeContext.name }}',
     type: '{{ nodeContext.type }}',

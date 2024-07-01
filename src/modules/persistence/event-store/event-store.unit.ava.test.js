@@ -26,7 +26,7 @@
 //      */
 //     async (t) => {
 //         await EventStore.apply({
-//             id: v4(),
+//             id: crypto.randomUUID(),
 //             streamId: "TEST",
 //             type: "TEST",
 //             streamPosition: 0,
@@ -45,7 +45,7 @@
 //     async (t) => {
 //
 //         const error2 = await Utils.getError(() =>  EventStore.apply({
-//             id: v4(),
+//             id: crypto.randomUUID(),
 //             streamPosition: 0,
 //             type: "TEST",
 //             timestamp: new Date().toString()
@@ -62,7 +62,7 @@
 //         t.deepEqual(error3[0].message, "must have required property 'id'");
 //
 //         const error4 = await Utils.getError(() =>  EventStore.apply({
-//             id: v4(),
+//             id: crypto.randomUUID(),
 //             streamId: StreamIds.TEST,
 //             type: "TEST",
 //             streamPosition: 0,
@@ -70,7 +70,7 @@
 //         t.deepEqual(error4[0].message, "must have required property 'timestamp'");
 //
 //         const error5 = await Utils.getError(() =>  EventStore.apply({
-//             id: v4(),
+//             id: crypto.randomUUID(),
 //             streamId: StreamIds.TEST,
 //             streamPosition: 0,
 //             timestamp: new Date().toString()
@@ -89,7 +89,7 @@
 //     async (t) => {
 //         const notFoundStreamId = "NOT_FOUND_STREAM_ID"
 //         const error = await Utils.getError(async () => await EventStore.apply({
-//             id: v4(),
+//             id: crypto.randomUUID(),
 //             streamId: notFoundStreamId,
 //             type: "TEST",
 //             streamPosition: 0,
@@ -112,7 +112,7 @@
 //     async (t) => {
 //         const notFoundStreamId = "NOT_FOUND_STREAM_ID"
 //         const error = await Utils.getError(async () => await EventStore.apply({
-//             id: v4(),
+//             id: crypto.randomUUID(),
 //             streamId: notFoundStreamId,
 //             type: "TEST",
 //             streamPosition: 0,

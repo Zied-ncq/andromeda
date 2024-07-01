@@ -6,7 +6,7 @@ import {v4} from "uuid";
 const EventStoreSchema = new mongoose.Schema({
     _id: {
         type: String,
-        default: v4(),
+        default: crypto.randomUUID(),
     },
     streamId: {
         type: String,

@@ -7,6 +7,7 @@ import WorkflowCodegenContext from "../../model/codegen/workflow.codegen.context
 import path from "path";
 import {fileURLToPath} from "url";
 import Utils from "../../utils/utils.js";
+import {Config} from "../../config/config.js";
 
 const Logger = new AndromedaLogger();
 const __filename = fileURLToPath(import.meta.url);
@@ -147,16 +148,12 @@ class WorkflowBuilder {
             lstripBlocks: true,
         });
 
-        let serviceFilePath = `./deployments/${workflowParsingContext.deploymentId}/src/services/${serviceFileName}.js`
+        let serviceFilePath = `./${Config.getInstance().deploymentFolder}/${workflowParsingContext.deploymentId}/src/services/${serviceFileName}.js`
 
         let template = fs.readFileSync(
-            path
-                .join(
-                    __dirname,
-                    './builder/templates/src/services/service.njk',
-                )
-                .toString(),
-        ).toString()
+            path.join(__dirname,'./builder/templates/src/services/service.njk').toString(),
+        ).toString();
+
         const renderedTemplate = nunjucks.renderString(
             template,
             {
@@ -169,7 +166,9 @@ class WorkflowBuilder {
         workflowCodegenContext.serviceClassFile = workflowCodegenContext.project.createSourceFile(
             serviceFilePath,
             renderedTemplate,
-            {overwrite: true},
+            {
+                overwrite: true
+            },
         );
         workflowCodegenContext.serviceClass = workflowCodegenContext.serviceClassFile.getClassOrThrow(serviceClassName)
     }
@@ -336,7 +335,7 @@ class WorkflowBuilder {
         workflowCodegenContext.containerCodegenContext.routes.push({verb: "POST", path: "/start" , method: "start"})
 
 
-        let serviceFilePath = `./deployments/${containerParsingContext.deploymentId}/src/controllers/${controllerName}.js`
+        let serviceFilePath = `./${Config.getInstance().deploymentFolder}/${containerParsingContext.deploymentId}/src/controllers/${controllerName}.js`
 
         let template = fs.readFileSync(
             path

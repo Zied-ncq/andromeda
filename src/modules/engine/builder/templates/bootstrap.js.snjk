@@ -1,3 +1,19 @@
-import {App} from "./app.js";
+import {fileURLToPath} from "url";
+import path from "path";
+import {config as LoadDotEnvConfig} from "dotenv";
 
-await new App().init();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dotEnvPath= path.join(__dirname, '../..', '.env' )
+LoadDotEnvConfig({path: dotEnvPath});
+
+
+async function run() {
+    // lazy load main module to make Loader.loadEnvVariables pop env variables before any logic is being executed
+    // if we add import before loadEnvVariables,  static imports (specifically `import( "./app.js")`) will be called
+    // with wrong or null values.
+    const {App} = await import( "./app.js");
+    await new App().init();
+}
+run();
+
