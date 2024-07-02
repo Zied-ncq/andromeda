@@ -10,12 +10,12 @@ class ServerController {
         if(!req.files || req.files.length === 0){
             throw new Error("at least a bpmn file must be specified");
         }
-        if(!req.body.deploymentId){
-            throw new Error("deploymentId must be specified");
+        if(!req.body.wpid){
+            throw new Error("wpid (workflow process id) must be specified");
         }
 
-        if(!req.body.deploymentId){
-            throw new Error("deploymentId must be specified");
+        if(!req.body.version){
+            throw new Error("workflow process version must be specified");
         }
         //
         let includeGalaxyModule;
@@ -30,7 +30,7 @@ class ServerController {
             for(let fileIndex in req.files){
                 fileContents.push(fs.readFileSync(req.files[fileIndex].path, {encoding: 'utf8'}));
             }
-            const containerParsingContext = await Utils.prepareContainerContext(fileContents, req.body.deploymentId);
+            const containerParsingContext = await Utils.prepareContainerContext(fileContents, req.body.wpid, req.body.version);
             containerParsingContext.includeGalaxyModule = includeGalaxyModule;
 
             await new EngineService().generateContainer(containerParsingContext);

@@ -10,12 +10,12 @@ class EmbeddedServerController {
 
     static runEmbeddedContainer = async (req, reply) => {
 
-        if(!req.body.deploymentId){
-            throw new Error("DeploymentId must be specified");
+        if(!req.body.wpid){
+            throw new Error("wpid must be specified");
         }
-        const deploymentId =req.body.deploymentId
+        const wpid =req.body.wpid
         try {
-            await EmbeddedContainerService.startEmbeddedContainer(deploymentId, {});
+            await EmbeddedContainerService.startEmbeddedContainer(wpid, {});
             return {};
         } catch (err) {
             const returnError = new Error();

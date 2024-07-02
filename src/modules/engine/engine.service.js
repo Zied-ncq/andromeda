@@ -17,9 +17,9 @@ export class EngineService {
 
     /**
      * snjk = static njk files, files that are not going to change, like package.json, app.sjs etc..
-     * @param dir: string
-     * @param sourcePath: string
-     * @param containerContext: ContainerParsingContext
+     * @param dir {string}
+     * @param sourcePath {string}
+     * @param containerContext {ContainerParsingContext}
      */
     generateStaticFiles(dir, sourcePath, containerContext) {
         let files = fs.readdirSync(dir)
@@ -97,8 +97,6 @@ export class EngineService {
         // common codegen context, contains common things such as routes
         const containerCodegenContext = new ContainerCodegenContext();
 
-        this.addLivelinessProbe(containerCodegenContext);
-        this.addReadinessProbe(containerCodegenContext);
 
 
         for (const bpmnModel of containerParsingContext.workflowParsingContext) {
@@ -182,23 +180,13 @@ export class EngineService {
 
     /**
      *
-     * @param ctx : ContainerParsingContext
-     * @param containerCodegenContext : ContainerCodegenContext
+     * @param ctx {ContainerParsingContext}
+     * @param containerCodegenContext {ContainerCodegenContext}
      */
     generateOpenApiYaml(ctx, containerCodegenContext) {
-        // let template = fs.readFileSync(
-        //     path
-        //         .join(
-        //             __dirname,
-        //             './builder/templates/specification.yaml.njk',
-        //         )
-        //         .toString(),
-        // ).toString();
-        //
-        // const renderedTemplate = nunjucks.renderString(
-        //     template,
-        //     {},
-        // );
+
+        this.addLivelinessProbe(containerCodegenContext);
+        this.addReadinessProbe(containerCodegenContext);
 
         fs.writeFileSync(path.join(Utils.getDeploymentPath(ctx), "specification.yaml"), containerCodegenContext.openApiCodegen.render());
     }

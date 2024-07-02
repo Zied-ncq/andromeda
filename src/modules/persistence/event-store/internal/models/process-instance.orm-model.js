@@ -19,7 +19,7 @@ const processInstanceSchema = new mongoose.Schema({
         default: crypto.randomUUID()
     },
 
-    deploymentId: {
+    wpid: {
         type: String,
         required: true
     },

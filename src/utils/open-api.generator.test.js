@@ -21,7 +21,7 @@ let opt = {
                                         format: "binary"
                                     }
                                 },
-                                deploymentId: {
+                                wpid: {
                                     type: "string"
                                 }
                             }
@@ -143,6 +143,8 @@ op.setServer("http://127.0.0.1:5000/", "localhost1")
                     }
                 }
         })
+    .addPath('/test','post')
+    .addPathVariableParameter('/test','post', 'processDef', 'string')
 
 
 console.log(op.render())

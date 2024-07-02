@@ -15,7 +15,7 @@ test('Start doc.e2e Engine', async (t) => {
     await new App("127.0.0.1" , port).init();
     const form = new FormData();
     form.append('bpmnFile', fs.readFileSync(path.join(process.cwd(), "./test/resources/scenario_script.bpmn")), "bpmnFile");
-    form.append('deploymentId', "compileBpmn");
+    form.append('wpid', "compileBpmn");
 
     const config = { headers: form.getHeaders()};
     // when
@@ -30,7 +30,7 @@ test('Start two Engines', async (t) => {
     await new App("127.0.0.1" , "5002").init();
     let form = new FormData();
     form.append('bpmnFile', fs.readFileSync(path.join(process.cwd(), "./test/resources/scenario_script.bpmn")), "bpmnFile");
-    form.append('deploymentId', "compileBpmn1");
+    form.append('wpid', "compileBpmn1");
 
     let config = { headers: form.getHeaders()};
     let port = 5002;
@@ -43,7 +43,7 @@ test('Start two Engines', async (t) => {
     await new App("127.0.0.1" , "5003").init();
     form = new FormData();
     form.append('bpmnFile', fs.readFileSync(path.join(process.cwd(), "./test/resources/scenario_script.bpmn")), "bpmnFile");
-    form.append('deploymentId', "compileBpmn1");
+    form.append('wpid', "compileBpmn1");
 
     config = { headers: form.getHeaders()};
     let port2 = 5003;

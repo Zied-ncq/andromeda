@@ -4,7 +4,8 @@
 
 export class ContainerParsingContext {
   constructor(config) {
-    this.deploymentId = config && config.deploymentId;
+    this.wpid = config && config.wpid;
+    this.version = config && config.version;
     this.port = config && config.port;
     this.isTestContainer = config && config.isTestContainer;
     this.workflowParsingContext= [];
@@ -35,12 +36,21 @@ export class ContainerParsingContext {
    */
   includePersistenceModule;
   /**
-   * deploymentId is the id of the container, it should be unique as it represents the folder in which the code
+   * wpid is the id of the process, it should be unique as it represents the folder in which the code
    * will be generated
-   * @property {string} deploymentId
+   * @property {string} wpid
    * @protected
    */
-  deploymentId;
+  wpid;
+
+
+  /**
+   * version of the process
+   * @property {string} version
+   * @protected
+   */
+  version;
+
 
   /**
    * port is the port on which the web server will listen

@@ -15,11 +15,12 @@ export class ContainerClient {
     /**
      *
      * @param processDef {string}
+     * @param version {string}
      * @param port {number}
      * @param variables {object}
      * @returns {Promise<void>}
      */
-    async startProcess(processDef, port, variables) {
+    async startProcess(processDef, version, port, variables) {
         const form = new FormData();
         if (variables) {
             form.append('variables', JSON.stringify(variables));
@@ -28,7 +29,7 @@ export class ContainerClient {
         // when
         // return await fetch().post(`, form, config);
         const startReq = await fetch(
-            `http://127.0.0.1:${this.port}/start`,
+            `http://127.0.0.1:${this.port}/start/process/${processDef}/version/${version}`,
             {
                 method: 'POST',
                 headers: {

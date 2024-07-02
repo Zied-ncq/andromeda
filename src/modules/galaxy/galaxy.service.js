@@ -62,7 +62,7 @@ paths:
                   items:
                     type: string
                     format: binary
-                deploymentId:
+                wpid:
                   type: string
   /api/run-embedded:
     post:
@@ -79,7 +79,7 @@ paths:
             schema:
               type: object
               properties:
-                deploymentId:
+                wpid:
                   type: string`
     }
 }

@@ -5,10 +5,10 @@ import {EventStore} from "../../event-store.js";
 export const processInstanceDataSchema = {
     type: "object",
     properties: {
-        deploymentId: {type: "string"},
+        wpid: {type: "string"},
         variables: {type: "object"},
     },
-    required: [ "deploymentId"],
+    required: [ "wpid"],
     additionalProperties: false,
 }
 

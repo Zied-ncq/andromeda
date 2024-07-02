@@ -13,8 +13,13 @@ export class Utils{
 
     }
 
+    /**
+     *
+     * @param {ContainerParsingContext} ctx
+     * @returns {string}
+     */
     static getDeploymentPath(ctx) {
-        return path.join(Config.getInstance().deploymentPath, ctx.deploymentId);
+        return path.join(Config.getInstance().deploymentPath, ctx.wpid, ctx.version);
     }
 
 
@@ -38,15 +43,15 @@ export class Utils{
     /**
      *
      * @param filesContent
-     * @param deploymentId :string
+     * @param wpid {string} workflow process id
+     * @param version {string} workflow process version
      * @returns {Promise<ContainerParsingContext>}
      */
-    static async prepareContainerContext(filesContent, deploymentId) {
+    static async prepareContainerContext(filesContent, wpid,  version) {
         const ctx = new ContainerParsingContext({
             isTestContainer: false,
             filesContent
         });
-        ctx.port
         for(let index in filesContent){
             const workflowParsingContext = new WorkflowParsingContext()
             workflowParsingContext.bpmnContent = filesContent[index]
@@ -54,7 +59,9 @@ export class Utils{
             workflowParsingContext.processPrefix= this.upperFirstChar(this.normalizeProcessPrefixWithoutVersion(workflowParsingContext.model.rootElement.id))
             ctx.workflowParsingContext.push(workflowParsingContext);
         }
-        ctx.deploymentId = deploymentId;
+        ctx.wpid = wpid;
+        ctx.version = version;
+
         // by default activate web and persistence modules
         ctx.includePersistenceModule = true;
         ctx.includeWebModule = true;
@@ -62,7 +69,7 @@ export class Utils{
         return ctx;
     }
 
-    // static getDeploymentId(model) {
+    // static getwpid(model) {
     //     if(!model){
     //         return new Error(`model should not be null`);
     //     }

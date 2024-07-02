@@ -19,17 +19,17 @@ export class ProcessInstanceRepository {
      *
      * @param {string} processInstanceId
      * @param {string} processDef
-     * @param {string} deploymentId
+     * @param {string} wpid
      * @param {string} containerId
      * @returns {Promise<void>}
      */
-    async createNewProcessInstance(processInstanceId,deploymentId, processDef, containerId) {
+    async createNewProcessInstance(processInstanceId,wpid, processDef, containerId) {
         Logger.info(`create new process instance ${processInstanceId}`);
         // @type {ProcessInstance}
         let processInstance= {
             _id: processInstanceId,
             processDef: processDef,
-            deploymentId: deploymentId,
+            wpid: wpid,
             status: ProcessInstanceStatus.Active,
             lock: {
                 containerId: containerId,

@@ -6,12 +6,12 @@ export const processInstanceDataSchema = {
     type: "object",
     properties: {
         id: {type: "string"},
-        deploymentId: {type: "string"},
+        wpid: {type: "string"},
         processDef: {type: "string"},
         containerId: {type: "string"},
         status: {type: "integer"},
     },
-    required: ["id", "deploymentId", "processDef", "containerId", "status"],
+    required: ["id", "wpid", "processDef", "containerId", "status"],
     additionalProperties: false,
 }
 

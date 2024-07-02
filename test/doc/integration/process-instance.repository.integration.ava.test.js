@@ -31,11 +31,11 @@ test('create new Process instances',
         const id = crypto.randomUUID();
         const processInstanceRepository = new ProcessInstanceRepository();
         const containerId = crypto.randomUUID();
-        await processInstanceRepository.createNewProcessInstance(id, "deploymentID", "processDef", containerId)
+        await processInstanceRepository.createNewProcessInstance(id, "wpid", "processDef", containerId)
         const processInstanceCollection = db.collection('ProcessInstance');
         const res = await processInstanceCollection.findOne({_id: id})
         t.truthy(res);
-        t.is(res.deploymentId, "deploymentID")
+        t.is(res.wpid, "wpid")
         t.truthy(res.lock)
         t.pass();
     });
@@ -51,7 +51,7 @@ test('remove Process instances lock',
         const id = crypto.randomUUID();
         const processInstanceRepository = new ProcessInstanceRepository();
         const containerId = crypto.randomUUID();
-        await processInstanceRepository.createNewProcessInstance(id, "deploymentID", "processDef", containerId)
+        await processInstanceRepository.createNewProcessInstance(id, "wpid", "processDef", containerId)
         // when
         await processInstanceRepository.removeLock(id)
         //then

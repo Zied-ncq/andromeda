@@ -65,22 +65,26 @@ export class EmbeddedContainerService {
 
     /**
      *
-     * @param deploymentId
+     * @param wpid {string}
+     * @param version {string}
      * @param options
      * @returns {Promise<*|number>}
      */
-    static async startEmbeddedContainer(deploymentId, options) {
+    static async startEmbeddedContainer(wpid, version, options) {
         let allocatedPort = await this.allocatePort(options);
 
         Logger.info(`starting container on port ${allocatedPort}`)
-        let deploymentPath = `./${Config.getInstance().deploymentFolder}/${deploymentId}`;
+
+        const deploymentPath = path.join(Config.getInstance().deploymentPath, wpid, version)
 
         this.deleteEmbeddedContainerPidFile(deploymentPath, allocatedPort);
 
         let childProcess;
         let executor = '';
         let args = []
-        executor = path.join(process.cwd(), Config.getInstance().deploymentFolder, deploymentId, "/bootstrap.js")
+
+
+        executor = path.join(deploymentPath, "/bootstrap.js")
         try {
             const embeddedLauncher = new EmbeddedLauncher();
             childProcess = await embeddedLauncher.start(executor, {
@@ -90,9 +94,9 @@ export class EmbeddedContainerService {
                 env: {
                     HTTP_PORT: String(allocatedPort),
                     DB_URI: Config.getInstance().dbURI,
-                    deploymentId: deploymentId
+                    wpid: wpid
                 },
-                cwd: path.join(process.cwd(), deploymentPath),
+                cwd: deploymentPath,
                 args: args
             });
             if (!childProcess || !childProcess.pid) {
@@ -106,8 +110,8 @@ export class EmbeddedContainerService {
 
 
         const pid = childProcess.pid
-        Logger.trace(`storing PID= ${pid}, for process ${deploymentId}, on port ${allocatedPort}`)
-        EmbeddedContainerService.containers.push({deploymentId, model: new EmbeddedContainerModel(pid, allocatedPort, deploymentId)});
+        Logger.trace(`storing PID= ${pid}, for process ${wpid}, on port ${allocatedPort}`)
+        EmbeddedContainerService.containers.push({wpid, model: new EmbeddedContainerModel(pid, allocatedPort, wpid)});
 
         if (Config.getInstance().isLocalMode && !Config.getInstance().isTestMode) {
             const daemon = await import("../embedded/embedded.sidecar.daemon.service.js");
@@ -115,7 +119,7 @@ export class EmbeddedContainerService {
             daemon.EmbeddedSidecarDaemonService.watchContainer(pid)
         }
 
-        await this.waitForEmbeddedContainerStart(deploymentPath, deploymentId, allocatedPort);
+        await this.waitForEmbeddedContainerStart(deploymentPath, wpid, allocatedPort);
         return allocatedPort;
     }
 
@@ -146,47 +150,47 @@ export class EmbeddedContainerService {
     /**
      *
      * @param {string} deploymentPath
-     * @param {string} deploymentId
+     * @param {string} wpid
      * @param {number} allocatedPort
      * @returns {Promise<void>}
      */
-    static async waitForEmbeddedContainerStart(deploymentPath, deploymentId, allocatedPort) {
+    static async waitForEmbeddedContainerStart(deploymentPath, wpid, allocatedPort) {
         const runContainer = async () => {
             if (fs.existsSync(deploymentPath + `/.pid_${allocatedPort}`)) {
-                Logger.info(`Found process id (PID), for process ${deploymentId}, on port ${allocatedPort}`)
+                Logger.info(`Found process id (PID), for process ${wpid}, on port ${allocatedPort}`)
                 return true;
             } else {
-                Logger.trace(`waiting for the container ${deploymentId} to connect on port ${allocatedPort}`)
+                Logger.trace(`waiting for the container ${wpid} to connect on port ${allocatedPort}`)
                 await Utils.sleep(1000)
                 return false;
             }
         };
 
         let numberOfAttempts = 300;
-        Logger.info(`Waiting for the embedded container ${deploymentId} to connect on port ${allocatedPort}`)
+        Logger.info(`Waiting for the embedded container ${wpid} to connect on port ${allocatedPort}`)
         for (let i = 0; i < numberOfAttempts; ++i) {
             if (await runContainer()) {
                 break;
             }
             if (i === numberOfAttempts - 1) {
-                Logger.error(`Cannot start embedded container:${deploymentId} Max number of attempts reached, on port ${allocatedPort}`);
-                await this.stopEmbeddedContainer(deploymentId, allocatedPort)
+                Logger.error(`Cannot start embedded container:${wpid} Max number of attempts reached, on port ${allocatedPort}`);
+                await this.stopEmbeddedContainer(wpid, allocatedPort)
                 throw `cannot start embedded container`;
             }
         }
     }
 
-    static async stopEmbeddedContainer(deploymentId, port) {
+    static async stopEmbeddedContainer(wpid, port) {
         if(!port){
             Logger.error(`to stop embedded container port must not specified `)
             throw new Error(`to stop embedded container port must not specified `)
         }
-        Logger.debug(`stopEmbeddedContainer :: ${deploymentId}`)
+        Logger.debug(`stopEmbeddedContainer :: ${wpid}`)
         const embeddedLauncher = new EmbeddedLauncher();
         EmbeddedContainerService.containers.forEach(e=>{
-            if(e.model.deploymentId === deploymentId){
+            if(e.model.wpid === wpid){
                 Logger.debug(`stopEmbeddedContainer :: with pid ${e.model.pid}`)
-                EmbeddedContainerService.deleteEmbeddedContainerPidFile(deploymentId, port);
+                EmbeddedContainerService.deleteEmbeddedContainerPidFile(wpid, port);
                 embeddedLauncher.killProcessTree(e.model.pid)
             }
         });

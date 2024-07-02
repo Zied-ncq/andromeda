@@ -21,7 +21,7 @@ import utils from "../../src/utils/utils.js";
     test('Start Embedded container', async (t) => {
 
         try {
-            let deploymentId = "cov/scenario_script";
+            let wpid = "cov/scenario_script";
             let fileContents = [];
             const __filename = fileURLToPath(import.meta.url);
             const __dirname = path.dirname(__filename);
@@ -29,15 +29,15 @@ import utils from "../../src/utils/utils.js";
             /**
              * @type {ContainerParsingContext} containerParsingContext
              */
-            let ctx = await Utils.prepareContainerContext(fileContents, deploymentId);
+            let ctx = await Utils.prepareContainerContext(fileContents, wpid);
             ctx.includeGalaxyModule = true;
             ctx.includeWebModule = true;
             ctx.includePersistenceModule = true;
 
             const engineService = new EngineService();
             await engineService.generateContainer(ctx);
-            await EmbeddedContainerService.startEmbeddedContainer(deploymentId, {port: 10002});
-            await EmbeddedContainerService.stopEmbeddedContainer(deploymentId, 10002);
+            await EmbeddedContainerService.startEmbeddedContainer(wpid, {port: 10002});
+            await EmbeddedContainerService.stopEmbeddedContainer(wpid, 10002);
             t.pass()
         } catch (e) {
             console.error(e)

@@ -18,16 +18,16 @@ import test from 'ava';
     })
 
     test('Start/Stop Embedded container', async (t) => {
-            let deploymentId = "test";
+            let wpid = "test";
             let fileContents = [];
             const __filename = fileURLToPath(import.meta.url);
             const __dirname = path.dirname(__filename);
             fileContents.push(fs.readFileSync(path.join(__dirname, ".." ,"resources", "andromeda.bpmn"  ), {encoding: 'utf8'}));
 
-            let ctx = await Utils.prepareContainerContext(fileContents, deploymentId);
+            let ctx = await Utils.prepareContainerContext(fileContents, wpid);
             const engineService = new EngineService();
             await engineService.generateContainer(ctx);
-            await EmbeddedContainerService.startEmbeddedContainer(deploymentId, {port:10000});
-            await EmbeddedContainerService.stopEmbeddedContainer(deploymentId, 10000);
+            await EmbeddedContainerService.startEmbeddedContainer(wpid, {port:10000});
+            await EmbeddedContainerService.stopEmbeddedContainer(wpid, 10000);
 
     });

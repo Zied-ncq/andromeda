@@ -20,7 +20,7 @@ export class ProcessInstanceProjection {
         if (event.type === "CREATE_PROCESS_INSTANCE") {
             Logger.trace("creating new process instance")
 
-            await this.repo.createNewProcessInstance(event.data.id, event.data.deploymentId, event.data.processDef, event.data.containerId);
+            await this.repo.createNewProcessInstance(event.data.id, event.data.wpid, event.data.processDef, event.data.containerId);
         }
 
         // console.dir(event)

@@ -92,6 +92,23 @@ export class OpenApiGenerator {
         return this;
     }
 
+    addPathVariableParameter(path, verb, variableName, variableType) {
+        if (this.paths[path] && this.paths[path][verb]) {
+            if(!this.paths[path][verb].parameters){
+                this.paths[path][verb].parameters= []
+            }
+            this.paths[path][verb].parameters.push({
+                     "in": "path",
+                     "name": variableName,
+                     "required": true,
+                     "schema": {
+                       "type": variableType,
+                     }
+            })
+        }
+        return this;
+    }
+
     addResponse(path, verb, response) {
         if (this.paths[path] && this.paths[path][verb]) {
             this.paths[path][verb].responses = {...this.paths[path][verb].responses}
@@ -180,7 +197,7 @@ let opt = {
                                         format: "binary"
                                     }
                                 },
-                                deploymentId: {
+                                wpid: {
                                     type: "string"
                                 }
                             }

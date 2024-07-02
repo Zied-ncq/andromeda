@@ -1,11 +1,11 @@
 export class EmbeddedContainerModel {
     pid
     port
-    deploymentId
+    wpid
 
-    constructor(pid, port, deploymentId) {
+    constructor(pid, port, wpid) {
         this.pid = pid;
         this.port = port;
-        this.deploymentId = deploymentId;
+        this.wpid = wpid;
     }
 }

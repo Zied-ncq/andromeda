@@ -4,6 +4,7 @@ import path from "path";
 import {fileURLToPath} from "url";
 import {OpenApiGenerator} from "../../utils/open-api.generator.js";
 import {Config} from "../../config/config.js";
+import Utils from "../../utils/utils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +37,8 @@ class ContainerCodegenContext {
          lstripBlocks: true,
       });
 
-      let routesRenderPath = `./${Config.getInstance().deploymentFolder}/${containerParsingContext.deploymentId}/src/routes/route.js`
+      const deploymentPath = Utils.getDeploymentPath(containerParsingContext)
+      let routesRenderPath = `${deploymentPath}/src/routes/route.js`
 
       let template = fs.readFileSync(
           path

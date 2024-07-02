@@ -20,7 +20,7 @@ import test from 'ava';
     test('Start Embedded container', async (t) => {
 
         try {
-            let deploymentId = "test/embedded_container";
+            let wpid = "test/embedded_container";
             let fileContents = [];
             const __filename = fileURLToPath(import.meta.url);
             const __dirname = path.dirname(__filename);
@@ -28,14 +28,14 @@ import test from 'ava';
             /**
              * @type {ContainerParsingContext} containerParsingContext
              */
-            let ctx = await Utils.prepareContainerContext(fileContents, deploymentId);
+            let ctx = await Utils.prepareContainerContext(fileContents, wpid);
             ctx.includeGalaxyModule = true;
 
 
             const engineService = new EngineService();
             await engineService.generateContainer(ctx);
-            await EmbeddedContainerService.startEmbeddedContainer(deploymentId, {port: 10005});
-            await EmbeddedContainerService.stopEmbeddedContainer(deploymentId, 10005);
+            await EmbeddedContainerService.startEmbeddedContainer(wpid, {port: 10005});
+            await EmbeddedContainerService.stopEmbeddedContainer(wpid, 10005);
             t.pass()
         } catch (e) {
             console.error(e)

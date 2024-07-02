@@ -8,7 +8,7 @@ export class Variable {
     /**
      * @type: string
      */
-    _id
+    id
     oldValue = null;
     currentValue = null;
     /**

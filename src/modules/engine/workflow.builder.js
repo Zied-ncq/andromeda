@@ -148,7 +148,8 @@ class WorkflowBuilder {
             lstripBlocks: true,
         });
 
-        let serviceFilePath = `./${Config.getInstance().deploymentFolder}/${workflowParsingContext.deploymentId}/src/services/${serviceFileName}.js`
+        const deploymentPath = Utils.getDeploymentPath(workflowParsingContext)
+        let serviceFilePath = `${deploymentPath}/src/services/${serviceFileName}.js`
 
         let template = fs.readFileSync(
             path.join(__dirname,'./builder/templates/src/services/service.njk').toString(),
@@ -209,6 +210,7 @@ class WorkflowBuilder {
                 ProcessDef: normalizedProcessDef,
             },
         );
+
         let destFile = path.join(Utils.getDeploymentPath(containerParsingContext), "src", "services", `${normalizedProcessDef.toLowerCase()}.process-instance-context.js`);
         fs.writeFileSync(
             destFile,
@@ -309,33 +311,35 @@ class WorkflowBuilder {
             lstripBlocks: true,
         });
 
-        workflowCodegenContext.containerCodegenContext.openApiCodegen.addPath("/start" , "post")
+        workflowCodegenContext.containerCodegenContext.openApiCodegen.addPath("/start/process/{processDef}/version/{version}" , "post")
+        workflowCodegenContext.containerCodegenContext.openApiCodegen.addPathVariableParameter("/start/process/{processDef}/version/{version}" , "post", 'processDef', 'string')
+
         workflowCodegenContext.containerCodegenContext.openApiCodegen.addResponse("/start" , "post" , {
             "responses": {
                 "200": {
                     "description": "Process instance id"
                 },
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "deploymentId": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                // "requestBody": {
+                //     "required": true,
+                //     "content": {
+                //         "multipart/form-data": {
+                //             "schema": {
+                //                 "type": "object",
+                //                 "properties": {
+                //                     "wpid": {
+                //                         "type": "string"
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
             }
         })
-        workflowCodegenContext.containerCodegenContext.routes.push({verb: "POST", path: "/start" , method: "start"})
+        workflowCodegenContext.containerCodegenContext.routes.push({verb: "POST", path: "/start/process/:processDef/version/:version" , method: "start"})
 
-
-        let serviceFilePath = `./${Config.getInstance().deploymentFolder}/${containerParsingContext.deploymentId}/src/controllers/${controllerName}.js`
+        const deploymentPath = Utils.getDeploymentPath(containerParsingContext)
+        let serviceFilePath = `${deploymentPath}/src/controllers/${controllerName}.js`
 
         let template = fs.readFileSync(
             path
