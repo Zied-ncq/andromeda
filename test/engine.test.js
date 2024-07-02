@@ -46,12 +46,12 @@ it('synchronous passing test', async () => {
 
         await sleep(2000);
 
-        await EmbeddedContainerService.stopEmbeddedContainer(wpid, port);
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
         // expect(true).toBe(true);  // Use global assertion method
     } catch (e) {
         Logger.error(e)
-        await EmbeddedContainerService.stopEmbeddedContainer(wpid, port);
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version, port);
         throw e;  // Re-throw the error to fail the test
     }
 });

@@ -22,6 +22,16 @@ export class Utils{
         return path.join(Config.getInstance().deploymentPath, ctx.wpid, ctx.version);
     }
 
+    /**
+     *
+     * @param {string} wpid
+     * @param {string} version
+     * @returns {string}
+     */
+    static getDeploymentPathUsingWPidAndVersion(wpid, version) {
+        return path.join(Config.getInstance().deploymentPath, wpid, version);
+    }
+
 
     static sleep(ms) {
 

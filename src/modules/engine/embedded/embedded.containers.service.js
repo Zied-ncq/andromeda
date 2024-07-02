@@ -77,7 +77,7 @@ export class EmbeddedContainerService {
 
         const deploymentPath = path.join(Config.getInstance().deploymentPath, wpid, version)
 
-        this.deleteEmbeddedContainerPidFile(deploymentPath, allocatedPort);
+        this.deleteEmbeddedContainerPidFile(wpid, version, allocatedPort);
 
         let childProcess;
         let executor = '';
@@ -123,8 +123,8 @@ export class EmbeddedContainerService {
         return allocatedPort;
     }
 
-    static deleteEmbeddedContainerPidFile(deploymentPath, port) {
-        const basePath = path.join(process.cwd(), Config.getInstance().deploymentFolder, deploymentPath)
+    static deleteEmbeddedContainerPidFile(wpid, version, port) {
+        const basePath = Utils.getDeploymentPathUsingWPidAndVersion(wpid, version)
         const pidPath= path.join(basePath , `.pid_${port}`)
         if (fs.existsSync(pidPath)) {
             Logger.debug(`deleteEmbeddedContainerPidFile:: Found pid file`)
@@ -180,7 +180,7 @@ export class EmbeddedContainerService {
         }
     }
 
-    static async stopEmbeddedContainer(wpid, port) {
+    static async stopEmbeddedContainer(wpid, version, port) {
         if(!port){
             Logger.error(`to stop embedded container port must not specified `)
             throw new Error(`to stop embedded container port must not specified `)
@@ -190,7 +190,7 @@ export class EmbeddedContainerService {
         EmbeddedContainerService.containers.forEach(e=>{
             if(e.model.wpid === wpid){
                 Logger.debug(`stopEmbeddedContainer :: with pid ${e.model.pid}`)
-                EmbeddedContainerService.deleteEmbeddedContainerPidFile(wpid, port);
+                EmbeddedContainerService.deleteEmbeddedContainerPidFile(wpid, version, port);
                 embeddedLauncher.killProcessTree(e.model.pid)
             }
         });
