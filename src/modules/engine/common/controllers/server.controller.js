@@ -30,10 +30,13 @@ class ServerController {
             for(let fileIndex in req.files){
                 fileContents.push(fs.readFileSync(req.files[fileIndex].path, {encoding: 'utf8'}));
             }
-            const containerParsingContext = await Utils.prepareContainerContext(fileContents, req.body.wpid, req.body.version);
-            containerParsingContext.includeGalaxyModule = includeGalaxyModule;
 
-            await new EngineService().generateContainer(containerParsingContext);
+
+            await new EngineService().generateContainer(fileContents, req.body.wpid, req.body.version, {
+                includeGalaxyModule: true,
+                includePersistenceModule: true,
+                includeWebModule: true,
+            });
             return {};
         } catch (err) {
             const returnError = new Error();

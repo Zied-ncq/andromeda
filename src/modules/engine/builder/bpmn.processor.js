@@ -7,6 +7,7 @@ import path from "path";
 import nunjucks from "nunjucks";
 import fs from "fs";
 import {fileURLToPath} from "url";
+import SubprocessNodeProcessor from "./processors/subprocess.node.processor.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const Logger = new AndromedaLogger();
@@ -20,6 +21,7 @@ class BpmnProcessor {
         this.processors[StartNodeProcessor.type] = new StartNodeProcessor();
         this.processors[EndNodeProcessor.type] = new EndNodeProcessor();
         this.processors[ScriptTaskNodeProcessor.type] = new ScriptTaskNodeProcessor();
+        this.processors[SubprocessNodeProcessor.type] = new SubprocessNodeProcessor();
     }
 
     /**

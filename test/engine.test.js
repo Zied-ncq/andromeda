@@ -7,17 +7,28 @@ import EngineService from '../src/modules/engine/engine.service.js';
 import { EmbeddedContainerService } from '../src/modules/engine/embedded/embedded.containers.service.js';
 import {ContainerClient} from "../src/utils/ContainerClient.js";
 import {AndromedaLogger} from "../src/config/andromeda-logger.js";
+import {Config} from "../src/config/config.js";
 
 // Define sleep function if not already defined
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const Logger = new AndromedaLogger("TEST");
 
 
+let wpid = "scenario_script";
+
+let version = "1.0.0";
+
+
+beforeAll(()=>{
+    const deploymentPath =  path.join(Config.getInstance().deploymentPath, wpid, version);
+    if(fs.existsSync(deploymentPath)){
+        fs.rmdirSync(deploymentPath, { recursive: true})
+    }
+})
+
 it('synchronous passing test', async () => {
 
-    let wpid = "scenario_script";
 
-    let version = "1.0.0";
     const port = 10002
 
     function getBpmnTestFile(fileName) {
@@ -31,20 +42,15 @@ it('synchronous passing test', async () => {
     try {
         let fileContents = getBpmnTestFile("scenario_script.bpmn");
 
-        let ctx = await Utils.prepareContainerContext(fileContents, wpid, version);
-        ctx.includeGalaxyModule = true;
-        ctx.includeWebModule = true;
-        ctx.includePersistenceModule = true;
-
-
-
         const engineService = new EngineService();
-        await engineService.generateContainer(ctx);
+        await engineService.generateContainer(fileContents, wpid, version, {
+            includeGalaxyModule : true,
+            includeWebModule : true,
+            includePersistenceModule : true
+        });
         await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
         await new ContainerClient(port).startProcess("scenario_script", version, port, {})
-
-        await sleep(2000);
 
         await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 

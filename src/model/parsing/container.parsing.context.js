@@ -14,32 +14,36 @@ export class ContainerParsingContext {
   /**
    * isTestContainer is to specify if the current container is used for testing purpose
    * @property {boolean} isTestContainer
-   * @protected
+   * @public
    */
   isTestContainer;
+
   /**
    * includeGalaxyModule  to load Galaxy Module in the current container
    * @property {boolean} includeGalaxyModule
-   * @protected
+   * @public
    */
   includeGalaxyModule;
+
   /**
    * includeWebModule  to load Web Module in the current container
    * @property {boolean} includeWebModule
-   * @protected
+   * @public
    */
   includeWebModule;
+
   /**
    * includePersistenceModule  to load Persistence in the current container
    * @property {boolean} includePersistenceModule
-   * @protected
+   * @public
    */
   includePersistenceModule;
+
   /**
    * wpid is the id of the process, it should be unique as it represents the folder in which the code
    * will be generated
    * @property {string} wpid
-   * @protected
+   * @public
    */
   wpid;
 
@@ -47,7 +51,7 @@ export class ContainerParsingContext {
   /**
    * version of the process
    * @property {string} version
-   * @protected
+   * @public
    */
   version;
 
@@ -55,14 +59,14 @@ export class ContainerParsingContext {
   /**
    * port is the port on which the web server will listen
    * @property {number} port
-   * @protected
+   * @public
    */
   port;
 
   /**
    * workflowParsingContext
-   * @property {string} workflowParsingContext
-   * @protected
+   * @property {WorkflowParsingContext[]} workflowParsingContext
+   * @public
    */
   workflowParsingContext;
 

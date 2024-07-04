@@ -5,6 +5,7 @@ import  {WorkflowParsingContext}  from "../model/parsing/workflow.parsing.contex
 import BPMNModdle from "bpmn-moddle";
 import {AndromedaLogger} from "../config/andromeda-logger.js";
 import path from "path";
+import {AProcess} from "../model/domain-model/a-process.js";
 const Logger = new AndromedaLogger();
 
 export class Utils{
@@ -50,34 +51,7 @@ export class Utils{
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    /**
-     *
-     * @param filesContent
-     * @param wpid {string} workflow process id
-     * @param version {string} workflow process version
-     * @returns {Promise<ContainerParsingContext>}
-     */
-    static async prepareContainerContext(filesContent, wpid,  version) {
-        const ctx = new ContainerParsingContext({
-            isTestContainer: false,
-            filesContent
-        });
-        for(let index in filesContent){
-            const workflowParsingContext = new WorkflowParsingContext()
-            workflowParsingContext.bpmnContent = filesContent[index]
-            workflowParsingContext.model = await new BPMNModdle().fromXML(workflowParsingContext.bpmnContent);
-            workflowParsingContext.processPrefix= this.upperFirstChar(this.normalizeProcessPrefixWithoutVersion(workflowParsingContext.model.rootElement.id))
-            ctx.workflowParsingContext.push(workflowParsingContext);
-        }
-        ctx.wpid = wpid;
-        ctx.version = version;
 
-        // by default activate web and persistence modules
-        ctx.includePersistenceModule = true;
-        ctx.includeWebModule = true;
-
-        return ctx;
-    }
 
     // static getwpid(model) {
     //     if(!model){

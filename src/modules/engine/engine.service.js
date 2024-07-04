@@ -3,14 +3,10 @@ import path from "path";
 import fs from "fs";
 import ContainerCodegenContext from "../../model/codegen/container.codegen.context.js";
 import WorkflowBuilder from "./workflow.builder.js";
-import {fileURLToPath} from "url";
-import {Shell} from "../../services/shell.js";
 import Utils from "../../utils/utils.js";
 
 
 const Logger = new AndromedaLogger();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class EngineService {
 
@@ -61,15 +57,23 @@ export class EngineService {
 
     /**
      *
-     * @param {ContainerParsingContext} containerParsingContext
+     * @param fileContents {string[]}
+     * @param wpid {string}
+     * @param version {string}
+     * @param config {{includeGalaxyModule:boolean}}
      * @returns {Promise<void>}
      */
-    async generateContainer(containerParsingContext) {
+    async generateContainer(fileContents, wpid, version, config) {
+
+        const workflowBuilder = new WorkflowBuilder()
+        const containerParsingContext = await WorkflowBuilder.prepareBpmnContainerContext(fileContents, wpid, version);
+        containerParsingContext.includeGalaxyModule = config.includeGalaxyModule;
+
         Logger.debug(`Trying to Generate Container`);
         const deploymentPath = Utils.getDeploymentPath(containerParsingContext);
         if (!fs.existsSync(deploymentPath)) {
             Logger.debug(`Trying to create deployment folder in path: ${deploymentPath}`);
-            Shell.mkdir(deploymentPath);
+            fs.mkdirSync(deploymentPath, {recursive: true});
         }
 
         // if (!containerParsingContext.workflowParsingContext.model || containerParsingContext.model.size === 0) {
@@ -99,8 +103,8 @@ export class EngineService {
 
 
 
-        for (const bpmnModel of containerParsingContext.workflowParsingContext) {
-            await new WorkflowBuilder().generateWorkflow(bpmnModel, containerParsingContext, containerCodegenContext);
+        for (const workflowInstance of containerParsingContext.workflowParsingContext) {
+            await workflowBuilder.generateWorkflow(workflowInstance, containerParsingContext, containerCodegenContext);
 
         }
 

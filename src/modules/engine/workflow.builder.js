@@ -8,6 +8,11 @@ import path from "path";
 import {fileURLToPath} from "url";
 import Utils from "../../utils/utils.js";
 import {Config} from "../../config/config.js";
+import {ContainerParsingContext} from "../../model/parsing/container.parsing.context.js";
+import {WorkflowParsingContext} from "../../model/parsing/workflow.parsing.context.js";
+import BPMNModdle from "bpmn-moddle";
+import {AProcess} from "../../model/domain-model/a-process.js";
+import {BpmnConverter} from "./model-converters/bpmn-converter.js";
 
 const Logger = new AndromedaLogger();
 const __filename = fileURLToPath(import.meta.url);
@@ -55,29 +60,69 @@ class WorkflowBuilder {
         this.bpmnProcessor.process(element, workflowCodegenContext, containerParsingContext);
     }
 
+
+    /**
+     *
+     * @param filesContent
+     * @param wpid {string} workflow process id
+     * @param version {string} workflow process version
+     * @returns {Promise<ContainerParsingContext>}
+     */
+    static async prepareBpmnContainerContext(filesContent, wpid, version) {
+        const ctx = new ContainerParsingContext({
+            isTestContainer: false,
+            filesContent
+        });
+        for(let index in filesContent){
+            const workflowParsingContext = new WorkflowParsingContext()
+            const model = await new BPMNModdle().fromXML(filesContent[index]);
+            const aModel = this.convertBpmnToGenericModel(model, version)
+            workflowParsingContext.model = model;
+            workflowParsingContext.processPrefix= Utils.upperFirstChar(Utils.normalizeProcessPrefixWithoutVersion(workflowParsingContext.model.rootElement.id))
+            ctx.workflowParsingContext.push(workflowParsingContext);
+        }
+        ctx.wpid = wpid;
+        ctx.version = version;
+
+        // by default activate web and persistence modules
+        ctx.includePersistenceModule = true;
+        ctx.includeWebModule = true;
+
+        return ctx;
+    }
+
+    /**
+     * @param {Definitions} model
+     * @param {string} version
+     * @returns {AProcess}
+     */
+    static convertBpmnToGenericModel(model, version){
+        return  new BpmnConverter().convert(model, version);
+    }
+
     /**
      * entry point for code generation
-     * @param bpmnModel : WorkflowParsingContext
+     * @param processModel : WorkflowParsingContext
      * @param containerParsingContext : ContainerParsingContext
      * @param containerCodegenContext : ContainerCodegenContext
      * @returns {Promise<void>}
      */
     async generateWorkflow(
-        bpmnModel,
+        processModel,
         containerParsingContext,
         containerCodegenContext
     ) {
         // each bpmn file can contain multiple process node
-        const processesInBpmnFile = this.getProcessesModel(bpmnModel.model);
+        const processesInBpmnFile = this.getProcessesModel(processModel.model);
 
-        const normalizedProcessDef = this.normalizeProcessDefWithoutVersion(bpmnModel.processPrefix);
+        const normalizedProcessDef = this.normalizeProcessDefWithoutVersion(processModel.processPrefix);
 
         const workflowCodegenContext = new WorkflowCodegenContext(containerCodegenContext);
 
-        await this.generateServiceClass(normalizedProcessDef, bpmnModel, containerParsingContext, workflowCodegenContext)
-        await this.generateWorkflowContext(normalizedProcessDef, bpmnModel, containerParsingContext)
+        await this.generateServiceClass(normalizedProcessDef, processModel, containerParsingContext, workflowCodegenContext)
+        await this.generateWorkflowContext(normalizedProcessDef, processModel, containerParsingContext)
 
-        await this.generateContainerControllerClass(normalizedProcessDef, bpmnModel, containerParsingContext, workflowCodegenContext)
+        await this.generateContainerControllerClass(normalizedProcessDef, processModel, containerParsingContext, workflowCodegenContext)
 
         processesInBpmnFile.forEach(process => {
             this.generateProcess(process, workflowCodegenContext, containerParsingContext);
