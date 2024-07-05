@@ -2,11 +2,11 @@ import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 
 const Logger = new AndromedaLogger();
 class ScriptTaskNodeProcessor {
-    static type = "bpmn:ScriptTask"
+    static type = "ScriptTask"
 
     /**
      *
-     * @param currentNode : ScriptTask
+     * @param currentNode {ANode}
      * @param workflowCodegenContext : WorkflowCodegenContext
      * @param containerParsingContext : ContainerParsingContext
      * @returns {{name: *, id, type, body: *}}
@@ -16,7 +16,7 @@ class ScriptTaskNodeProcessor {
         Logger.info(`processing script event`);
         const nodeContext = {
             id: currentNode.id,
-            type: currentNode.$type,
+            type: currentNode.type,
             name: currentNode.name || currentNode.id,
             body: currentNode.script,
         };

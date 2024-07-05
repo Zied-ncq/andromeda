@@ -1,3 +1,5 @@
+import {AFlowNode} from './a-flow-node.js'
+
 export class AFlow {
 
     /**
@@ -7,7 +9,7 @@ export class AFlow {
     id
 
     /**
-     * @property {string} to
+     * @property {AFlowNode} to
      * @public
      */
     to

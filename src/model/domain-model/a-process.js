@@ -1,3 +1,6 @@
+import {AVariable} from './a-variable.js'
+import {ANode} from './a-node.js'
+
 export class AProcess {
 
     /**

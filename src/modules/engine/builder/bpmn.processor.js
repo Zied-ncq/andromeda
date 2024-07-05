@@ -26,12 +26,12 @@ class BpmnProcessor {
 
     /**
      *
-     * @param element : FlowNode
+     * @param element {ANode}
      * @param workflowCodegenContext
      * @param containerParsingContext
      */
     process(element, workflowCodegenContext, containerParsingContext){
-        let type = element.$type;
+        let type = element.type;
         let processor = this.processors[type];
         if(!processor){
             throw new Error(`cannot find suitable processor for Element of type ${type}`);
@@ -41,15 +41,17 @@ class BpmnProcessor {
             throw new Error(`cannot find a suitable node context for Element of type ${type}`);
         }
         this.buildMethod(element, nodeContext, workflowCodegenContext);
-        element.outgoing?.forEach((flow) => {
-            if (!this.treatedNodes.includes(flow.targetRef.id)) {
-                this.treatedNodes.push(flow.targetRef.id);
+
+        for (const flow of element.flows) {
+            if (!this.treatedNodes.includes(flow.id)) {
+                this.treatedNodes.push(flow.id);
                 Logger.info(
-                    `next element id= ${flow.targetRef.id}, type =${flow.targetRef.$type}`,
+                    `next element id= ${flow.id}, type =${flow.to}`,
                 );
-                 this.process(flow.targetRef, workflowCodegenContext, containerParsingContext);
+
+                this.process(flow.to.ref, workflowCodegenContext, containerParsingContext);
             }
-        });
+        }
     }
 
 

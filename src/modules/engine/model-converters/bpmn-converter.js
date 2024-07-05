@@ -32,18 +32,19 @@ export class BpmnConverter {
         const definition = model.rootElement;
         const processesInBpmnFile = definition.rootElements.find((e) => e.$type === 'bpmn:Process')
 
-        return this.parse(processesInBpmnFile, version)
+        return this.parse(processesInBpmnFile, definition.id, version)
 
     }
 
     /**
      * @param root {FlowElementsContainer}
+     * @param id {string}
      * @param version {string}
      * @returns {AProcess}
      */
-    parse(root, version) {
+    parse(root, id, version) {
         const process = new AProcess()
-        process.id = root.id
+        process.id = id
         process.version = version
 
         const flowElements = root.flowElements;
@@ -60,7 +61,7 @@ export class BpmnConverter {
         for (let node of nodes) {
 
             if (node.$type === "bpmn:SubProcess") {
-                process.subProcesses.push(this.parse(node, version))
+                process.subProcesses.push(this.parse(node, node.id,  version))
             }
 
             /**
@@ -74,11 +75,22 @@ export class BpmnConverter {
             const nodeFlow = flows.filter(e => e.sourceRef.id === node.id)
             modelNode.flows = nodeFlow.map(e => ({
                 id: e.id,
-                to: e.targetRef.id,
+                to: {
+                    id: e.targetRef.id,
+                },
                 condition: e.conditionExpression?.body
-            }))
+            }));
+
             process.nodes.push(modelNode)
         }
+        // fill refs
+
+        for (let node of process.nodes) {
+            for (let flow of node.flows) {
+                flow.to.ref = process.nodes.find(e=> e.id === flow.to.id)
+            }
+        }
+
 
         return process;
     }

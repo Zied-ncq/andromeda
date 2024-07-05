@@ -2,13 +2,13 @@ import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 
 const Logger = new AndromedaLogger();
 class StartNodeProcessor {
-    static type = "bpmn:StartEvent"
+    static type = "StartEvent"
     process(currentNode, workflowCodegenContext, containerParsingContext){
 
         Logger.info(`processing start event`);
         const nodeContext = {
             id: currentNode.id,
-            type: currentNode.$type,
+            type: currentNode.type,
             name: currentNode.name || currentNode.id,
             body: ``,
         };
