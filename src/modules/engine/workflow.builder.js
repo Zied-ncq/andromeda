@@ -35,29 +35,29 @@ class WorkflowBuilder {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    async generateEmbeddedContainer(element, workflowCodegenContext, containerParsingContext) {
+    async generateContainer(element, workflowCodegenContext, containerParsingContext) {
         let self = this;
         // search start
         // generate code
         const startElements = this.getStartElements(element);
         startElements.forEach(startElement => {
-            self.generate(startElement, workflowCodegenContext, containerParsingContext);
+            self.generate(startElement.id, workflowCodegenContext, containerParsingContext);
         })
-        let embeddedEventSubprocesses = this.getEventSubProcess(element);
-        embeddedEventSubprocesses.forEach(container => {
-            self.generateEmbeddedContainer(container, workflowCodegenContext, containerParsingContext)
-        })
+        // let embeddedEventSubprocesses = this.getEventSubProcess(element);
+        // embeddedEventSubprocesses.forEach(container => {
+        //     self.generateContainer(container, workflowCodegenContext, containerParsingContext)
+        // })
     }
 
     /**
      *
-     * @param element : FlowNode
-     * @param workflowCodegenContext : WorkflowCodegenContext
-     * @param containerParsingContext : ContainerParsingContext
+     * @param element  {string}
+     * @param workflowCodegenContext  {WorkflowCodegenContext}
+     * @param containerParsingContext {ContainerParsingContext}
      * @returns {Promise<void>}
      */
-    async generate(element, workflowCodegenContext, containerParsingContext) {
-        this.bpmnProcessor.process(element, workflowCodegenContext, containerParsingContext);
+    async generate(element, workflowCodegenContext, containerParsingContext, process) {
+        this.bpmnProcessor.process(element, workflowCodegenContext, containerParsingContext, process);
     }
 
 
@@ -125,6 +125,7 @@ class WorkflowBuilder {
         await this.generateContainerControllerClass(normalizedProcessDef, processModel, containerParsingContext, workflowCodegenContext)
 
         // processesInBpmnFile.forEach(process => {
+        // current node = definition
         await this.generateProcess(processModel.model, workflowCodegenContext, containerParsingContext);
 
         // });
@@ -174,14 +175,14 @@ class WorkflowBuilder {
      *
      * @param {string} normalizedProcessDef
      * @param parsedModel
-     * @param {ContainerParsingContext} workflowParsingContext
+     * @param {ContainerParsingContext} containerParsingContext
      * @param {WorkflowCodegenContext} workflowCodegenContext
      * @returns {Promise<void>}
      */
     async generateServiceClass(
         normalizedProcessDef,
         parsedModel,
-        workflowParsingContext,
+        containerParsingContext,
         workflowCodegenContext,
     ) {
 
@@ -193,7 +194,7 @@ class WorkflowBuilder {
             lstripBlocks: true,
         });
 
-        const deploymentPath = Utils.getDeploymentPath(workflowParsingContext)
+        const deploymentPath = Utils.getDeploymentPath(containerParsingContext)
         let serviceFilePath = `${deploymentPath}/src/services/${serviceFileName}.js`
 
         let template = fs.readFileSync(
@@ -206,6 +207,8 @@ class WorkflowBuilder {
                 ServiceFileName: serviceFileName,
                 ServiceClassName: serviceClassName,
                 ProcessDef: normalizedProcessDef,
+                containerParsingContext,
+                workflowCodegenContext,
             },
         );
 
@@ -266,20 +269,20 @@ class WorkflowBuilder {
 
     /**
      *
-     * @param process : Process
-     * @param workflowCodegenContext : WorkflowCodegenContext
-     * @param containerParsingContext : ContainerParsingContext
+     * @param process  {ANode}
+     * @param workflowCodegenContext {WorkflowCodegenContext}
+     * @param containerParsingContext {ContainerParsingContext}
      */
     async generateProcess(process, workflowCodegenContext, containerParsingContext) {
         let startElements = this.getStartElements(process);
         for (const startElement of startElements) {
-            await this.generate(startElement, workflowCodegenContext, containerParsingContext);
+            await this.generate(startElement.id, workflowCodegenContext, containerParsingContext, process);
         }
 
-        let embeddedEventSubprocesses = this.getEventSubProcess(process);
-        for (const container of embeddedEventSubprocesses) {
-            await this.generateEmbeddedContainer(container, workflowCodegenContext, containerParsingContext)
-        }
+        // let embeddedEventSubprocesses = this.getEventSubProcess(process);
+        // for (const container of embeddedEventSubprocesses) {
+        //     await this.generateContainer(container, workflowCodegenContext, containerParsingContext)
+        // }
     }
 
 
@@ -400,6 +403,8 @@ class WorkflowBuilder {
                 ControllerClassName: controllerName,
                 startMethod : { name: normalizedProcessDef},
                 ProcessDef: normalizedProcessDef,
+                containerParsingContext,
+                workflowCodegenContext,
             },
         );
         workflowCodegenContext.addControllerClassImport(`${normalizedProcessDef}ProcessInstanceService`,`../services/${normalizedProcessDef.toLowerCase()}.process-instance.service.js`)

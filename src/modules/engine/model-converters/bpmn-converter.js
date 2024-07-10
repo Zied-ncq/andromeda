@@ -77,7 +77,13 @@ export class BpmnConverter {
                 id: e.id,
                 to: {
                     id: e.targetRef.id,
+                    type: BpmnTypeConverter[e.targetRef?.$type],
                 },
+                from: {
+                    id: e.sourceRef.id,
+                    type: BpmnTypeConverter[e.sourceRef.$type] ,
+                },
+
                 condition: e.conditionExpression?.body
             }));
 
@@ -85,11 +91,15 @@ export class BpmnConverter {
         }
         // fill refs
 
-        for (let node of process.nodes) {
-            for (let flow of node.flows) {
-                flow.to.ref = process.nodes.find(e=> e.id === flow.to.id)
-            }
-        }
+        // for (let node of process.nodes) {
+        //     for (let flow of node.flows) {
+        //         flow.to.ref = process.nodes.find(e=> e.id === flow.to.id)
+        //         // flow.from = {
+        //         //     ref: node,
+        //         //     id :node.id
+        //         // }
+        //     }
+        // }
 
 
         return process;

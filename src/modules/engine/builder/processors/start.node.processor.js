@@ -1,9 +1,10 @@
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
+import {AType} from "./a-node-type.js";
 
 const Logger = new AndromedaLogger();
 class StartNodeProcessor {
-    static type = "StartEvent"
-    process(currentNode, workflowCodegenContext, containerParsingContext){
+    static type = AType.StartEvent
+    process(currentNode, workflowCodegenContext, containerParsingContext, process){
 
         Logger.info(`processing start event`);
         const nodeContext = {

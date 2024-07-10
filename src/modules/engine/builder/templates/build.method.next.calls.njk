@@ -1,12 +1,31 @@
 let flows = new Map();
 {% for flow in outgoingSequenceFlows %}
-
+    let {{ flow.id }} = await this.{{ flow.to.type }}CreateFlow({{ stringify(flow) }}, __localMethodContext);
+    {% if flow.conditionExpression !== '' and flow.conditionExpression !== undefined %}
+        if (await this.evaluate('{{ flow.conditionExpression.body }}')) {
+            {{ flow.id }}.executable = true;
+        }else{
+            {{ flow.id }}.executable = false;
+        }
+    {% else %}
+       {{ flow.id }}.executable = true;
+    {% endif %}
+    flows.set( '{{ flow.id }}' , {{ flow.id }});
 {% endfor %}
 
 
 if(flows.size > 0){
-    // await this.bulkCreateSequenceFlow(Array.from(flows.values()));
+ // await this.bulkCreateSequenceFlow(Array.from(flows.values()));
 }
 {% for flow in outgoingSequenceFlows %}
-
+    try {
+        let nextFlowModel = flows.get('{{ flow.id }}');
+        if(nextFlowModel.executable){
+            let $args = {}
+            {{ flow.targetNodeMethodSignature }};
+        }
+    } catch (error) {
+        Logger.error(error);
+        await this.failProcessInstance('{{ flow.id }}', __localMethodContext);
+    }
 {% endfor %}

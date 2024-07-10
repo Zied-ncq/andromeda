@@ -1,11 +1,15 @@
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
+import {AType} from "./a-node-type.js";
 
 const Logger = new AndromedaLogger();
 class StartNodeProcessor {
-    static type = "SubProcess"
-    process(currentNode, workflowCodegenContext, containerParsingContext){
+
+    static type = AType.SubProcess
+
+    process(currentNode, workflowCodegenContext, containerParsingContext, process){
 
         Logger.info(`processing SubProcess`);
+
         const nodeContext = {
             id: currentNode.id,
             type: currentNode.type,
@@ -13,10 +17,6 @@ class StartNodeProcessor {
             body: ``,
         };
 
-        const bootstrapMethod =workflowCodegenContext.serviceClass.getMethodOrThrow('bootstrap');
-        bootstrapMethod.addStatements(
-            `this.fn_${currentNode.id}()`,
-        );
         return nodeContext;
 
     }

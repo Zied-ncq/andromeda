@@ -22,6 +22,7 @@ class {{ ControllerClassName }} {
             res.send({id: processInstance.id})
 
         } catch (err) {
+            Logger.error(err)
             const returnError = new Error();
             returnError.statusCode = 500;
             returnError.message = err;

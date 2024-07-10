@@ -1,6 +1,8 @@
+import {AType} from "../builder/processors/a-node-type.js";
+
 export const BpmnTypeConverter = {
-    "bpmn:ScriptTask" : "ScriptTask",
-    "bpmn:StartEvent" : "StartEvent",
-    "bpmn:EndEvent" : "EndEvent",
-    "bpmn:SubProcess" : "SubProcess",
+    "bpmn:ScriptTask" : AType.ScriptTask,
+    "bpmn:StartEvent" : AType.StartEvent,
+    "bpmn:EndEvent" : AType.EndEvent,
+    "bpmn:SubProcess" : AType.SubProcess,
 }

@@ -8,10 +8,11 @@ export const processInstanceDataSchema = {
         id: {type: "string"},
         wpid: {type: "string"},
         processDef: {type: "string"},
+        version: {type: "string"},
         containerId: {type: "string"},
         status: {type: "integer"},
     },
-    required: ["id", "wpid", "processDef", "containerId", "status"],
+    required: ["id", "wpid", "processDef", "version", "containerId", "status"],
     additionalProperties: false,
 }
 

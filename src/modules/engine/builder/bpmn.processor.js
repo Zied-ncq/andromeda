@@ -8,6 +8,7 @@ import nunjucks from "nunjucks";
 import fs from "fs";
 import {fileURLToPath} from "url";
 import SubprocessNodeProcessor from "./processors/subprocess.node.processor.js";
+import {FlowHelper} from "./flow-helper.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const Logger = new AndromedaLogger();
@@ -26,17 +27,27 @@ class BpmnProcessor {
 
     /**
      *
-     * @param element {ANode}
-     * @param workflowCodegenContext
-     * @param containerParsingContext
+     * @param elementId {string}
+     * @param workflowCodegenContext  {WorkflowCodegenContext}
+     * @param containerParsingContext {ContainerParsingContext}
      */
-    process(element, workflowCodegenContext, containerParsingContext){
-        let type = element.type;
+    process(elementId, workflowCodegenContext, containerParsingContext, process){
+
+        const element = process.nodes.find(e=> e.id === elementId)
+        const type = element.type;
+
         let processor = this.processors[type];
         if(!processor){
             throw new Error(`cannot find suitable processor for Element of type ${type}`);
         }
-        let nodeContext = this.processors[type].process(element, workflowCodegenContext, containerParsingContext)
+        const nodeContext = processor.process(element, workflowCodegenContext, containerParsingContext, process);
+
+        if(processor.createFlow){
+            processor.createFlow();
+        }else{
+            FlowHelper.createFlow( workflowCodegenContext,element)
+        }
+
         if(!nodeContext){
             throw new Error(`cannot find a suitable node context for Element of type ${type}`);
         }
@@ -49,7 +60,7 @@ class BpmnProcessor {
                     `next element id= ${flow.id}, type =${flow.to}`,
                 );
 
-                this.process(flow.to.ref, workflowCodegenContext, containerParsingContext);
+                this.process(flow.to.id, workflowCodegenContext, containerParsingContext, process);
             }
         }
     }
@@ -58,8 +69,8 @@ class BpmnProcessor {
     getNextNodes(
         node
     ) {
-        if (node.outgoing !== undefined) {
-            return node.outgoing;
+        if (node.flows !== undefined) {
+            return node.flows;
         }
         return [];
     }
@@ -74,13 +85,9 @@ class BpmnProcessor {
         const outgoingSequenceFlows = nextNodes.map(
             (nextNode) => {
                 const flow = {
-                    ...JSON.parse(JSON.stringify(nextNode)),
-                    target: JSON.parse(JSON.stringify(nextNode.targetRef)),
-                    source: JSON.parse(JSON.stringify(nextNode.sourceRef)),
+                    ...nextNode,
                 };
-                flow.targetNodeMethodSignature = `this.fn_${flow.target.id}(nextFlowModel)`;
-                flow.source.$type = flow.source.$type.substr(5);
-                flow.target.$type = flow.target.$type.substr(5);
+                flow.targetNodeMethodSignature = `this.fn_${flow.to.id}(nextFlowModel)`;
                 return flow;
             },
             // this.generateOutgoingSequenceFlowContext(currentElement, nextNode),

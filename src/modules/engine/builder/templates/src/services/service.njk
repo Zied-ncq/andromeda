@@ -1,10 +1,19 @@
 import  {AndromedaLogger} from "../config/andromeda-logger.js";
 const Logger = new AndromedaLogger();
 import {ProcessInstanceContext} from "./{{ ProcessDef.toLowerCase() }}.process-instance-context.js";
+import {ProcessInstanceStatus} from "../config/constants.js";
+import {PersistenceGateway} from "../modules/persistence/event-store/persistence-gateway.js";
+import ContainerService from "../modules/container/container.service.js";
+
+
 
 class {{ServiceClassName}} {
 
+
+    serviceContext;
+
     processInstanceId
+
     // _context = new {{ ProcessDef }}ProcessInstanceContext();
 
     bootstrap(){
@@ -12,22 +21,28 @@ class {{ServiceClassName}} {
 
     constructor(processInstanceId)
     {
-        if (processInstanceId) {
+        if (processInstanceId !== null && processInstanceId !== undefined ) {
             // in case we resume a process instance after a container restart
             this.processInstanceId = processInstanceId;
             // this.flowService = new TestFlowService(this.id);
         } else {
+            const id  = crypto.randomUUID()
+            Logger.debug(`Creating new Process instance id= ${id}`)
             this.processInstanceId = crypto.randomUUID();
             // this.flowService = new TestFlowService(this.id);
         }
 
     }
 
-    static createInstance(processInstanceId)
+    static async createInstance(processInstanceId)
     {
-        const instance = new BasicScenarioProcessInstanceService(processInstanceId)
+        const instance = new {{ServiceClassName}}(processInstanceId)
         // ContainerService.getInstance().lock(instance)
-
+        await PersistenceGateway.newProcessInstance(ContainerService.containerId,
+            '{{containerParsingContext.wpid}}',
+            '{{ProcessDef}}',
+            '{{containerParsingContext.version}}',
+             instance.processInstanceId)
         return instance;
 
     }
@@ -35,6 +50,45 @@ class {{ServiceClassName}} {
     close(){
 
     }
+
+    // async closeProcessInstanceEvent(){
+    //     const event: CloseProcessInstanceEvent = {
+    //         createdAt: new Date(),
+    //         eventType: CLOSE_PROCESS_INSTANCE,
+    //         payload: {
+    //             processInstanceId: this._metaInfo.processInstanceId,
+    //         },
+    //         version: 1.0,
+    //     };
+    //     await this._metaInfo.eventStore.insert(event);
+    // }
+    //
+    // async failProcessInstanceEvent(){
+    //     const event = {
+    //         createdAt: new Date(),
+    //         eventType: FAIL_PROCESS_INSTANCE,
+    //         payload: {
+    //             processInstanceId: this._metaInfo.processInstanceId,
+    //         },
+    //         version: 1.0,
+    //     };
+    //     await this._metaInfo.eventStore.insert(event);
+    // }
+    //
+    //
+    // async abortProcessInstanceEvent(){
+    //     const event = {
+    //         createdAt: new Date(),
+    //         eventType: ABORT_PROCESS_INSTANCE,
+    //         payload: {
+    //             processInstanceId: this._metaInfo.processInstanceId,
+    //         },
+    //         version: 1.0,
+    //     };
+    //     await this._metaInfo.eventStore.insert(event);
+    // }
+
+
 }
 
 export default {{ServiceClassName}}

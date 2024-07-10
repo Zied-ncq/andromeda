@@ -1,6 +1,5 @@
 
 import mongoose from "mongoose";
-import {v4} from "uuid";
 
 export const ProcessInstanceStatus = {
     Active: 0,

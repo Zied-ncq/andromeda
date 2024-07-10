@@ -11,9 +11,9 @@ let containers = []
 Logger.warn(`
 /**
  * NB: THIS HELPER IS USED ONLY LOCALLY IN DEV MODE, it's called sidecar daemon
- * This helper will kill child (containers aka node process) when the engine is closed
+ * This helper will kill child (node process aka process containers ) when the engine is closed
  * When the daemon detects that the engine is closed, checks pid regularly, it will close all related node processes.
- * When the engine starts, it will start the daemon, and pass its own pid.
+ * When the engine starts, it will start the daemon, and pass its own pid as argument.
  * When a container starts, it will send the pid of the created process, the daemon will store it in memory.
  *
  * This daemon uses a socket file, implemented using the node-ipc npm package, to communicate with the engine.

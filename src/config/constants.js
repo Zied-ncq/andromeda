@@ -1,3 +1,4 @@
+
 const constants = {
     APP_NAME: "Andromeda",
     WEB: "web",
@@ -6,5 +7,12 @@ const constants = {
     PERSISTENCE: "persistence",
 
 }
+
+export const ProcessInstanceStatus = {
+    Active: 0,
+    Completed: 1,
+    Error: 2,
+    Aborted: 3
+};
 
 export  default constants

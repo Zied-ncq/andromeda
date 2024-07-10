@@ -14,6 +14,14 @@ export class AFlow {
      */
     to
 
+
+    // /**
+    //  * @property {AFlowNode} from
+    //  * @public
+    //  */
+    // from
+
+
     /**
      * @property {object} condition
      * @public
