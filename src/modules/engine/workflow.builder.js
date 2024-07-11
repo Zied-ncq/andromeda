@@ -11,7 +11,7 @@ import {Config} from "../../config/config.js";
 import {ContainerParsingContext} from "../../model/parsing/container.parsing.context.js";
 import {WorkflowParsingContext} from "../../model/parsing/workflow.parsing.context.js";
 import BPMNModdle from "bpmn-moddle";
-import {AProcess} from "../../model/domain-model/a-process.js";
+import {AProcess} from "../../model/domain-model/bzprocess/a-process.js";
 import {BpmnConverter} from "./model-converters/bpmn-converter.js";
 
 const Logger = new AndromedaLogger();

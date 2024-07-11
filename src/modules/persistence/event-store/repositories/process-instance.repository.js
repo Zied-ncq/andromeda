@@ -56,4 +56,23 @@ export class ProcessInstanceRepository {
         await this.repo.upsert({_id: processInstanceId}, {status: ProcessInstanceStatus.Completed, lock: null})
     }
 
+
+    /**
+     *
+     * @param id
+     * @returns {Promise<ProcessInstance>}
+     */
+    async getProcessInstanceById(id){
+        const instance = await this.repo.findOne({_id: id})
+        return {
+            id: instance._id,
+            lock: instance.lock,
+            processDef: instance.processDef,
+            wpid:  instance.wpid,
+            status: instance.status,
+            version: instance.version
+        }
+
+    }
+
 }

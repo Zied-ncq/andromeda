@@ -22,7 +22,7 @@ export const closeProcessInstanceDataSchema = {
         id: {type: "string"},
         containerId: {type: "string"},
     },
-    required: ["id"],
+    required: ["id", "containerId"],
     additionalProperties: false,
 }
 

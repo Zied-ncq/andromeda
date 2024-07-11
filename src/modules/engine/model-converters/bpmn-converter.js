@@ -1,4 +1,4 @@
-import {AProcess} from "../../../model/domain-model/a-process.js";
+import {AProcess} from "../../../model/domain-model/bzprocess/a-process.js";
 import {BpmnTypeConverter} from "./bpmn-type-converter.js";
 
 export class BpmnConverter {

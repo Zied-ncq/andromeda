@@ -5,7 +5,7 @@ import  {WorkflowParsingContext}  from "../model/parsing/workflow.parsing.contex
 import BPMNModdle from "bpmn-moddle";
 import {AndromedaLogger} from "../config/andromeda-logger.js";
 import path from "path";
-import {AProcess} from "../model/domain-model/a-process.js";
+import {AProcess} from "../model/domain-model/bzprocess/a-process.js";
 const Logger = new AndromedaLogger();
 
 export class Utils{

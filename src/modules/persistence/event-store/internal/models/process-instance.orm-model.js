@@ -26,6 +26,10 @@ const processInstanceSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    version:  {
+        type: String,
+        required: true
+    },
     status: {
         type: Number,
         enum: [ProcessInstanceStatus.Active, ProcessInstanceStatus.Completed, ProcessInstanceStatus.Error, ProcessInstanceStatus.Aborted ],
