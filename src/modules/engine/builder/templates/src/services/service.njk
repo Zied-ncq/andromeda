@@ -1,9 +1,10 @@
 import  {AndromedaLogger} from "../config/andromeda-logger.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 import {ProcessInstanceContext} from "./{{ ProcessDef.toLowerCase() }}.process-instance-context.js";
 import {ProcessInstanceStatus} from "../config/constants.js";
 import {PersistenceGateway} from "../modules/persistence/event-store/persistence-gateway.js";
 import ContainerService from "../modules/container/container.service.js";
+import {WorkflowHelper} from "./workflow-helper.js";
 
 
 
@@ -13,6 +14,8 @@ class {{ServiceClassName}} {
     serviceContext;
 
     processInstanceId
+
+    workflowhelper = new WorkflowHelper(this)
 
     // _context = new {{ ProcessDef }}ProcessInstanceContext();
 
@@ -42,26 +45,13 @@ class {{ServiceClassName}} {
             '{{containerParsingContext.wpid}}',
             '{{ProcessDef}}',
             '{{containerParsingContext.version}}',
-             instance.processInstanceId)
+             instance.processInstanceId);
         return instance;
 
     }
 
-    close(){
 
-    }
 
-    // async closeProcessInstanceEvent(){
-    //     const event: CloseProcessInstanceEvent = {
-    //         createdAt: new Date(),
-    //         eventType: CLOSE_PROCESS_INSTANCE,
-    //         payload: {
-    //             processInstanceId: this._metaInfo.processInstanceId,
-    //         },
-    //         version: 1.0,
-    //     };
-    //     await this._metaInfo.eventStore.insert(event);
-    // }
     //
     // async failProcessInstanceEvent(){
     //     const event = {

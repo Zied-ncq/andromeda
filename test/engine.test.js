@@ -11,7 +11,7 @@ import {Config} from "../src/config/config.js";
 
 // Define sleep function if not already defined
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const Logger = new AndromedaLogger("TEST");
+const Logger = AndromedaLogger;
 
 
 let wpid = "scenario_script";

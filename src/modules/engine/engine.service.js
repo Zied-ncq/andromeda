@@ -6,7 +6,7 @@ import WorkflowBuilder from "./workflow.builder.js";
 import Utils from "../../utils/utils.js";
 
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 export class EngineService {
 

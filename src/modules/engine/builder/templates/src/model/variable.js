@@ -1,5 +1,5 @@
 import  {AndromedaLogger} from "../config/andromeda-logger.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 import Md5 from 'yamd5.js'
 import {VariableEncoder} from "../helpers/variable-encoder";

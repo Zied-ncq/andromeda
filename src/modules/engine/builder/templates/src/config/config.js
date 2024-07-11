@@ -3,7 +3,7 @@ import  {AndromedaLogger} from "./andromeda-logger.js";
 let config;
 import { get } from "env-var";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 export class Config {
 
     dbURI;

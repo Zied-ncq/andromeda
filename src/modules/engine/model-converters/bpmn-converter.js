@@ -71,7 +71,14 @@ export class BpmnConverter {
             const modelNode = {
                 id: node.id,
                 type: BpmnTypeConverter[node.$type],
+                content: {}
             }
+
+            if (node.$type === "bpmn:ScriptTask" && node.script !== undefined) {
+                modelNode.content.script = node.script
+            }
+
+
             const nodeFlow = flows.filter(e => e.sourceRef.id === node.id)
             modelNode.flows = nodeFlow.map(e => ({
                 id: e.id,

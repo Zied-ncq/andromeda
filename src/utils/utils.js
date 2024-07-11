@@ -6,7 +6,7 @@ import BPMNModdle from "bpmn-moddle";
 import {AndromedaLogger} from "../config/andromeda-logger.js";
 import path from "path";
 import {AProcess} from "../model/domain-model/bzprocess/a-process.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 export class Utils{
     static moduleIsActive(module) {

@@ -2,7 +2,7 @@ import AndromedaLogger from "../../../../config/andromeda-logger.js";
 import {ProcessInstanceRepository} from "../repositories/process-instance.repository.js";
 import {EventTypes} from "../event-types.js";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 export class ProcessInstanceProjection {
 
     /**

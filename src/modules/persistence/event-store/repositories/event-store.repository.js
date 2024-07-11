@@ -5,7 +5,7 @@ import {Config} from "../../../../config/config.js";
 import EventStoreModel from "../internal/models/event-store.orm-model.js";
 import FakeRepositoryBase from "../internal/fake.repository.base.js";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 export class EventStoreRepository {
 

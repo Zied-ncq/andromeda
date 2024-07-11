@@ -23,11 +23,12 @@ const logSingleton = log4js.getLogger('container');
 
 log4js.configure(log4jsConfig);
 
-export class AndromedaLogger {
+class CAndromedaLogger {
     logger;
     loggerOptions;
 
     constructor(args) {
+        console.error(`LOGGER AndromedaLogger is created`)
         this.logger = logSingleton;
     }
 
@@ -72,9 +73,10 @@ export class AndromedaLogger {
     }
 
     child() {
-        return new AndromedaLogger()
+        return new CAndromedaLogger()
     };
 
 
 }
+export const AndromedaLogger = new CAndromedaLogger();
 export default AndromedaLogger;

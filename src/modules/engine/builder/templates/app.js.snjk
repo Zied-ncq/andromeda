@@ -1,5 +1,5 @@
 import  {AndromedaLogger} from "./src/config/andromeda-logger.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 import Config from "./src/config/config.js";
 
 
@@ -61,6 +61,29 @@ export class App {
         await this.initWebModule();
         Logger.info(`INIT (${this.modules.length}) MODULES `)
         await this.executePromisesSequentially(this.modules);
+
+
+        process.stdin.resume();//so the program will not close instantly
+
+        function exitHandler(options, exitCode) {
+            if(exitCode === false){
+                Logger.info(`Crash exit`);
+            }
+            process.exit(0);
+        }
+
+        //do something when app is closing
+        process.on('exit', exitHandler.bind(null, {exit: true}));
+
+        //catches ctrl+c event
+        process.on('SIGINT', exitHandler.bind(null, {exit: true}));
+
+        // catches "kill pid" (for example: nodemon restart)
+        process.on('SIGUSR1', exitHandler.bind(null, {exit: true}));
+        process.on('SIGUSR2', exitHandler.bind(null, {exit: true}));
+
+        //catches uncaught exceptions
+        process.on('uncaughtException', exitHandler.bind(null, {exit: false}));
     }
 
     static async close(){

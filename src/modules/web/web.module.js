@@ -10,7 +10,7 @@ import {AndromedaLogger} from "../../config/andromeda-logger.js";
 import {Config} from "../../config/config.js";
 import fs from "fs";
 import {App} from "../../../app.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 
 export class WebModule {

@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 class CommonService {
 

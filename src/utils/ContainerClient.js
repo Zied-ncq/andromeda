@@ -1,12 +1,12 @@
 import {AndromedaLogger} from "../config/andromeda-logger.js";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 export class ContainerClient {
 
     port
 
-    Logger = new AndromedaLogger();
+    Logger = AndromedaLogger;
 
     constructor(port) {
         this.port = port;

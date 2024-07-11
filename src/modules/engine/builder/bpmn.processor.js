@@ -11,7 +11,7 @@ import SubprocessNodeProcessor from "./processors/subprocess.node.processor.js";
 import {FlowHelper} from "./flow-helper.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 class BpmnProcessor {
 

@@ -14,7 +14,7 @@ import BPMNModdle from "bpmn-moddle";
 import {AProcess} from "../../model/domain-model/bzprocess/a-process.js";
 import {BpmnConverter} from "./model-converters/bpmn-converter.js";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

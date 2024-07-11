@@ -5,7 +5,7 @@ import {AndromedaLogger} from "../../config/andromeda-logger.js";
  import {Stream} from "./event-store/streams/stream.js";
  import {ProcessInstanceStreamBuilder} from "./event-store/streams/process-instance/process-instance.stream-builder.js";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 export class PersistenceModule  {
 

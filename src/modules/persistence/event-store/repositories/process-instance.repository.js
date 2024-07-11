@@ -2,7 +2,7 @@ import BaseRepository from "./baseRepository.js";
 
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 import ProcessInstanceModel, {ProcessInstanceStatus} from "../internal/models/process-instance.orm-model.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 export class ProcessInstanceRepository {
 

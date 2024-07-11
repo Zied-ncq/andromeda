@@ -1,5 +1,5 @@
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 class BaseRepository {
   /**
    * @type {Model}

@@ -2,7 +2,7 @@ import {Config} from "../config/config.js";
 import constants from "../config/constants.js";
 import GalaxyController from "../modules/galaxy/controllers/galaxy.controller.js";
 import {AndromedaLogger} from "../config/andromeda-logger.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 function route (fastify, opts, next) {
 

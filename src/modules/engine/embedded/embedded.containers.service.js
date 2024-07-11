@@ -7,7 +7,7 @@ import {Config} from "../../../config/config.js";
 import {AndromedaLogger} from "../../../config/andromeda-logger.js";
 import http from "http";
 import {EmbeddedLauncher} from "./embedded-launcher.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 export class EmbeddedContainerService {
 

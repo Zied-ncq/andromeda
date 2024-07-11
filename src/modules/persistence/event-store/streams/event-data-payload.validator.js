@@ -1,6 +1,6 @@
 import {EventStore} from "../event-store.js";
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 
 

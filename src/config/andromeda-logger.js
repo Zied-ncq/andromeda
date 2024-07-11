@@ -23,7 +23,7 @@ log4js.addLayout('json', function (config) {
 const log = log4js.getLogger('engine');
 log4js.configure(new Log4jsConfig().getConfig());
 
-export class AndromedaLogger {
+class CAndromedaLogger {
     logger;
     name;
 
@@ -74,10 +74,11 @@ export class AndromedaLogger {
     }
 
     child() {
-        return new AndromedaLogger()
+        return CAndromedaLogger
     };
 
 
 }
 
-export  default AndromedaLogger
+export const AndromedaLogger = new CAndromedaLogger();
+export default AndromedaLogger;

@@ -1,7 +1,7 @@
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 import {AType} from "./a-node-type.js";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 class EndNodeProcessor {
     static type = AType.EndEvent
@@ -11,7 +11,9 @@ class EndNodeProcessor {
             id: currentNode.id,
             type: currentNode.type,
             name: currentNode.name || currentNode.id,
-            body: ``,
+            body: `
+               await this.workflowhelper.closeProcessInstanceEvent();
+            `,
         };
     }
 }

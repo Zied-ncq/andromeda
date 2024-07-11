@@ -1,6 +1,6 @@
 
 import {AndromedaLogger} from "./src/config/andromeda-logger.js";
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 import {Utils} from "./src/utils/utils.js";
 import constants from "./src/config/constants.js";

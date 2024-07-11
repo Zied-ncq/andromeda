@@ -31,19 +31,22 @@ export class PersistenceGateway {
             timestamp: new Date().toString()
         });
     }
-    static async closeProcessInstance() {
+
+    /**
+     *
+     * @param processInstancesId {string}
+     * @param containerId  {string}
+     * @returns {Promise<void>}
+     */
+    static async closeProcessInstance(processInstancesId, containerId ) {
         await EventStore.apply({
             id: crypto.randomUUID(),
-            streamId: "PROCESS_INSTANCE",
-            type: "CREATE_PROCESS_INSTANCE",
+            streamId: StreamIds.PROCESS_INSTANCE,
+            type: EventTypes.CLOSE_PROCESS_INSTANCE,
             streamPosition: 0,
             data: {
-                id: processInstanceId,
-                wpid,
-                processDef,
-                status: 0,
-                version,
-                containerId
+                id: processInstancesId,
+                containerId: containerId
             },
             timestamp: new Date().toString()
         })

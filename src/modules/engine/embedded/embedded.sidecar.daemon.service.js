@@ -1,9 +1,8 @@
 import path from "path";
 import ipc from "node-ipc";
 import { AndromedaLogger } from "../../../config/andromeda-logger.js";
-import { Config } from "../../../config/config.js";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 /**
  * NB: THIS HELPER IS USED ONLY LOCALLY IN DEV MODE
@@ -20,6 +19,9 @@ export class EmbeddedSidecarDaemonService {
         ipc.config.retry = 5000;
         ipc.config.stopRetrying = true;
 
+        /**
+         * @role: using node ipc (inter process call) we start the another process called sidecar daemon
+         */
         function initEngine() {
             ipc.of.andromeda_daemon.on('connect', function () {
                 ipc.of.andromeda_daemon.emit('watch_engine_pid', {
@@ -28,7 +30,7 @@ export class EmbeddedSidecarDaemonService {
                 ipc.disconnect('andromeda_engine');
             });
         }
-
+        // here we spawn the sidecar
         import('child_process').then(childProcess => {
             const child = childProcess.spawn('node', ['./dev-engine-sidecar.daemon.js'], {
                 detached: true
@@ -42,6 +44,7 @@ export class EmbeddedSidecarDaemonService {
         });
 
         setTimeout(() => {
+            // socker path = /temp/andromeda.ipc.sock
             ipc.connectTo('andromeda_daemon', EmbeddedSidecarDaemonService.socketPath, initEngine);
         }, 2000);
     }

@@ -2,7 +2,7 @@ import {AndromedaLogger} from "../../config/andromeda-logger.js";
 import path from "path";
 import {fileURLToPath} from "url";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 
 
 export class GalaxyModule {

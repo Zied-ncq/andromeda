@@ -2,13 +2,14 @@ import * as fs from 'fs';
 import { fork, exec } from 'child_process';
 import {AndromedaLogger} from "../../../config/andromeda-logger.js";
 
-const Logger = new AndromedaLogger()
+const Logger = AndromedaLogger
 export class EmbeddedLauncher {
     constructor() {
         this.currentRestarts = 0;
     }
 
     /**
+     * @role: execute a generated js file
      * Starts the executor with the given options.
      * @param {string} executor - The command to execute (e.g., 'node').
      * @param {Object} options - The options for execution.

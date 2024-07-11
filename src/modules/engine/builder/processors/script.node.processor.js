@@ -1,7 +1,7 @@
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 import {AType} from "./a-node-type.js";
 
-const Logger = new AndromedaLogger();
+const Logger = AndromedaLogger;
 class ScriptTaskNodeProcessor {
     static type = AType.ScriptTask
 
@@ -19,7 +19,7 @@ class ScriptTaskNodeProcessor {
             id: currentNode.id,
             type: currentNode.type,
             name: currentNode.name || currentNode.id,
-            body: currentNode.script,
+            body: currentNode.content.script,
         };
 
 
