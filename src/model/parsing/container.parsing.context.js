@@ -65,7 +65,7 @@ export class ContainerParsingContext {
 
   /**
    * workflowParsingContext
-   * @property {WorkflowParsingContext[]} workflowParsingContext
+   * @property {AProcess[]} workflowParsingContext
    * @public
    */
   workflowParsingContext;

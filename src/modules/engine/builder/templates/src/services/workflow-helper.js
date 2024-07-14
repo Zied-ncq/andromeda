@@ -20,4 +20,30 @@ export class WorkflowHelper{
             this.service.processInstanceId,
             ContainerService.containerId);
     }
+
+
+    /**
+     *
+     * @param flowId {string}
+     * @param localMethodContext {{nodeName: string, incomingFlowId: *, nodeSession: `${string}-${string}-${string}-${string}-${string}`, type: string, nodeId: string}}
+     * @returns {Promise<void>}
+     */
+    async failProcessInstance(flowId, localMethodContext){
+        await PersistenceGateway.failProcessInstance(flowId,  ContainerService.containerId)
+
+    }
+
+    //
+    //
+    // async abortProcessInstanceEvent(){
+    //     const event = {
+    //         createdAt: new Date(),
+    //         eventType: ABORT_PROCESS_INSTANCE,
+    //         payload: {
+    //             processInstanceId: this._metaInfo.processInstanceId,
+    //         },
+    //         version: 1.0,
+    //     };
+    //     await this._metaInfo.eventStore.insert(event);
+    // }
 }

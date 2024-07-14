@@ -32,21 +32,20 @@ export class BpmnConverter {
         const definition = model.rootElement;
         const processesInBpmnFile = definition.rootElements.find((e) => e.$type === 'bpmn:Process')
 
-        return this.parse(processesInBpmnFile, definition.id, version)
+        return this.parse(processesInBpmnFile, version)
 
     }
 
     /**
      * @param root {FlowElementsContainer}
-     * @param id {string}
      * @param version {string}
      * @returns {AProcess}
      */
-    parse(root, id, version) {
+    parse(root, version) {
         const process = new AProcess()
-        process.id = id
+        process.hasParentProcess= false;
+        process.id = root.id
         process.version = version
-
         const flowElements = root.flowElements;
 
         const nodes = root.flowElements.filter(e => e.$type !== 'bpmn:SequenceFlow')
@@ -61,7 +60,9 @@ export class BpmnConverter {
         for (let node of nodes) {
 
             if (node.$type === "bpmn:SubProcess") {
-                process.subProcesses.push(this.parse(node, node.id,  version))
+                const subProcess = this.parse(node,  version)
+                subProcess.hasParentProcess=true;
+                process.subProcesses.push(subProcess)
             }
 
             /**

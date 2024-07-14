@@ -16,10 +16,13 @@ class {{ ControllerClassName }} {
                 Logger.debug(`storing file ${file} in persistent storage`);
                 });
             }
+           // if()
             const processInstance = await {{ startMethod.name }}ProcessInstanceService.createInstance();
             await processInstance.bootstrap(variables);
             res.status(200)
             res.send({id: processInstance.id})
+
+
 
         } catch (err) {
             Logger.error(err)

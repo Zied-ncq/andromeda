@@ -14,15 +14,18 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const Logger = AndromedaLogger;
 
 
-let wpid = "scenario_script";
 
 let version = "1.0.0";
 
 
 beforeAll(()=>{
-    const deploymentPath =  path.join(Config.getInstance().deploymentPath, wpid, version);
-    if(fs.existsSync(deploymentPath)){
-        fs.rmdirSync(deploymentPath, { recursive: true})
+    const cleanProcessWpids = ["scenario_script"];
+    for (let wpid of cleanProcessWpids) {
+        const deploymentPath =  path.join(Config.getInstance().deploymentPath, wpid, version);
+        if(fs.existsSync(deploymentPath)){
+            fs.rmdirSync(deploymentPath, { recursive: true})
+
+        }
     }
 })
 
@@ -30,6 +33,7 @@ it('synchronous passing test', async () => {
 
 
     const port = 10002
+    let wpid = "scenario_script";
 
     function getBpmnTestFile(fileName) {
         let fileContents = [];
@@ -53,6 +57,44 @@ it('synchronous passing test', async () => {
         await new ContainerClient(port).startProcess("scenario_script", version, port, {})
 
         await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
+
+        // expect(true).toBe(true);  // Use global assertion method
+    } catch (e) {
+        Logger.error(e)
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version, port);
+        throw e;  // Re-throw the error to fail the test
+    }
+});
+
+it('sub_process', async () => {
+
+
+    const port = 10003
+    let wpid = "sub_process";
+
+    function getBpmnTestFile(fileName) {
+        let fileContents = [];
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        fileContents.push(fs.readFileSync(path.join(__dirname, "resources", fileName), {encoding: 'utf8'}));
+        return fileContents;
+    }
+
+    try {
+        let fileContents = getBpmnTestFile("sub_process.bpmn");
+
+        const engineService = new EngineService();
+        await engineService.generateContainer(fileContents, wpid, version, {
+            includeGalaxyModule : true,
+            includeWebModule : true,
+            includePersistenceModule : true
+        });
+        await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
+
+        await new ContainerClient(port).startProcess("sub_processw", version, port, {})
+
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
+
 
         // expect(true).toBe(true);  // Use global assertion method
     } catch (e) {

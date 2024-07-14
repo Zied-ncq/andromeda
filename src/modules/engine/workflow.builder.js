@@ -7,9 +7,8 @@ import WorkflowCodegenContext from "../../model/codegen/workflow.codegen.context
 import path from "path";
 import {fileURLToPath} from "url";
 import Utils from "../../utils/utils.js";
-import {Config} from "../../config/config.js";
 import {ContainerParsingContext} from "../../model/parsing/container.parsing.context.js";
-import {WorkflowParsingContext} from "../../model/parsing/workflow.parsing.context.js";
+// import {WorkflowParsingContext} from "../../model/parsing/workflow.parsing.context.js";
 import BPMNModdle from "bpmn-moddle";
 import {AProcess} from "../../model/domain-model/bzprocess/a-process.js";
 import {BpmnConverter} from "./model-converters/bpmn-converter.js";
@@ -57,7 +56,8 @@ class WorkflowBuilder {
      * @returns {Promise<void>}
      */
     async generate(element, workflowCodegenContext, containerParsingContext, process) {
-        this.bpmnProcessor.process(element, workflowCodegenContext, containerParsingContext, process);
+        await
+            this.bpmnProcessor.process(element, workflowCodegenContext, containerParsingContext, process);
     }
 
 
@@ -74,12 +74,12 @@ class WorkflowBuilder {
             filesContent
         });
         for(let index in filesContent){
-            const workflowParsingContext = new WorkflowParsingContext()
+            // const workflowParsingContext = new WorkflowParsingContext()
             const model = await new BPMNModdle().fromXML(filesContent[index]);
             const aModel = this.convertBpmnToGenericModel(model, version)
-            workflowParsingContext.model = aModel;
-            workflowParsingContext.processPrefix= Utils.upperFirstChar(Utils.normalizeProcessPrefixWithoutVersion(workflowParsingContext.model.id))
-            ctx.workflowParsingContext.push(workflowParsingContext);
+            // workflowParsingContext = aModel;
+            // workflowParsingContext.processPrefix= Utils.upperFirstChar(Utils.normalizeProcessPrefixWithoutVersion(workflowParsingContext.model.id))
+            ctx.workflowParsingContext.push(aModel);
         }
         ctx.wpid = wpid;
         ctx.version = version;
@@ -102,31 +102,31 @@ class WorkflowBuilder {
 
     /**
      * entry point for code generation
-     * @param processModel : WorkflowParsingContext
+     * @param model  {AProcess}
      * @param containerParsingContext : ContainerParsingContext
      * @param containerCodegenContext : ContainerCodegenContext
      * @returns {Promise<void>}
      */
     async generateWorkflow(
-        processModel,
+        model,
         containerParsingContext,
         containerCodegenContext
     ) {
         // each bpmn file can contain multiple process node
         // const processesInBpmnFile = this.getProcessesModel(processModel.model);
 
-        const normalizedProcessDef = this.normalizeProcessDefWithoutVersion(processModel.processPrefix);
+        const normalizedProcessDef = this.normalizeProcessDefWithoutVersion(model.id);
 
         const workflowCodegenContext = new WorkflowCodegenContext(containerCodegenContext);
 
-        await this.generateServiceClass(normalizedProcessDef, processModel, containerParsingContext, workflowCodegenContext)
-        await this.generateWorkflowContext(normalizedProcessDef, processModel, containerParsingContext)
+        await this.generateServiceClass(normalizedProcessDef, model, containerParsingContext, workflowCodegenContext)
+        await this.generateWorkflowContext(normalizedProcessDef, model, containerParsingContext)
 
-        await this.generateContainerControllerClass(normalizedProcessDef, processModel, containerParsingContext, workflowCodegenContext)
+        await this.generateContainerControllerClass(normalizedProcessDef, model, containerParsingContext, workflowCodegenContext)
 
         // processesInBpmnFile.forEach(process => {
         // current node = definition
-        await this.generateProcess(processModel.model, workflowCodegenContext, containerParsingContext);
+        await this.generateProcess(model, workflowCodegenContext, containerParsingContext);
 
         // });
 
@@ -269,7 +269,7 @@ class WorkflowBuilder {
 
     /**
      *
-     * @param process  {ANode}
+     * @param process  {AProcess}
      * @param workflowCodegenContext {WorkflowCodegenContext}
      * @param containerParsingContext {ContainerParsingContext}
      */
@@ -279,7 +279,8 @@ class WorkflowBuilder {
             await this.generate(startElement.id, workflowCodegenContext, containerParsingContext, process);
         }
 
-        // let embeddedEventSubprocesses = this.getEventSubProcess(process);
+        let embeddedEventSubprocesses = this.getEventSubProcess(process);
+        console.log(`---->`)
         // for (const container of embeddedEventSubprocesses) {
         //     await this.generateContainer(container, workflowCodegenContext, containerParsingContext)
         // }
@@ -331,12 +332,12 @@ class WorkflowBuilder {
         }
 
         // search event subprocess, because they are triggered automatically
-        return (
+        const x =
             bpmnProcess.nodes.filter(
                 (e) =>
-                    e.type === 'SubProcess' && e.triggeredByEvent === true
-            )
-        );
+                    e.type === 'SubProcess' // && e.triggeredByEvent === true
+            );
+        return x;
     }
 
     // getProcessesModel(model) {
@@ -346,7 +347,7 @@ class WorkflowBuilder {
     /**
      *
      * @param {string} normalizedProcessDef
-     * @param {WorkflowParsingContext} bpmnModel
+     * @param {AProcess} bpmnModel
      * @param {ContainerParsingContext} containerParsingContext
      * @param {WorkflowCodegenContext} workflowCodegenContext
      */

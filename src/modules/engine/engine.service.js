@@ -103,8 +103,8 @@ export class EngineService {
 
 
 
-        for (const workflowInstance of containerParsingContext.workflowParsingContext) {
-            await workflowBuilder.generateWorkflow(workflowInstance, containerParsingContext, containerCodegenContext);
+        for (const process of containerParsingContext.workflowParsingContext) {
+            await workflowBuilder.generateWorkflow(process, containerParsingContext, containerCodegenContext);
 
         }
 

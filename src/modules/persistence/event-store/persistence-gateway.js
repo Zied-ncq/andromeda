@@ -51,4 +51,19 @@ export class PersistenceGateway {
             timestamp: new Date().toString()
         })
     };
+
+    static async failProcessInstance(processInstancesId, containerId ) {
+        await EventStore.apply({
+            id: crypto.randomUUID(),
+            streamId: StreamIds.PROCESS_INSTANCE,
+            type: EventTypes.FAIL_PROCESS_INSTANCE,
+            streamPosition: 0,
+            data: {
+                id: processInstancesId,
+                containerId: containerId
+            },
+            timestamp: new Date().toString()
+        })
+
+    };
 }

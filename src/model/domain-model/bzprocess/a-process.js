@@ -34,4 +34,11 @@ export class AProcess {
     subProcesses
 
 
+    /**
+     * @property {Boolean} hasParentProcess
+     * @public
+     */
+    hasParentProcess
+
+
 }

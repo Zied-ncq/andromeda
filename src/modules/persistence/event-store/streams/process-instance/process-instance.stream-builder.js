@@ -26,6 +26,16 @@ export const closeProcessInstanceDataSchema = {
     additionalProperties: false,
 }
 
+export const failProcessInstanceDataSchema = {
+    type: "object",
+    properties: {
+        id: {type: "string"},
+        containerId: {type: "string"},
+    },
+    required: ["id", "containerId"],
+    additionalProperties: false,
+}
+
 
 export class ProcessInstanceStreamBuilder {
 
@@ -42,6 +52,7 @@ export class ProcessInstanceStreamBuilder {
         stream.validators ={
             [stream.eventsRegistry.CREATE_PROCESS_INSTANCE] : processInstanceDataSchema,
             [stream.eventsRegistry.CLOSE_PROCESS_INSTANCE] : closeProcessInstanceDataSchema,
+            [stream.eventsRegistry.FAIL_PROCESS_INSTANCE] : failProcessInstanceDataSchema,
         }
 
         EventStore.registerStream(stream.streamId, stream);

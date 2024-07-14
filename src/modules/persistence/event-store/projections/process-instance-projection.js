@@ -24,6 +24,11 @@ export class ProcessInstanceProjection {
             await this.repo.createNewProcessInstance(event.data.id, event.data.wpid, event.data.processDef, event.data.version, event.data.containerId);
         }
 
+        if (event.type === EventTypes.FAIL_PROCESS_INSTANCE) {
+            Logger.trace("Failing process instance")
+            await this.repo.failProcessInstance(event.data.id);
+        }
+
         // console.dir(event)
     }
 }

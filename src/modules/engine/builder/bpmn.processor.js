@@ -31,24 +31,24 @@ class BpmnProcessor {
      * @param workflowCodegenContext  {WorkflowCodegenContext}
      * @param containerParsingContext {ContainerParsingContext}
      */
-    process(elementId, workflowCodegenContext, containerParsingContext, process){
+    async process(elementId, workflowCodegenContext, containerParsingContext, process) {
 
-        const element = process.nodes.find(e=> e.id === elementId)
+        const element = process.nodes.find(e => e.id === elementId)
         const type = element.type;
 
         let processor = this.processors[type];
-        if(!processor){
+        if (!processor) {
             throw new Error(`cannot find suitable processor for Element of type ${type}`);
         }
-        const nodeContext = processor.process(element, workflowCodegenContext, containerParsingContext, process);
+        const nodeContext = await processor.process(element, workflowCodegenContext, containerParsingContext, process);
 
-        if(processor.createFlow){
+        if (processor.createFlow) {
             processor.createFlow();
-        }else{
-            FlowHelper.createFlow( workflowCodegenContext,element)
+        } else {
+            FlowHelper.createFlow(workflowCodegenContext, element)
         }
 
-        if(!nodeContext){
+        if (!nodeContext) {
             throw new Error(`cannot find a suitable node context for Element of type ${type}`);
         }
         this.buildMethod(element, nodeContext, workflowCodegenContext);
