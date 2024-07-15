@@ -12,8 +12,6 @@ let flows = new Map();
     {% endif %}
     flows.set( '{{ flow.id }}' , {{ flow.id }});
 {% endfor %}
-
-
 if(flows.size > 0){
  // await this.bulkCreateSequenceFlow(Array.from(flows.values()));
 }

@@ -9,7 +9,7 @@ async fn_{{nodeContext.id}} (flowModel) {
   }
 
   Logger.debug(`visiting node {{ nodeContext.id }}, session: ${__localMethodContext.nodeSession}`);
-
+    {% if nodeContext.type !== 'SubProcess'%}
   try {
 {% if nodeContext.args and nodeContext.args.executeBody !== null  %}
     if(flowModel.executeBody) {
@@ -20,7 +20,8 @@ async fn_{{nodeContext.id}} (flowModel) {
 {% if nodeContext.args and nodeContext.args.resumeExecution !== null  %}
       if(flowModel.resumeExecution){
 {% endif %}
-        {% include "build.method.next.calls.njk" %}
+
+          {% include "build.method.next.calls.njk" %}
 {% if nodeContext.args and nodeContext.args.resumeExecution !== null  %}
       }
 {% endif %}
@@ -34,5 +35,7 @@ async fn_{{nodeContext.id}} (flowModel) {
     const stack = _bpmnProcessorException.stack;
     throw new Error(JSON.stringify({ stacktrace: stack, context: __localMethodContext }));
   }
+  {% endif %}
+
 }
 

@@ -8,8 +8,8 @@ class ScriptTaskNodeProcessor {
     /**
      *
      * @param currentNode {ANode}
-     * @param workflowCodegenContext : WorkflowCodegenContext
-     * @param containerParsingContext : ContainerParsingContext
+     * @param workflowCodegenContext {WorkflowCodegenContext}
+     * @param containerParsingContext {ContainerParsingContext}
      * @returns {{name: *, id, type, body: *}}
      */
     process(currentNode, workflowCodegenContext, containerParsingContext, process){

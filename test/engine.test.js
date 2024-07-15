@@ -8,6 +8,10 @@ import { EmbeddedContainerService } from '../src/modules/engine/embedded/embedde
 import {ContainerClient} from "../src/utils/ContainerClient.js";
 import {AndromedaLogger} from "../src/config/andromeda-logger.js";
 import {Config} from "../src/config/config.js";
+import {
+    ProcessInstanceRepository
+} from "../src/modules/persistence/event-store/repositories/process-instance.repository.js";
+import PersistenceModule from "../src/modules/persistence/persistence.module.js";
 
 // Define sleep function if not already defined
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -16,17 +20,24 @@ const Logger = AndromedaLogger;
 
 
 let version = "1.0.0";
+const persistenceModule = new PersistenceModule()
 
+beforeAll(async () => {
 
-beforeAll(()=>{
+    await persistenceModule.start();
+
     const cleanProcessWpids = ["scenario_script"];
     for (let wpid of cleanProcessWpids) {
-        const deploymentPath =  path.join(Config.getInstance().deploymentPath, wpid, version);
-        if(fs.existsSync(deploymentPath)){
-            fs.rmdirSync(deploymentPath, { recursive: true})
+        const deploymentPath = path.join(Config.getInstance().deploymentPath, wpid, version);
+        if (fs.existsSync(deploymentPath)) {
+            fs.rmdirSync(deploymentPath, {recursive: true})
 
         }
     }
+})
+
+afterAll(async () => {
+    await persistenceModule.dispose();
 })
 
 it('synchronous passing test', async () => {
@@ -91,10 +102,21 @@ it('sub_process', async () => {
         });
         await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
-        await new ContainerClient(port).startProcess("sub_processw", version, port, {})
-
+        const containerClient = new ContainerClient(port);
+        const res = await containerClient.startProcess("subProcess", version, port, {})
         await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
+
+        const processInstancesId = res.id
+        const repo = new ProcessInstanceRepository();
+        let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
+        expect(processInstanceEntity).toBeDefined()
+        expect(processInstanceEntity.id).toEqual(processInstancesId)
+        expect(processInstanceEntity.wpid).toEqual("sub_process")
+        expect(processInstanceEntity.processDef).toEqual("subProcess")
+        expect(processInstanceEntity.version).toEqual("1.0.0")
+        expect(processInstanceEntity.status).toEqual(1)
+        expect(processInstanceEntity.lock).toBeNull()
 
         // expect(true).toBe(true);  // Use global assertion method
     } catch (e) {

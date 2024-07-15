@@ -1,7 +1,7 @@
 import {AndromedaLogger} from "../../config/andromeda-logger.js";
 import path from "path";
 import fs from "fs";
-import ContainerCodegenContext from "../../model/codegen/container.codegen.context.js";
+import ContainerCodegenModel from "../../model/codegen/containerCodegenModel.js";
 import WorkflowBuilder from "./workflow.builder.js";
 import Utils from "../../utils/utils.js";
 
@@ -65,7 +65,6 @@ export class EngineService {
      */
     async generateContainer(fileContents, wpid, version, config) {
 
-        const workflowBuilder = new WorkflowBuilder()
         const containerParsingContext = await WorkflowBuilder.prepareBpmnContainerContext(fileContents, wpid, version);
         containerParsingContext.includeGalaxyModule = config.includeGalaxyModule;
 
@@ -95,21 +94,22 @@ export class EngineService {
             this.GenerateModule(deploymentPath, "web");
         }
 
+
         const templatePath = path.join(process.cwd(), "src", "modules", "engine", "builder", "templates");
         this.generateStaticFiles(templatePath, deploymentPath , containerParsingContext)
 
         // common codegen context, contains common things such as routes
-        const containerCodegenContext = new ContainerCodegenContext();
+        const containerCodegenModel = new ContainerCodegenModel();
 
 
+        const workflowBuilder = new WorkflowBuilder(containerCodegenModel)
 
         for (const process of containerParsingContext.workflowParsingContext) {
-            await workflowBuilder.generateWorkflow(process, containerParsingContext, containerCodegenContext);
+            await workflowBuilder.generateWorkflow(process, containerParsingContext, containerCodegenModel);
 
         }
 
-
-        this.generateOpenApiYaml(containerParsingContext, containerCodegenContext);
+        this.generateOpenApiYaml(containerParsingContext, containerCodegenModel);
         //
         // await Promise.all(
         //     Array.from(containerContext.model.keys()).map(async (processDef) => {
@@ -185,7 +185,7 @@ export class EngineService {
     /**
      *
      * @param ctx {ContainerParsingContext}
-     * @param containerCodegenContext {ContainerCodegenContext}
+     * @param containerCodegenContext {ContainerCodegenModel}
      */
     generateOpenApiYaml(ctx, containerCodegenContext) {
 

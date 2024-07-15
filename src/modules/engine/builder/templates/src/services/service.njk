@@ -15,6 +15,11 @@ class {{ServiceClassName}} {
 
     processInstanceId
 
+    // flowModel is the flow used for subprocess to create a sub process instance
+    flowModel
+
+    parentProcessInstance
+
     workflowhelper = new WorkflowHelper(this)
 
     // _context = new {{ ProcessDef }}ProcessInstanceContext();
@@ -22,7 +27,7 @@ class {{ServiceClassName}} {
     bootstrap(){
     }
 
-    constructor(processInstanceId)
+    constructor(processInstanceId, flowModel, parentProcessInstance)
     {
         if (processInstanceId !== null && processInstanceId !== undefined ) {
             // in case we resume a process instance after a container restart
@@ -35,18 +40,32 @@ class {{ServiceClassName}} {
             // this.flowService = new TestFlowService(this.id);
         }
 
+        if (flowModel !== null && flowModel !== undefined ) {
+            this.flowModel = flowModel
+        }
+
+        if (parentProcessInstance !== null && parentProcessInstance !== undefined ) {
+            this.parentProcessInstance = parentProcessInstance
+        }
+
     }
 
-    static async createInstance(processInstanceId)
+    static async createInstance(processInstanceId, flowModel)
     {
+
+        {% if process.hasParentProcess === true %}
+            return new {{ServiceClassName}}(processInstanceId, flowModel)
+        {% else %}
         const instance = new {{ServiceClassName}}(processInstanceId)
         // ContainerService.getInstance().lock(instance)
         await PersistenceGateway.newProcessInstance(ContainerService.containerId,
             '{{containerParsingContext.wpid}}',
             '{{ProcessDef}}',
             '{{containerParsingContext.version}}',
-             instance.processInstanceId);
+            instance.processInstanceId);
         return instance;
+        {% endif %}
+
 
     }
 

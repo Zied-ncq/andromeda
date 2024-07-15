@@ -69,15 +69,17 @@ export class ProcessInstanceRepository {
      */
     async getProcessInstanceById(id){
         const instance = await this.repo.findOne({_id: id})
-        return {
-            id: instance._id,
-            lock: instance.lock,
-            processDef: instance.processDef,
-            wpid:  instance.wpid,
-            status: instance.status,
-            version: instance.version
+        if(instance){
+            return {
+                id: instance._id,
+                lock: instance.lock,
+                processDef: instance.processDef,
+                wpid:  instance.wpid,
+                status: instance.status,
+                version: instance.version
+            }
         }
-
+        return null;
     }
 
 }

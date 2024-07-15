@@ -16,13 +16,18 @@ class {{ ControllerClassName }} {
                 Logger.debug(`storing file ${file} in persistent storage`);
                 });
             }
-           // if()
-            const processInstance = await {{ startMethod.name }}ProcessInstanceService.createInstance();
-            await processInstance.bootstrap(variables);
-            res.status(200)
-            res.send({id: processInstance.id})
+            if(!req.params.processDef){
+                throw new Error(`Process identifier processDef is required`)
+            }
 
-
+            if(req.params.processDef === '{{ startMethod.name }}'){
+                const processInstance = await {{ startMethod.name }}ProcessInstanceService.createInstance();
+                await processInstance.bootstrap(variables);
+                res.status(200)
+                res.send({id: processInstance.processInstanceId})
+            }
+            res.status(404)
+            res.send("cannot find processDef")
 
         } catch (err) {
             Logger.error(err)

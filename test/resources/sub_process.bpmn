@@ -15,8 +15,9 @@
       <bpmn:outgoing>Flow_117sm5b</bpmn:outgoing>
       <bpmn:script>console.log("****************************** BASIC SCRIPT ***********************");</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:subProcess id="SUB_PROCESS">
+    <bpmn:subProcess id="subi">
       <bpmn:incoming>Flow_117sm5b</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vat83f</bpmn:outgoing>
       <bpmn:startEvent id="Event_START_SUB">
         <bpmn:outgoing>Flow_1wdioml</bpmn:outgoing>
       </bpmn:startEvent>
@@ -25,7 +26,12 @@
         <bpmn:incoming>Flow_1wdioml</bpmn:incoming>
       </bpmn:endEvent>
     </bpmn:subProcess>
-    <bpmn:sequenceFlow id="Flow_117sm5b" sourceRef="ACT_SCRIPT_1" targetRef="SUB_PROCESS" />
+    <bpmn:sequenceFlow id="Flow_117sm5b" sourceRef="ACT_SCRIPT_1" targetRef="subi" />
+    <bpmn:scriptTask id="Activity_039xnsk">
+      <bpmn:incoming>Flow_0vat83f</bpmn:incoming>
+      <bpmn:script>console.log(`============= after sub process =========`)</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_0vat83f" sourceRef="subi" targetRef="Activity_039xnsk" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="subProcess">
@@ -41,6 +47,10 @@
         <di:waypoint x="188" y="120" />
         <di:waypoint x="380" y="120" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vat83f_di" bpmnElement="Flow_0vat83f">
+        <di:waypoint x="630" y="430" />
+        <di:waypoint x="790" y="430" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="ACT_START_1">
         <dc:Bounds x="152" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -50,18 +60,21 @@
       <bpmndi:BPMNShape id="Activity_1me6866_di" bpmnElement="ACT_SCRIPT_1">
         <dc:Bounds x="380" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0olz74g_di" bpmnElement="SUB_PROCESS" isExpanded="true">
+      <bpmndi:BPMNShape id="Activity_0e1bxah_di" bpmnElement="Activity_039xnsk">
+        <dc:Bounds x="790" y="390" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0olz74g_di" bpmnElement="subi" isExpanded="true">
         <dc:Bounds x="230" y="320" width="400" height="200" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1wdioml_di" bpmnElement="Flow_1wdioml">
         <di:waypoint x="338" y="420" />
-        <di:waypoint x="522" y="420" />
+        <di:waypoint x="542" y="420" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_07wxcdx_di" bpmnElement="Event_END_SUB">
-        <dc:Bounds x="522" y="402" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0rn3kxj_di" bpmnElement="Event_START_SUB">
         <dc:Bounds x="302" y="402" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07wxcdx_di" bpmnElement="Event_END_SUB">
+        <dc:Bounds x="542" y="402" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

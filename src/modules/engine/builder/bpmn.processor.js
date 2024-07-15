@@ -28,7 +28,7 @@ class BpmnProcessor {
     /**
      *
      * @param elementId {string}
-     * @param workflowCodegenContext  {WorkflowCodegenContext}
+     * @param workflowCodegenContext  {CodegenContext}
      * @param containerParsingContext {ContainerParsingContext}
      */
     async process(elementId, workflowCodegenContext, containerParsingContext, process) {
@@ -53,6 +53,12 @@ class BpmnProcessor {
         }
         this.buildMethod(element, nodeContext, workflowCodegenContext);
 
+
+        if(processor.postProcess){
+            processor.postProcess(element, workflowCodegenContext, containerParsingContext, process)
+        }
+
+
         for (const flow of element.flows) {
             if (!this.treatedNodes.includes(flow.id)) {
                 this.treatedNodes.push(flow.id);
@@ -60,7 +66,7 @@ class BpmnProcessor {
                     `next element id= ${flow.id}, type =${flow.to}`,
                 );
 
-                this.process(flow.to.id, workflowCodegenContext, containerParsingContext, process);
+                await this.process(flow.to.id, workflowCodegenContext, containerParsingContext, process);
             }
         }
     }

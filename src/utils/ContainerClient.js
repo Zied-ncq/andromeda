@@ -41,5 +41,6 @@ export class ContainerClient {
         if(!startReq.ok){
             throw new Error(await startReq.text())
         }
+        return await startReq.json()
     }
 }

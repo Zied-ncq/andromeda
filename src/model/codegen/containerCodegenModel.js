@@ -9,8 +9,10 @@ import Utils from "../../utils/utils.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-class ContainerCodegenContext {
+class ContainerCodegenModel {
+
    openApiCodegen = new OpenApiGenerator()
+
    routes = [];
 
 
@@ -61,4 +63,4 @@ class ContainerCodegenContext {
    }
 }
 
-export default ContainerCodegenContext;
+export default ContainerCodegenModel;

@@ -1,12 +1,12 @@
 import * as tsMorph from "ts-morph";
 
-class WorkflowCodegenContext {
+class CodegenContext {
 
     processId
     /**
-     * @param {ContainerCodegenContext} containerCodegenContext
+     * @param {ContainerCodegenModel} containerCodegenModel
      */
-    containerCodegenContext
+    containerCodegenModel
     /**
      * @type {Project}
      */
@@ -29,11 +29,15 @@ class WorkflowCodegenContext {
 
 
     constructor(containerCodegenContext) {
-        this.containerCodegenContext = containerCodegenContext;
+        this.containerCodegenModel = containerCodegenContext;
     }
 
     addControllerClassImport(defaultImport, moduleSpecifier){
         this.controllerClassImports.push({defaultImport,moduleSpecifier})
+    }
+
+    addServiceClassImport(defaultImport, moduleSpecifier){
+        this.serviceClassImports.push({defaultImport,moduleSpecifier})
     }
 
     renderImports() {
@@ -52,4 +56,4 @@ class WorkflowCodegenContext {
     }
 }
 
-export default WorkflowCodegenContext;
+export default CodegenContext;

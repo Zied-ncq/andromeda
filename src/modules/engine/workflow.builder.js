@@ -3,7 +3,7 @@ import BpmnProcessor from "./builder/bpmn.processor.js";
 import {AndromedaLogger} from "../../config/andromeda-logger.js";
 import fs from "fs";
 import nunjucks from "nunjucks";
-import WorkflowCodegenContext from "../../model/codegen/workflow.codegen.context.js";
+import CodegenContext from "../../model/codegen/codegenContext.js";
 import path from "path";
 import {fileURLToPath} from "url";
 import Utils from "../../utils/utils.js";
@@ -12,13 +12,21 @@ import {ContainerParsingContext} from "../../model/parsing/container.parsing.con
 import BPMNModdle from "bpmn-moddle";
 import {AProcess} from "../../model/domain-model/bzprocess/a-process.js";
 import {BpmnConverter} from "./model-converters/bpmn-converter.js";
+import {ProcessHelper} from "./builder/processors/process-helper.js";
 
 const Logger = AndromedaLogger;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class WorkflowBuilder {
-    constructor() {
+
+    codegenContext
+
+    constructor(containerCodegenModel) {
+        if(containerCodegenModel === undefined){
+            throw new Error(`containerCodegenModel cannot be null`)
+        }
+        this.codegenContext = new CodegenContext(containerCodegenModel);
     }
 
     bpmnProcessor = new BpmnProcessor();
@@ -30,17 +38,15 @@ class WorkflowBuilder {
         return result.replace(regex, `$1`);
     }
 
-    upperFirstChar(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
 
-    async generateContainer(element, workflowCodegenContext, containerParsingContext) {
+
+    async generateContainer(element, containerParsingContext) {
         let self = this;
         // search start
         // generate code
         const startElements = this.getStartElements(element);
         startElements.forEach(startElement => {
-            self.generate(startElement.id, workflowCodegenContext, containerParsingContext);
+            self.generate(startElement.id, containerParsingContext);
         })
         // let embeddedEventSubprocesses = this.getEventSubProcess(element);
         // embeddedEventSubprocesses.forEach(container => {
@@ -51,13 +57,13 @@ class WorkflowBuilder {
     /**
      *
      * @param element  {string}
-     * @param workflowCodegenContext  {WorkflowCodegenContext}
      * @param containerParsingContext {ContainerParsingContext}
+     * @param process {AProcess}
      * @returns {Promise<void>}
      */
-    async generate(element, workflowCodegenContext, containerParsingContext, process) {
+    async generate(element, containerParsingContext, process) {
         await
-            this.bpmnProcessor.process(element, workflowCodegenContext, containerParsingContext, process);
+            this.bpmnProcessor.process(element, this.codegenContext, containerParsingContext, process);
     }
 
 
@@ -103,39 +109,39 @@ class WorkflowBuilder {
     /**
      * entry point for code generation
      * @param model  {AProcess}
-     * @param containerParsingContext : ContainerParsingContext
-     * @param containerCodegenContext : ContainerCodegenContext
+     * @param containerParsingContext  {ContainerParsingContext}
+     * @param containerCodegenModel  {ContainerCodegenModel}
      * @returns {Promise<void>}
      */
     async generateWorkflow(
         model,
         containerParsingContext,
-        containerCodegenContext
+        containerCodegenModel
     ) {
         // each bpmn file can contain multiple process node
         // const processesInBpmnFile = this.getProcessesModel(processModel.model);
 
         const normalizedProcessDef = this.normalizeProcessDefWithoutVersion(model.id);
 
-        const workflowCodegenContext = new WorkflowCodegenContext(containerCodegenContext);
 
-        await this.generateServiceClass(normalizedProcessDef, model, containerParsingContext, workflowCodegenContext)
+
+        await this.generateServiceClass(normalizedProcessDef, model, containerParsingContext )
         await this.generateWorkflowContext(normalizedProcessDef, model, containerParsingContext)
 
-        await this.generateContainerControllerClass(normalizedProcessDef, model, containerParsingContext, workflowCodegenContext)
+        await this.generateContainerControllerClass(normalizedProcessDef, model, containerParsingContext)
 
         // processesInBpmnFile.forEach(process => {
         // current node = definition
-        await this.generateProcess(model, workflowCodegenContext, containerParsingContext);
+        await this.generateProcess(model, containerParsingContext);
 
         // });
 
-        containerCodegenContext.renderRoutes(normalizedProcessDef, containerParsingContext);
-        workflowCodegenContext.renderImports()
-        workflowCodegenContext.serviceClassFile.formatText({
+        containerCodegenModel.renderRoutes(normalizedProcessDef, containerParsingContext);
+        this.codegenContext.renderImports()
+        this.codegenContext.serviceClassFile.formatText({
             placeOpenBraceOnNewLineForFunctions: true,
         });
-        await workflowCodegenContext.project.saveSync();
+        await this.codegenContext.project.saveSync();
 
 
         // for each process create a start method
@@ -176,14 +182,12 @@ class WorkflowBuilder {
      * @param {string} normalizedProcessDef
      * @param parsedModel
      * @param {ContainerParsingContext} containerParsingContext
-     * @param {WorkflowCodegenContext} workflowCodegenContext
      * @returns {Promise<void>}
      */
     async generateServiceClass(
         normalizedProcessDef,
         parsedModel,
         containerParsingContext,
-        workflowCodegenContext,
     ) {
 
         const serviceFileName = this.getServiceFileName(normalizedProcessDef);
@@ -208,18 +212,19 @@ class WorkflowBuilder {
                 ServiceClassName: serviceClassName,
                 ProcessDef: normalizedProcessDef,
                 containerParsingContext,
-                workflowCodegenContext,
+                workflowCodegenContext: this.codegenContext,
+                process: parsedModel
             },
         );
 
-        workflowCodegenContext.serviceClassFile = workflowCodegenContext.project.createSourceFile(
+        this.codegenContext.serviceClassFile = this.codegenContext.project.createSourceFile(
             serviceFilePath,
             renderedTemplate,
             {
                 overwrite: true
             },
         );
-        workflowCodegenContext.serviceClass = workflowCodegenContext.serviceClassFile.getClassOrThrow(serviceClassName)
+        this.codegenContext.serviceClass = this.codegenContext.serviceClassFile.getClassOrThrow(serviceClassName)
     }
 
 
@@ -270,17 +275,15 @@ class WorkflowBuilder {
     /**
      *
      * @param process  {AProcess}
-     * @param workflowCodegenContext {WorkflowCodegenContext}
      * @param containerParsingContext {ContainerParsingContext}
      */
-    async generateProcess(process, workflowCodegenContext, containerParsingContext) {
+    async generateProcess(process, containerParsingContext) {
         let startElements = this.getStartElements(process);
         for (const startElement of startElements) {
-            await this.generate(startElement.id, workflowCodegenContext, containerParsingContext, process);
+            await this.generate(startElement.id, containerParsingContext, process);
         }
 
-        let embeddedEventSubprocesses = this.getEventSubProcess(process);
-        console.log(`---->`)
+        // let embeddedEventSubprocesses = this.getEventSubProcess(process);
         // for (const container of embeddedEventSubprocesses) {
         //     await this.generateContainer(container, workflowCodegenContext, containerParsingContext)
         // }
@@ -297,7 +300,7 @@ class WorkflowBuilder {
     }
 
     getServiceClassName(normalizedProcessDef) {
-        return this.upperFirstChar(normalizedProcessDef) + 'ProcessInstanceService';
+        return ProcessHelper.upperFirstChar(normalizedProcessDef) + 'ProcessInstanceService';
     }
 
 
@@ -349,9 +352,8 @@ class WorkflowBuilder {
      * @param {string} normalizedProcessDef
      * @param {AProcess} bpmnModel
      * @param {ContainerParsingContext} containerParsingContext
-     * @param {WorkflowCodegenContext} workflowCodegenContext
      */
-    generateContainerControllerClass(normalizedProcessDef, bpmnModel, containerParsingContext, workflowCodegenContext) {
+    generateContainerControllerClass(normalizedProcessDef, bpmnModel, containerParsingContext) {
             const controllerName= `${normalizedProcessDef}Controller`
         nunjucks.configure({
             autoescape: false,
@@ -359,10 +361,10 @@ class WorkflowBuilder {
             lstripBlocks: true,
         });
 
-        workflowCodegenContext.containerCodegenContext.openApiCodegen.addPath("/start/process/{processDef}/version/{version}" , "post")
-        workflowCodegenContext.containerCodegenContext.openApiCodegen.addPathVariableParameter("/start/process/{processDef}/version/{version}" , "post", 'processDef', 'string')
+        this.codegenContext.containerCodegenModel.openApiCodegen.addPath("/start/process/{processDef}/version/{version}" , "post")
+        this.codegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter("/start/process/{processDef}/version/{version}" , "post", 'processDef', 'string')
 
-        workflowCodegenContext.containerCodegenContext.openApiCodegen.addResponse("/start" , "post" , {
+        this.codegenContext.containerCodegenModel.openApiCodegen.addResponse("/start" , "post" , {
             "responses": {
                 "200": {
                     "description": "Process instance id"
@@ -384,7 +386,7 @@ class WorkflowBuilder {
                 // }
             }
         })
-        workflowCodegenContext.containerCodegenContext.routes.push({verb: "POST", path: "/start/process/:processDef/version/:version" , method: "start"})
+        this.codegenContext.containerCodegenModel.routes.push({verb: "POST", path: "/start/process/:processDef/version/:version" , method: "start"})
 
         const deploymentPath = Utils.getDeploymentPath(containerParsingContext)
         let serviceFilePath = `${deploymentPath}/src/controllers/${controllerName}.js`
@@ -405,11 +407,11 @@ class WorkflowBuilder {
                 startMethod : { name: normalizedProcessDef},
                 ProcessDef: normalizedProcessDef,
                 containerParsingContext,
-                workflowCodegenContext,
+                workflowCodegenContext: this.codegenContext,
             },
         );
-        workflowCodegenContext.addControllerClassImport(`${normalizedProcessDef}ProcessInstanceService`,`../services/${normalizedProcessDef.toLowerCase()}.process-instance.service.js`)
-        workflowCodegenContext.controllerClassFile = workflowCodegenContext.project.createSourceFile(
+        this.codegenContext.addControllerClassImport(`${normalizedProcessDef}ProcessInstanceService`,`../services/${normalizedProcessDef.toLowerCase()}.process-instance.service.js`)
+        this.codegenContext.controllerClassFile = this.codegenContext.project.createSourceFile(
             serviceFilePath,
             renderedTemplate,
             {overwrite: true},
