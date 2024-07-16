@@ -22,6 +22,8 @@ class {{ServiceClassName}} {
 
     workflowhelper = new WorkflowHelper(this)
 
+    endNodeIsReached = false;
+
     // _context = new {{ ProcessDef }}ProcessInstanceContext();
 
     bootstrap(){
@@ -68,9 +70,6 @@ class {{ServiceClassName}} {
 
 
     }
-
-
-
 
 
 }

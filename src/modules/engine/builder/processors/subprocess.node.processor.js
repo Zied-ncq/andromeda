@@ -67,7 +67,7 @@ export class SubProcessNodeProcessor {
                 bootstrapMethod.addStatements(
                     `
                   try {
-                        const subProcess = new SubiProcessInstanceService(this.processInstanceId, flowModel, this)
+                        const subProcess = new ${ProcessHelper.upperFirstChar(sub.id)}ProcessInstanceService(this.processInstanceId, flowModel, this)
                         await subProcess.fn_${startElement.id}(flowModel);
                   } catch (_bpmnProcessorException) {
                     Logger.error(_bpmnProcessorException)

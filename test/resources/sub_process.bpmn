@@ -4,15 +4,11 @@
     <bpmn:startEvent id="ACT_START_1">
       <bpmn:outgoing>Flow_1t45tk4</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:endEvent id="ACT_END_1">
-      <bpmn:incoming>Flow_0brafkq</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1t45tk4" sourceRef="ACT_START_1" targetRef="ACT_SCRIPT_1" />
-    <bpmn:sequenceFlow id="Flow_0brafkq" sourceRef="ACT_SCRIPT_1" targetRef="ACT_END_1" />
     <bpmn:scriptTask id="ACT_SCRIPT_1" name="scripts">
       <bpmn:incoming>Flow_1t45tk4</bpmn:incoming>
-      <bpmn:outgoing>Flow_0brafkq</bpmn:outgoing>
       <bpmn:outgoing>Flow_117sm5b</bpmn:outgoing>
+      <bpmn:outgoing>Flow_08t5s43</bpmn:outgoing>
       <bpmn:script>console.log("****************************** BASIC SCRIPT ***********************");</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:subProcess id="subi">
@@ -32,49 +28,53 @@
       <bpmn:script>console.log(`============= after sub process =========`)</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="Flow_0vat83f" sourceRef="subi" targetRef="Activity_039xnsk" />
+    <bpmn:endEvent id="ACT_END">
+      <bpmn:incoming>Flow_08t5s43</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_08t5s43" sourceRef="ACT_SCRIPT_1" targetRef="ACT_END" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="subProcess">
+      <bpmndi:BPMNEdge id="Flow_0vat83f_di" bpmnElement="Flow_0vat83f">
+        <di:waypoint x="631" y="320" />
+        <di:waypoint x="750" y="320" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_117sm5b_di" bpmnElement="Flow_117sm5b">
         <di:waypoint x="430" y="160" />
-        <di:waypoint x="430" y="320" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0brafkq_di" bpmnElement="Flow_0brafkq">
-        <di:waypoint x="480" y="120" />
-        <di:waypoint x="672" y="120" />
+        <di:waypoint x="430" y="251" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1t45tk4_di" bpmnElement="Flow_1t45tk4">
         <di:waypoint x="188" y="120" />
         <di:waypoint x="380" y="120" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0vat83f_di" bpmnElement="Flow_0vat83f">
-        <di:waypoint x="630" y="430" />
-        <di:waypoint x="790" y="430" />
+      <bpmndi:BPMNEdge id="Flow_08t5s43_di" bpmnElement="Flow_08t5s43">
+        <di:waypoint x="480" y="120" />
+        <di:waypoint x="732" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="ACT_START_1">
         <dc:Bounds x="152" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0j33rcc_di" bpmnElement="ACT_END_1">
-        <dc:Bounds x="672" y="102" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1me6866_di" bpmnElement="ACT_SCRIPT_1">
         <dc:Bounds x="380" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1o78nmk_di" bpmnElement="ACT_END">
+        <dc:Bounds x="732" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0e1bxah_di" bpmnElement="Activity_039xnsk">
-        <dc:Bounds x="790" y="390" width="100" height="80" />
+        <dc:Bounds x="750" y="280" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0olz74g_di" bpmnElement="subi" isExpanded="true">
-        <dc:Bounds x="230" y="320" width="400" height="200" />
+        <dc:Bounds x="231" y="251" width="400" height="200" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1wdioml_di" bpmnElement="Flow_1wdioml">
-        <di:waypoint x="338" y="420" />
-        <di:waypoint x="542" y="420" />
+        <di:waypoint x="339" y="351" />
+        <di:waypoint x="543" y="351" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0rn3kxj_di" bpmnElement="Event_START_SUB">
-        <dc:Bounds x="302" y="402" width="36" height="36" />
+        <dc:Bounds x="303" y="333" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_07wxcdx_di" bpmnElement="Event_END_SUB">
-        <dc:Bounds x="542" y="402" width="36" height="36" />
+        <dc:Bounds x="543" y="333" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

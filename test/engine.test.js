@@ -125,3 +125,53 @@ it('sub_process', async () => {
         throw e;  // Re-throw the error to fail the test
     }
 });
+
+
+it('sub_sub_process', async () => {
+
+
+    const port = 10003
+    let wpid = "sub_sub_process";
+
+    function getBpmnTestFile(fileName) {
+        let fileContents = [];
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        fileContents.push(fs.readFileSync(path.join(__dirname, "resources", fileName), {encoding: 'utf8'}));
+        return fileContents;
+    }
+
+    try {
+        let fileContents = getBpmnTestFile("sub_sub_process.bpmn");
+
+        const engineService = new EngineService();
+        await engineService.generateContainer(fileContents, wpid, version, {
+            includeGalaxyModule : true,
+            includeWebModule : true,
+            includePersistenceModule : true
+        });
+        await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
+
+        const containerClient = new ContainerClient(port);
+        const res = await containerClient.startProcess("subSubProcess", version, port, {})
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
+
+
+        const processInstancesId = res.id
+        const repo = new ProcessInstanceRepository();
+        let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
+        expect(processInstanceEntity).toBeDefined()
+        expect(processInstanceEntity.id).toEqual(processInstancesId)
+        expect(processInstanceEntity.wpid).toEqual("sub_sub_process")
+        expect(processInstanceEntity.processDef).toEqual("subSubProcess")
+        expect(processInstanceEntity.version).toEqual("1.0.0")
+        expect(processInstanceEntity.status).toEqual(1)
+        expect(processInstanceEntity.lock).toBeNull()
+
+        // expect(true).toBe(true);  // Use global assertion method
+    } catch (e) {
+        Logger.error(e)
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version, port);
+        throw e;  // Re-throw the error to fail the test
+    }
+});

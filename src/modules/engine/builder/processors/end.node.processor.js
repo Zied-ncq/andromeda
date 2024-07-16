@@ -17,9 +17,14 @@ class EndNodeProcessor {
     process(currentNode, workflowCodegenContext, containerParsingContext, process){
         Logger.info(`processing start event`);
 
-        let body = `await this.workflowhelper.closeProcessInstanceEvent();`
+        let body = `
+        this.endNodeIsReached = true;
+        await this.workflowhelper.closeProcessInstanceEvent();`
         if(process.hasParentProcess){
-            body = `await this.parentProcessInstance.fn_resume_sub_process_${process.id}(this.flowModel)`
+            body = `
+            this.endNodeIsReached = true;
+            await this.parentProcessInstance.fn_resume_sub_process_${process.id}(this.flowModel);
+            `
         }
 
         return {
