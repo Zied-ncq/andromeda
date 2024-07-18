@@ -1,11 +1,63 @@
+import {Variable} from "../model/variable.js";
+import {PersistenceGateway} from "../modules/persistence/event-store/persistence-gateway.js";
+import ContainerService from "../modules/container/container.service.js";
 
-export class {{ processDef }}ProcessInstanceContext {
+class {{ ProcessDef }}ProcessInstanceContext {
 
-    __variablesRef = []
 
-    async saveContext(context){
-        this.__variablesRef.filter(variable => variable.needToSave());
-        // await new VariableRepository().bulkUpsertVariables(variables, this.processInstanceService.id, this.processInstanceService.processDef);
+    processInstanceService;
+
+    {% for var in processVariables %}
+    $_{{ var.name  }} = new Variable('{{ var.name }}', '{{ var.type }}' );
+    get {{ var.name  }}() { return this.$_{{ var.name  }}.value(); }
+    set {{ var.name  }}(val) {  this.$_{{ var.name  }}.setValue(val); }
+
+    {% endfor  %}
+
+    __metaVariables = [{% for var in processVariables %}this.$_{{ var.name  }},{% endfor  %}]
+
+    constructor(parentService) {
+        this.processInstanceService = parentService;
     }
 
+
+    async saveContext(){
+        let variables = this.__metaVariables.filter(variable => variable.needToSave());
+        await this.createVariables(variables)
+    }
+
+    async createVariables(variables) {
+
+        await PersistenceGateway.createProcessVariables(ContainerService.containerId, this.processInstanceService.processInstanceId, variables );
+
+    }
+
+    async restoreVariableValues() {
+    }
+
+    evaluate(expression) {
+        let code = ` ${expression}; `;
+        let result = ts.transpile(code); // tslint:disable-next-line:no-eval
+        try {
+            return eval(result);
+        } catch (e) {
+            Logger.error(e);
+            throw e;
+        }
+    }
+
+    transcodeVariable(stringVariableValue, type){
+        let expression = `let value;`;
+        if(type === "string"){
+            expression += `value = \`${stringVariableValue}\`;`;
+        }else{
+            expression += `value= ${stringVariableValue};`
+        }
+        expression += `let variable: ${type} = <${type}> value; variable;`
+
+        return this.evaluate(expression);
+    }
+
+
 }
+export default {{ ProcessDef }}ProcessInstanceContext;

@@ -96,6 +96,7 @@ export class EmbeddedContainerService {
                     DB_URI: Config.getInstance().dbURI,
                     wpid: wpid
                 },
+                mode: 'spawn',
                 cwd: deploymentPath,
                 args: args
             });

@@ -25,15 +25,13 @@ export class ContainerClient {
         if (variables) {
             form.append('variables', JSON.stringify(variables));
         }
-        // const config = {headers: form.getHeaders()};
-        // when
-        // return await fetch().post(`, form, config);
+
         const startReq = await fetch(
             `http://127.0.0.1:${this.port}/start/process/${processDef}/version/${version}`,
             {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Accept': '*/*',
                 },
                 body: form,
             },

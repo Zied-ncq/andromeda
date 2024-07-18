@@ -1,6 +1,6 @@
 import  {AndromedaLogger} from "../config/andromeda-logger.js";
 const Logger = AndromedaLogger;
-import {ProcessInstanceContext} from "./{{ ProcessDef.toLowerCase() }}.process-instance-context.js";
+import ProcessInstanceContext from "./{{ ProcessDef }}.process-instance-context.js";
 import {ProcessInstanceStatus} from "../config/constants.js";
 import {PersistenceGateway} from "../modules/persistence/event-store/persistence-gateway.js";
 import ContainerService from "../modules/container/container.service.js";
@@ -20,14 +20,18 @@ class {{ServiceClassName}} {
 
     parentProcessInstance
 
+    variables = new ProcessInstanceContext();
+
     workflowhelper = new WorkflowHelper(this)
 
     endNodeIsReached = false;
 
     // _context = new {{ ProcessDef }}ProcessInstanceContext();
 
-    bootstrap(){
+    bootstrap(variables){
     }
+
+
 
     constructor(processInstanceId, flowModel, parentProcessInstance)
     {

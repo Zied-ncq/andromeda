@@ -9,6 +9,7 @@ import fs from "fs";
 import {fileURLToPath} from "url";
 import SubprocessNodeProcessor from "./processors/subprocess.node.processor.js";
 import {FlowHelper} from "./flow-helper.js";
+import CatchEventNodeProcessor from "./processors/catch-event.node.processor.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const Logger = AndromedaLogger;
@@ -23,6 +24,7 @@ class BpmnProcessor {
         this.processors[EndNodeProcessor.type] = new EndNodeProcessor();
         this.processors[ScriptTaskNodeProcessor.type] = new ScriptTaskNodeProcessor();
         this.processors[SubprocessNodeProcessor.type] = new SubprocessNodeProcessor();
+        this.processors[CatchEventNodeProcessor.type] = new CatchEventNodeProcessor();
     }
 
     /**

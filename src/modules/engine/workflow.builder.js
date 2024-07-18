@@ -260,7 +260,8 @@ class WorkflowBuilder {
         const renderedTemplate = nunjucks.renderString(
             template,
             {
-                ProcessDef: normalizedProcessDef,
+                ProcessDef: ProcessHelper.upperFirstChar(normalizedProcessDef),
+                processVariables: parsedModel.variables
             },
         );
 

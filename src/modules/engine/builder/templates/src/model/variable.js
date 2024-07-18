@@ -1,25 +1,34 @@
 import  {AndromedaLogger} from "../config/andromeda-logger.js";
 const Logger = AndromedaLogger;
+import {VariableEncoder} from "../helpers/variable-encoder.js";
+import { createHash } from 'crypto';
 
-import Md5 from 'yamd5.js'
-import {VariableEncoder} from "../helpers/variable-encoder";
 
 export class Variable {
     /**
-     * @type: string
+     *  id {string}
      */
     id
+
     oldValue = null;
+
     currentValue = null;
+
     /**
-     * @type: string
+     * name {string}
      */
     name = null;
+
     /**
-     * @type: string
+     * type {string}
      */
     type;
 
+    /**
+     *
+     * @param name {string}
+     * @param type {string}
+     */
     constructor(name, type) {
         this.name = name;
         if (type) {
@@ -27,12 +36,21 @@ export class Variable {
         }
     }
 
+    /**
+     *
+     * @param input {string}
+     * @returns {string}
+     */
+    generateMD5Hash(input) {
+        return createHash('md5').update(input).digest('hex');
+    }
+
 
     needToSave() {
         if(this.type !== "object"){
             return this.oldValue !== this.currentValue
         }else{
-            return Md5.hashStr(JSON.stringify(this.currentValue)) !== Md5.hashStr(JSON.stringify( this.oldValue));
+            return this.generateMD5Hash(JSON.stringify(this.currentValue)) !== this.generateMD5Hash(JSON.stringify( this.oldValue));
         }
     }
 
@@ -51,6 +69,10 @@ export class Variable {
        return this.currentValue;
     }
 
+    /**
+     *
+     * @param value {unknown}
+     */
     setValue(value) {
         VariableEncoder.transcodeVariable(value, this.type, this.name);
         if(this.type !== "object"){

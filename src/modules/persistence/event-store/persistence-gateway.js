@@ -32,6 +32,21 @@ export class PersistenceGateway {
         });
     }
 
+    static async createProcessVariables(containerId, processInstanceId, variables) {
+        await EventStore.apply({
+            id: crypto.randomUUID(),
+            streamId: StreamIds.PROCESS_INSTANCE,
+            type: EventTypes.CREATE_PROCESS_VARIABLES,
+            streamPosition: 0,
+            data: {
+                id: processInstanceId,
+                containerId,
+                variables
+            },
+            timestamp: new Date().toString()
+        });
+    }
+
     /**
      *
      * @param processInstancesId {string}

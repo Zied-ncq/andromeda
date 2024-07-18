@@ -1,5 +1,4 @@
 
-import test from "ava"
 import {VariableEncoder} from "./variable-encoder.js";
 import Utils from "../../../../../../utils/utils.js";
 
@@ -33,13 +32,13 @@ test('Transcode object',
      * @param {Assertions} t
      * @returns {Promise<void>}
      */
-    async (t) => {
+    async () => {
 
     let strVal = `{"id": "idLorem" , "value": "valueIpsum"}`;
     val = VariableEncoder.transcodeVariable(strVal , "LoremClass", "objVar")
-    t.is(isObject(val), true)
-    t.is(val.id, "idLorem")
-    t.is(val.value, "valueIpsum")
+   expect(isObject(val)).toBe( true)
+   expect(val.id).toBe( "idLorem")
+   expect(val.value).toBe( "valueIpsum")
 
 })
 
@@ -50,45 +49,44 @@ test('Transcode Array of objects',
      * @param {Assertions} t
      * @returns {Promise<void>}
      */
-    async (t) => {
+    async () => {
         let strVal =  `[{"id": "idLorem" , "value": "valueIpsum"}]`;
         val = VariableEncoder.transcodeVariable(strVal , "Array<LoremClass>", "arrayVar")
-        t.is(Array.isArray(val), true)
-        t.is(val[0].id, "idLorem")
-        t.is(val[0].value, "valueIpsum")
+        expect(Array.isArray(val)).toBe(true)
+       expect((val[0].id)).toBe("idLorem")
+       expect((val[0].value)).toBe("valueIpsum")
 
     })
 
 test('Transcode Boolean Variable',
     /**
      *
-     * @param {Assertions} t
      * @returns {Promise<void>}
      */
-    async (t) => {
+    async () => {
         let strVal =  "";
         val = VariableEncoder.transcodeVariable(strVal , "boolean", "boolVar")
-        t.is(VariableEncoder.isPrimitiveValue(val), true)
-        t.is(val, false)
+       expect(VariableEncoder.isPrimitiveValue(val)).toBe( true)
+       expect(val).toBe( false)
 
         strVal =  "false";
         val = VariableEncoder.transcodeVariable(strVal , "boolean", "boolVar")
-        t.is(VariableEncoder.isPrimitiveValue(val), true)
-        t.is(val, false)
+       expect(VariableEncoder.isPrimitiveValue(val)).toBe( true)
+       expect(val).toBe( false)
 
         strVal =  "true";
         val = VariableEncoder.transcodeVariable(strVal , "boolean", "boolVar")
-        t.is(VariableEncoder.isPrimitiveValue(val), true)
-        t.is(val, true);
+       expect(VariableEncoder.isPrimitiveValue(val)).toBe( true)
+       expect(val).toBe( true);
 
         strVal =  "notValidValue";
         const error = await Utils.getError(() =>  VariableEncoder.transcodeVariable(strVal , "boolean", "boolVar"))
-        t.deepEqual(error, new Error('cannot transcode variable boolVar of type boolean, possible values [true|false|""]'))
+        expect(error).toEqual(new Error('cannot transcode variable boolVar of type boolean, possible values [true|false|""]'))
 
         strVal =  undefined;
         val = VariableEncoder.transcodeVariable(strVal , "boolean", "boolVar")
-        t.is(VariableEncoder.isPrimitiveValue(val), true)
-        t.is(val, undefined);
+       expect(VariableEncoder.isPrimitiveValue(val)).toBe( true)
+       expect(val).toBe( undefined);
 
 
     })
@@ -99,10 +97,10 @@ test('Transcode string value',
      * @param {Assertions} t
      * @returns {Promise<void>}
      */
-    async (t) => {
+    async () => {
         let strVal =  `valueIpsum`;
         val = VariableEncoder.transcodeVariable(strVal , "string", "arrayVar")
-        t.is(val, "valueIpsum")
+       expect(val).toBe("valueIpsum")
 
     })
 
@@ -112,10 +110,10 @@ test('Transcode integer value',
      * @param {Assertions} t
      * @returns {Promise<void>}
      */
-    async (t) => {
+    async () => {
         let strVal =  `50`;
         val = VariableEncoder.transcodeVariable(strVal , "number", "numberVal")
-        t.is(val, 50)
+       expect(val).toBe( 50)
 
     })
 
@@ -126,10 +124,10 @@ test('Transcode float value',
      * @param {Assertions} t
      * @returns {Promise<void>}
      */
-    async (t) => {
+    async () => {
         let strVal =  `50.4`;
         val = VariableEncoder.transcodeVariable(strVal , "number", "floatVal")
-        t.is(val, 50.4)
+       expect(val).toBe( 50.4)
 
     })
 
@@ -139,21 +137,20 @@ test('Transcode uuid value as string',
      * @param {Assertions} t
      * @returns {Promise<void>}
      */
-    async (t) => {
+    async () => {
         let strVal =  `a0221430-a7ff-ac48-1ec6-8d21674e8464`;
         val = VariableEncoder.transcodeVariable(strVal , "string", "uuidVal")
-        t.is(val, "a0221430-a7ff-ac48-1ec6-8d21674e8464")
+       expect(val).toBe( "a0221430-a7ff-ac48-1ec6-8d21674e8464")
 
     })
 
 test('Transcode date value',
     /**
      *
-     * @param {Assertions} t
      * @returns {Promise<void>}
      */
-    async (t) => {
+    async () => {
         let strVal =  `2022-01-01T12:00:00+01:00`;
         val = VariableEncoder.transcodeVariable(strVal , "Date", "dateVal")
-        t.deepEqual(val, new Date(Date.parse(strVal)))
+        expect(val).toEqual(new Date(Date.parse(strVal)))
     })

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="BasicScenario" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.25.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:itemDefinition id="_ageItem" structureRef="number" />
+  <bpmn:itemDefinition id="_contentItem" structureRef="object" />
+  <bpmn:itemDefinition id="_dddItem" structureRef="string" />
+  <bpmn:process id="variables" isExecutable="true">
+    <bpmn:property id="age" itemSubjectRef="_ageItem" name="age" />
+    <bpmn:property id="content" itemSubjectRef="_contentItem" name="content" />
+    <bpmn:property id="ddd" itemSubjectRef="_dddItem" name="ddd" />
+    <bpmn:startEvent id="ACT_START_1">
+      <bpmn:outgoing>Flow_1t45tk4</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1t45tk4" sourceRef="ACT_START_1" targetRef="ACT_SCRIPT_1" />
+    <bpmn:scriptTask id="ACT_SCRIPT_1" name="scripts">
+      <bpmn:incoming>Flow_1t45tk4</bpmn:incoming>
+      <bpmn:outgoing>Flow_117sm5b</bpmn:outgoing>
+      <bpmn:script>console.log(`****************************** BASIC SCRIPT ${this.variables.age}***********************`);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_117sm5b" sourceRef="ACT_SCRIPT_1" targetRef="END_NODE" />
+    <bpmn:endEvent id="END_NODE">
+      <bpmn:incoming>Flow_117sm5b</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="variables">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="ACT_START_1">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1me6866_di" bpmnElement="ACT_SCRIPT_1">
+        <dc:Bounds x="490" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_137aceb_di" bpmnElement="END_NODE">
+        <dc:Bounds x="932" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1t45tk4_di" bpmnElement="Flow_1t45tk4">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="490" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_117sm5b_di" bpmnElement="Flow_117sm5b">
+        <di:waypoint x="590" y="120" />
+        <di:waypoint x="932" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

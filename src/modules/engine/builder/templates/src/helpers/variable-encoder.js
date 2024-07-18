@@ -3,7 +3,7 @@ import {AndromedaLogger} from "../config/andromeda-logger.js";
 const Logger = AndromedaLogger;
 
 
-export class VariableEncoder {
+export class  VariableEncoder {
 
     static transcodeVariable(value, type, name) {
         let expression = `let value;`;
@@ -60,3 +60,5 @@ export class VariableEncoder {
     }
 
 }
+
+export  default VariableEncoder

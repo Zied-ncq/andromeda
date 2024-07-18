@@ -55,6 +55,19 @@ export class BpmnConverter {
          */
         const flows = flowElements.filter(e => e.$type === 'bpmn:SequenceFlow')
 
+        const processVariables = [];
+        if (root.properties) {
+            root.properties.forEach((p) => {
+                // Logger.debug(`add variable ${p.name}`);
+                processVariables.push({
+                    name: p.name,
+                    type: p.itemSubjectRef.structureRef,
+                });
+            });
+            // add meta property to use it when we iterate over variables
+        }
+
+        process.variables = processVariables
         process.nodes = []
         process.subProcesses =[]
         for (let node of nodes) {

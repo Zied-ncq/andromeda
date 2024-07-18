@@ -130,7 +130,7 @@ it('sub_process', async () => {
 it('sub_sub_process', async () => {
 
 
-    const port = 10003
+    const port = 10004
     let wpid = "sub_sub_process";
 
     function getBpmnTestFile(fileName) {
@@ -164,6 +164,109 @@ it('sub_sub_process', async () => {
         expect(processInstanceEntity.id).toEqual(processInstancesId)
         expect(processInstanceEntity.wpid).toEqual("sub_sub_process")
         expect(processInstanceEntity.processDef).toEqual("subSubProcess")
+        expect(processInstanceEntity.version).toEqual("1.0.0")
+        expect(processInstanceEntity.status).toEqual(1)
+        expect(processInstanceEntity.lock).toBeNull()
+
+        // expect(true).toBe(true);  // Use global assertion method
+    } catch (e) {
+        Logger.error(e)
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version, port);
+        throw e;  // Re-throw the error to fail the test
+    }
+});
+
+it('variables', async () => {
+
+
+    const port = 10005
+    let wpid = "variables";
+
+    function getBpmnTestFile(fileName) {
+        let fileContents = [];
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        fileContents.push(fs.readFileSync(path.join(__dirname, "resources", fileName), {encoding: 'utf8'}));
+        return fileContents;
+    }
+
+    try {
+        let fileContents = getBpmnTestFile("variables.bpmn");
+
+        const engineService = new EngineService();
+        await engineService.generateContainer(fileContents, wpid, version, {
+            includeGalaxyModule : true,
+            includeWebModule : true,
+            includePersistenceModule : true
+        });
+        await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
+        const containerClient = new ContainerClient(port);
+        const res = await containerClient.startProcess("variables", version, port, {
+            age: 5,
+            ddd : "string",
+            content: {   c: 5,
+                d : "string"
+            }
+        })
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
+
+
+        const processInstancesId = res.id
+        const repo = new ProcessInstanceRepository();
+        let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
+        expect(processInstanceEntity).toBeDefined()
+        expect(processInstanceEntity.id).toEqual(processInstancesId)
+        expect(processInstanceEntity.wpid).toEqual("variables")
+        expect(processInstanceEntity.processDef).toEqual("variables")
+        expect(processInstanceEntity.version).toEqual("1.0.0")
+        expect(processInstanceEntity.status).toEqual(1)
+        expect(processInstanceEntity.lock).toBeNull()
+
+        // expect(true).toBe(true);  // Use global assertion method
+    } catch (e) {
+        Logger.error(e)
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version, port);
+        throw e;  // Re-throw the error to fail the test
+    }
+});
+
+it('catch_event', async () => {
+
+
+    const port = 10006
+    let wpid = "catch_event";
+
+    function getBpmnTestFile(fileName) {
+        let fileContents = [];
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        fileContents.push(fs.readFileSync(path.join(__dirname, "resources", fileName), {encoding: 'utf8'}));
+        return fileContents;
+    }
+
+    try {
+        let fileContents = getBpmnTestFile("catch_event.bpmn");
+
+        const engineService = new EngineService();
+        await engineService.generateContainer(fileContents, wpid, version, {
+            includeGalaxyModule : true,
+            includeWebModule : true,
+            includePersistenceModule : true
+        });
+        await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
+
+        const containerClient = new ContainerClient(port);
+        const res = await containerClient.startProcess("catchEvent", version, port, {})
+        await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
+
+
+        const processInstancesId = res.id
+        const repo = new ProcessInstanceRepository();
+        let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
+        expect(processInstanceEntity).toBeDefined()
+        expect(processInstanceEntity.id).toEqual(processInstancesId)
+        expect(processInstanceEntity.wpid).toEqual("catch_event")
+        expect(processInstanceEntity.processDef).toEqual("catchEvent")
         expect(processInstanceEntity.version).toEqual("1.0.0")
         expect(processInstanceEntity.status).toEqual(1)
         expect(processInstanceEntity.lock).toBeNull()

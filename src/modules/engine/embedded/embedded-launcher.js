@@ -1,11 +1,13 @@
 import * as fs from 'fs';
-import { fork, exec } from 'child_process';
-import {AndromedaLogger} from "../../../config/andromeda-logger.js";
+import { fork, spawn, exec } from 'child_process';
+import { AndromedaLogger } from "../../../config/andromeda-logger.js";
 
-const Logger = AndromedaLogger
+const Logger = AndromedaLogger;
+
 export class EmbeddedLauncher {
     constructor() {
         this.currentRestarts = 0;
+        this.childProcess = null;
     }
 
     /**
@@ -18,6 +20,7 @@ export class EmbeddedLauncher {
      * @param {boolean} [options.killTree=false] - If true, kills the entire process tree on stop.
      * @param {Object} [options.env=process.env] - Environment variables to set for the process.
      * @param {string} [options.cwd=process.cwd()] - Current working directory for the process.
+     * @param {string} [options.mode='fork'] - child process mode, fork | spawn.
      * @param {Array<string>} [options.args=[]] - Arguments to pass to the command.
      * @param {string} [options.logFile='embedded-launcher.log'] - Path to the log file.
      */
@@ -35,20 +38,32 @@ export class EmbeddedLauncher {
             return;
         }
 
-        const childProcess = fork(executor, args, {
-            env: env,
-            cwd: cwd,
-            silent: silent,
-        });
+        if (options.mode === 'spawn') {
+            this.childProcess = spawn('node', [executor, ...args],{
+                env: env,
+                cwd: cwd,
+                stdio: 'inherit', // Inherit stdio from the parent process
+                stderr: 'inherit'
+            });
+        } else {
+            this.childProcess = fork(executor, args, {
+                env: env,
+                cwd: cwd,
+                // silent: silent,
+                stdio: 'inherit', // Inherit stdio from the parent process
+                stderr: 'inherit'
+            });
 
-        childProcess.on('close', (code) => {
+        }
+
+        this.childProcess.on('close', (code) => {
             this.log(`Process exited with code ${code}`, logFile, silent);
             this.currentRestarts += 1;
             this.log(`Restarting process (${this.currentRestarts}/${maxRestarts})...`, logFile, silent);
             setTimeout(() => this.start(executor, options), 1000); // Restart after 1 second
         });
-        return childProcess;
 
+        return this.childProcess;
     }
 
     /**
@@ -84,8 +99,6 @@ export class EmbeddedLauncher {
     /**
      * Kills the process tree of the given PID.
      * @param {number} pid - The process ID.
-     * @param {string} logFile - The path to the log file.
-     * @param {boolean} silent - If true, suppress output logging.
      */
     killProcessTree(pid) {
         const isWindows = process.platform === 'win32';

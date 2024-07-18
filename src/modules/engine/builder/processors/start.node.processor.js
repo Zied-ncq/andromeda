@@ -16,7 +16,16 @@ class StartNodeProcessor {
 
         const bootstrapMethod =workflowCodegenContext.serviceClass.getMethodOrThrow('bootstrap');
         bootstrapMethod.addStatements(
-            `this.fn_${currentNode.id}()`,
+            `
+            Object.keys(variables).forEach(v => {
+                this.variables.__metaVariables.forEach(metaVar => {
+                    if (v === metaVar.name) {
+                        metaVar.setValue(variables[v]);
+                    }
+                });
+            });
+            this.fn_${currentNode.id}()
+            `,
         );
         return nodeContext;
 

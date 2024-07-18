@@ -3,13 +3,13 @@ import path from "path";
 import fastify from "fastify";
 import GracefulServer from "@gquittet/graceful-server";
 import fastifySwagger from "@fastify/swagger";
-import multer from "fastify-multer";
 import autoload from "@fastify/autoload";
 
 import {AndromedaLogger} from "../../config/andromeda-logger.js";
 import {Config} from "../../config/config.js";
 import fs from "fs";
 import {App} from "../../../app.js";
+import fastifyMultipart from "@fastify/multipart";
 const Logger = AndromedaLogger;
 
 
@@ -63,8 +63,7 @@ export class WebModule {
             Logger.info(`Server is down because of ${error.message}`)
         })
 
-        // this.app.register(multer.contentParser, {addToBody: true})
-        this.app.register(multer.contentParser)
+        this.app.register(fastifyMultipart, { attachFieldsToBody: 'keyValues' });
 
         this.app.register(autoload, {
             dir: path.join(__dirname, '../../routes'),

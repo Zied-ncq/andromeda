@@ -5,4 +5,5 @@ export const BpmnTypeConverter = {
     "bpmn:StartEvent" : AType.StartEvent,
     "bpmn:EndEvent" : AType.EndEvent,
     "bpmn:SubProcess" : AType.SubProcess,
+    "bpmn:IntermediateCatchEvent" : AType.CatchEvent,
 }

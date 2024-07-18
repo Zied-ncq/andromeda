@@ -28,7 +28,6 @@ class CAndromedaLogger {
     loggerOptions;
 
     constructor(args) {
-        console.error(`LOGGER AndromedaLogger is created`)
         this.logger = logSingleton;
     }
 
