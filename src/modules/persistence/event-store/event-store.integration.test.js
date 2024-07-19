@@ -39,7 +39,6 @@ describe('Event Store', () => {
                 data: {
                     id: processInstancesId,
                     wpid: "wpid",
-                    processDef: "processDef",
                     version: '1.0.0',
                     status: 0,
                     containerId
@@ -52,7 +51,6 @@ describe('Event Store', () => {
             expect(processInstanceEntity).toBeDefined()
             expect(processInstanceEntity.id).toEqual(processInstancesId)
             expect(processInstanceEntity.wpid).toEqual("wpid")
-            expect(processInstanceEntity.processDef).toEqual("processDef")
             expect(processInstanceEntity.version).toEqual("1.0.0")
             expect(processInstanceEntity.status).toEqual(0)
             expect(processInstanceEntity.lock).toBeDefined()
@@ -74,7 +72,6 @@ describe('Event Store', () => {
                 data: {
                     id: processInstancesId,
                     wpid: "wpid",
-                    processDef: "processDef",
                     status: 0,
                     version: "1.0.0",
                     containerId
@@ -101,7 +98,6 @@ describe('Event Store', () => {
                 data: {
                     id: processInstancesId,
                     wpid: "wpid",
-                    processDef: "processDef",
                     status: 0,
                     version: "1.0.0",
                     containerId: crypto.randomUUID()

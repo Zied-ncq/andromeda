@@ -10,11 +10,10 @@ export class PersistenceGateway {
      *
      * @param containerId {uuid}
      * @param wpid {string}
-     * @param processDef  {string}
      * @param version  {string}
      * @param processInstanceId {uuid}
      */
-    static async newProcessInstance(containerId, wpid, processDef, version, processInstanceId) {
+    static async newProcessInstance(containerId, wpid, version, processInstanceId) {
         await EventStore.apply({
             id: crypto.randomUUID(),
             streamId: StreamIds.PROCESS_INSTANCE,
@@ -23,7 +22,6 @@ export class PersistenceGateway {
             data: {
                 id: processInstanceId,
                 wpid,
-                processDef,
                 status: 0,
                 version,
                 containerId
@@ -32,15 +30,16 @@ export class PersistenceGateway {
         });
     }
 
-    static async createProcessVariables(containerId, processInstanceId, variables) {
+    static async createProcessVariables(containerId, processInstanceId, variables, wpid) {
         await EventStore.apply({
             id: crypto.randomUUID(),
             streamId: StreamIds.PROCESS_INSTANCE,
             type: EventTypes.CREATE_PROCESS_VARIABLES,
             streamPosition: 0,
             data: {
-                id: processInstanceId,
+                processInstanceId,
                 containerId,
+                wpid,
                 variables
             },
             timestamp: new Date().toString()

@@ -53,18 +53,9 @@ export class Utils{
 
 
 
-    // static getwpid(model) {
-    //     if(!model){
-    //         return new Error(`model should not be null`);
-    //     }
-    //     return sanitize(model.rootElement.id);
-    // }
 
-    // normalizeProcessDefWithoutVersion(processDef) {
-    //     const result = processDef;
-    //     const regex = /(\w+)(-[vV][0-9]+\.[0-9]+)/;
-    //     return result.replace(regex, `$1`);
-    // }
+
+
 
     /**
      * Used to encapsulate exceptions in

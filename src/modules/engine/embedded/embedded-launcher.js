@@ -38,21 +38,21 @@ export class EmbeddedLauncher {
             return;
         }
 
+        const executorOptions = {
+            env: env,
+            cwd: cwd,
+            stdio: 'inherit', // Inherit stdio from the parent process
+            stderr: 'inherit'
+        }
+
         if (options.mode === 'spawn') {
-            this.childProcess = spawn('node', [executor, ...args],{
-                env: env,
-                cwd: cwd,
-                stdio: 'inherit', // Inherit stdio from the parent process
-                stderr: 'inherit'
-            });
+            let executorArgs = [executor, ...args]
+            if(process.env.PROFILE === 'test'){
+                executorArgs = ['--inspect', executor, ...args]
+            }
+            this.childProcess = spawn('node', executorArgs, executorOptions);
         } else {
-            this.childProcess = fork(executor, args, {
-                env: env,
-                cwd: cwd,
-                // silent: silent,
-                stdio: 'inherit', // Inherit stdio from the parent process
-                stderr: 'inherit'
-            });
+            this.childProcess = fork(executor, args, executorOptions);
 
         }
 

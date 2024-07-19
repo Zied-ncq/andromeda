@@ -1,7 +1,7 @@
 
 import { test } from "node:test"
 import mongoose from "mongoose";
-import BaseRepository from "../../src/modules/persistence/event-store/repositories/baseRepository.js";
+import {BaseRepository} from "../../src/modules/persistence/event-store/repositories/baseRepository.js";
 import TestModel from "../../src/modules/persistence/event-store/internal/models/test-model.js";
 
 

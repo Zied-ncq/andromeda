@@ -14,7 +14,7 @@ export class FlowHelper {
         const createFlowTemplate = nunjucks.renderString(
            `async {{ nodeType }}CreateFlow( incomingFlow , __localMethodContext ) {
               return {
-                         processInstanceId: this.processInstanceId,
+                         processInstanceId: this.__metaInfo.processInstanceId,
                         id: incomingFlow.id,
                         type: incomingFlow.type,
                         to: {

@@ -1,4 +1,4 @@
-import BaseRepository from "./baseRepository.js";
+import {BaseRepository} from "./baseRepository.js";
 
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 import {Config} from "../../../../config/config.js";

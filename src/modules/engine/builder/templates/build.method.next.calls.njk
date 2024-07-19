@@ -24,6 +24,6 @@ if(flows.size > 0){
         }
     } catch (error) {
         Logger.error(error);
-        await this.workflowHelper.failProcessInstance('{{ flow.id }}', __localMethodContext);
+        await this.__metaInfo.workflowHelper.failProcessInstance('{{ flow.id }}', __localMethodContext);
     }
 {% endfor %}

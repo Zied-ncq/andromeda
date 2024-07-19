@@ -32,8 +32,8 @@ class WorkflowBuilder {
     bpmnProcessor = new BpmnProcessor();
 
 
-    normalizeProcessDefWithoutVersion(processDef) {
-        const result = processDef;
+    normalizeWpidWithoutVersion(wpid) {
+        const result = wpid;
         const regex = /(\w+)(-[vV][0-9]+\.[0-9]+)/;
         return result.replace(regex, `$1`);
     }
@@ -121,14 +121,14 @@ class WorkflowBuilder {
         // each bpmn file can contain multiple process node
         // const processesInBpmnFile = this.getProcessesModel(processModel.model);
 
-        const normalizedProcessDef = this.normalizeProcessDefWithoutVersion(model.id);
+        const nwpid = this.normalizeWpidWithoutVersion(model.id);
 
 
 
-        await this.generateServiceClass(normalizedProcessDef, model, containerParsingContext )
-        await this.generateWorkflowContext(normalizedProcessDef, model, containerParsingContext)
+        await this.generateServiceClass(nwpid, model, containerParsingContext )
+        await this.generateWorkflowContext(nwpid, model, containerParsingContext)
 
-        await this.generateContainerControllerClass(normalizedProcessDef, model, containerParsingContext)
+        await this.generateContainerControllerClass(nwpid, model, containerParsingContext)
 
         // processesInBpmnFile.forEach(process => {
         // current node = definition
@@ -136,7 +136,7 @@ class WorkflowBuilder {
 
         // });
 
-        containerCodegenModel.renderRoutes(normalizedProcessDef, containerParsingContext);
+        containerCodegenModel.renderRoutes(nwpid, containerParsingContext);
         this.codegenContext.renderImports()
         this.codegenContext.serviceClassFile.formatText({
             placeOpenBraceOnNewLineForFunctions: true,
@@ -158,16 +158,16 @@ class WorkflowBuilder {
 
 
         // const buildContext = new ProcessInstanceBuildContext();
-        // this.generateServiceClass(processDef, buildContext, containerParsingContext);
-        // // this.generateVariableContextHandlerClass(processDef, containerParsingContext);
-        // this.generateControllerClass(processDef, buildContext, containerParsingContext);
+        // this.generateServiceClass(wpid, buildContext, containerParsingContext);
+        // // this.generateVariableContextHandlerClass(wpid, containerParsingContext);
+        // this.generateControllerClass(wpid, buildContext, containerParsingContext);
         // this.generateVariable(
         //   processesInBpmnFile,
-        //   this.normalizeProcessDefWithoutVersion(processDef),
+        //   this.normalizeWpidWithoutVersion(wpid),
         //   buildContext,
         //   containerParsingContext,
         // );
-        // // this.createWorkflowWorker(processDef, containerParsingContext);
+        // // this.createWorkflowWorker(wpid, containerParsingContext);
         // startElements.forEach((startElement) => {
         //   this.generateContentForElement(startElement, buildContext);
         // });
@@ -179,19 +179,19 @@ class WorkflowBuilder {
 
     /**
      *
-     * @param {string} normalizedProcessDef
+     * @param {string} nwpid
      * @param parsedModel
      * @param {ContainerParsingContext} containerParsingContext
      * @returns {Promise<void>}
      */
     async generateServiceClass(
-        normalizedProcessDef,
+        nwpid,
         parsedModel,
         containerParsingContext,
     ) {
 
-        const serviceFileName = this.getServiceFileName(normalizedProcessDef);
-        const serviceClassName = this.getServiceClassName(normalizedProcessDef);
+        const serviceFileName = this.getServiceFileName(nwpid);
+        const serviceClassName = this.getServiceClassName(nwpid);
         nunjucks.configure({
             autoescape: false,
             trimBlocks: true,
@@ -210,7 +210,9 @@ class WorkflowBuilder {
             {
                 ServiceFileName: serviceFileName,
                 ServiceClassName: serviceClassName,
-                ProcessDef: normalizedProcessDef,
+                version: containerParsingContext.version,
+                nwpid,
+                cnwpid: ProcessHelper.upperFirstChar(nwpid),
                 containerParsingContext,
                 workflowCodegenContext: this.codegenContext,
                 process: parsedModel
@@ -231,13 +233,13 @@ class WorkflowBuilder {
 
     /**
      *
-     * @param {string} normalizedProcessDef
+     * @param {string} nwpid
      * @param parsedModel
      * @param {ContainerParsingContext} containerParsingContext
      * @returns {Promise<void>}
      */
     async generateWorkflowContext(
-        normalizedProcessDef,
+        nwpid,
         parsedModel,
         containerParsingContext) {
 
@@ -260,12 +262,14 @@ class WorkflowBuilder {
         const renderedTemplate = nunjucks.renderString(
             template,
             {
-                ProcessDef: ProcessHelper.upperFirstChar(normalizedProcessDef),
+                cnwpid: ProcessHelper.upperFirstChar(nwpid),
+                wpid: ProcessHelper.upperFirstChar(nwpid),
+                version: containerParsingContext.version,
                 processVariables: parsedModel.variables
             },
         );
 
-        let destFile = path.join(Utils.getDeploymentPath(containerParsingContext), "src", "services", `${normalizedProcessDef.toLowerCase()}.process-instance-context.js`);
+        let destFile = path.join(Utils.getDeploymentPath(containerParsingContext), "src", "services", `${nwpid}.process-instance-context.js`);
         fs.writeFileSync(
             destFile,
             renderedTemplate,
@@ -293,15 +297,15 @@ class WorkflowBuilder {
 
     /**
      *
-     * @param normalizedProcessDef : string
+     * @param nwpid {string}
      * @returns {string}
      */
-    getServiceFileName(normalizedProcessDef) {
-        return normalizedProcessDef.toLowerCase() + '.process-instance.service';
+    getServiceFileName(nwpid) {
+        return nwpid.toLowerCase() + '.process-instance.service';
     }
 
-    getServiceClassName(normalizedProcessDef) {
-        return ProcessHelper.upperFirstChar(normalizedProcessDef) + 'ProcessInstanceService';
+    getServiceClassName(nwpid) {
+        return ProcessHelper.upperFirstChar(nwpid) + 'ProcessInstanceService';
     }
 
 
@@ -350,20 +354,20 @@ class WorkflowBuilder {
 
     /**
      *
-     * @param {string} normalizedProcessDef
+     * @param {string} nwpid
      * @param {AProcess} bpmnModel
      * @param {ContainerParsingContext} containerParsingContext
      */
-    generateContainerControllerClass(normalizedProcessDef, bpmnModel, containerParsingContext) {
-            const controllerName= `${normalizedProcessDef}Controller`
+    generateContainerControllerClass(nwpid, bpmnModel, containerParsingContext) {
+            const controllerName= `${ProcessHelper.upperFirstChar(nwpid)}Controller`
         nunjucks.configure({
             autoescape: false,
             trimBlocks: true,
             lstripBlocks: true,
         });
 
-        this.codegenContext.containerCodegenModel.openApiCodegen.addPath("/start/process/{processDef}/version/{version}" , "post")
-        this.codegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter("/start/process/{processDef}/version/{version}" , "post", 'processDef', 'string')
+        this.codegenContext.containerCodegenModel.openApiCodegen.addPath("/start/process/{wpid}/version/{version}" , "post")
+        this.codegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter("/start/process/{wpid}/version/{version}" , "post", 'wpid', 'string')
 
         this.codegenContext.containerCodegenModel.openApiCodegen.addResponse("/start" , "post" , {
             "responses": {
@@ -387,7 +391,7 @@ class WorkflowBuilder {
                 // }
             }
         })
-        this.codegenContext.containerCodegenModel.routes.push({verb: "POST", path: "/start/process/:processDef/version/:version" , method: "start"})
+        this.codegenContext.containerCodegenModel.routes.push({verb: "POST", path: "/start/process/:wpid/version/:version" , method: "start"})
 
         const deploymentPath = Utils.getDeploymentPath(containerParsingContext)
         let serviceFilePath = `${deploymentPath}/src/controllers/${controllerName}.js`
@@ -405,13 +409,13 @@ class WorkflowBuilder {
             {
                 ControllerFileName: controllerName,
                 ControllerClassName: controllerName,
-                startMethod : { name: normalizedProcessDef},
-                ProcessDef: normalizedProcessDef,
+                startMethod : { name: nwpid},
+                Wpid: nwpid,
                 containerParsingContext,
                 workflowCodegenContext: this.codegenContext,
             },
         );
-        this.codegenContext.addControllerClassImport(`${normalizedProcessDef}ProcessInstanceService`,`../services/${normalizedProcessDef.toLowerCase()}.process-instance.service.js`)
+        this.codegenContext.addControllerClassImport(`${nwpid}ProcessInstanceService`,`../services/${nwpid.toLowerCase()}.process-instance.service.js`)
         this.codegenContext.controllerClassFile = this.codegenContext.project.createSourceFile(
             serviceFilePath,
             renderedTemplate,

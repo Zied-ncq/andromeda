@@ -7,7 +7,7 @@ import {EmbeddedContainerService} from "./embedded.containers.service.js";
 import * as net from "net";
 import {Config} from "../../../config/config.js";
 import Utils from "../../../utils/utils.js";
-
+import { expect, test } from 'vitest'
 
 
 test('isPortFree', async () => {

@@ -22,10 +22,6 @@ const processInstanceSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    processDef: {
-        type: String,
-        required: true
-    },
     version:  {
         type: String,
         required: true

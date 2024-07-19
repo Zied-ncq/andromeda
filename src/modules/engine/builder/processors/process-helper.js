@@ -1,7 +1,7 @@
 export class ProcessHelper{
 
-    static normalizeProcessDefWithoutVersion(processDef) {
-        const result = processDef;
+    static normalizeWpidWithoutVersion(wpid) {
+        const result = wpid;
         const regex = /(\w+)(-[vV][0-9]+\.[0-9]+)/;
         return result.replace(regex, `$1`);
     }

@@ -1,6 +1,6 @@
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 const Logger = AndromedaLogger;
-class BaseRepository {
+export class BaseRepository {
   /**
    * @type {Model}
    * @private
@@ -84,4 +84,4 @@ class BaseRepository {
   }
 }
 
-export  default BaseRepository;
+// export  default BaseRepository;

@@ -1,57 +1,42 @@
 import  {AndromedaLogger} from "../config/andromeda-logger.js";
 const Logger = AndromedaLogger;
-import ProcessInstanceContext from "./{{ ProcessDef }}.process-instance-context.js";
+import {{cnwpid}}ProcessInstanceContext from "./{{ nwpid }}.process-instance-context.js";
 import {ProcessInstanceStatus} from "../config/constants.js";
 import {PersistenceGateway} from "../modules/persistence/event-store/persistence-gateway.js";
 import ContainerService from "../modules/container/container.service.js";
 import {WorkflowHelper} from "./workflow-helper.js";
+import {MetaInfoJs} from "./meta-info.js";
 
 
 
 class {{ServiceClassName}} {
 
+    __metaInfo = new MetaInfoJs(this)
 
-    serviceContext;
-
-    processInstanceId
-
-    // flowModel is the flow used for subprocess to create a sub process instance
-    flowModel
-
-    parentProcessInstance
-
-    variables = new ProcessInstanceContext();
-
-    workflowhelper = new WorkflowHelper(this)
-
-    endNodeIsReached = false;
-
-    // _context = new {{ ProcessDef }}ProcessInstanceContext();
+    variables = new {{cnwpid}}ProcessInstanceContext(this);
 
     bootstrap(variables){
     }
-
-
 
     constructor(processInstanceId, flowModel, parentProcessInstance)
     {
         if (processInstanceId !== null && processInstanceId !== undefined ) {
             // in case we resume a process instance after a container restart
-            this.processInstanceId = processInstanceId;
+            this.__metaInfo.processInstanceId = processInstanceId;
             // this.flowService = new TestFlowService(this.id);
         } else {
             const id  = crypto.randomUUID()
             Logger.debug(`Creating new Process instance id= ${id}`)
-            this.processInstanceId = crypto.randomUUID();
+            this.__metaInfo.processInstanceId = crypto.randomUUID();
             // this.flowService = new TestFlowService(this.id);
         }
 
         if (flowModel !== null && flowModel !== undefined ) {
-            this.flowModel = flowModel
+            this.__metaInfo.flowModel = flowModel
         }
 
         if (parentProcessInstance !== null && parentProcessInstance !== undefined ) {
-            this.parentProcessInstance = parentProcessInstance
+            this.__metaInfo.parentProcessInstance = parentProcessInstance
         }
 
     }
@@ -66,9 +51,8 @@ class {{ServiceClassName}} {
         // ContainerService.getInstance().lock(instance)
         await PersistenceGateway.newProcessInstance(ContainerService.containerId,
             '{{containerParsingContext.wpid}}',
-            '{{ProcessDef}}',
             '{{containerParsingContext.version}}',
-            instance.processInstanceId);
+            instance.__metaInfo.processInstanceId);
         return instance;
         {% endif %}
 

@@ -1,4 +1,4 @@
-import BaseRepository from "./baseRepository.js";
+import {BaseRepository} from "./baseRepository.js";
 
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 import ProcessInstanceModel, {ProcessInstanceStatus} from "../internal/models/process-instance.orm-model.js";
@@ -18,18 +18,16 @@ export class ProcessInstanceRepository {
     /**
      *
      * @param {string} processInstanceId
-     * @param {string} processDef
      * @param {string} wpid
      * @param {string} version
      * @param {string} containerId
      * @returns {Promise<void>}
      */
-    async createNewProcessInstance(processInstanceId,wpid, processDef, version, containerId) {
+    async createNewProcessInstance(processInstanceId,wpid, version, containerId) {
         Logger.info(`create new process instance ${processInstanceId}`);
         // @type {ProcessInstance}
         let processInstance= {
             _id: processInstanceId,
-            processDef: processDef,
             wpid: wpid,
             version,
             status: ProcessInstanceStatus.Active,
@@ -73,7 +71,7 @@ export class ProcessInstanceRepository {
             return {
                 id: instance._id,
                 lock: instance.lock,
-                processDef: instance.processDef,
+                wpid: instance.wpid,
                 wpid:  instance.wpid,
                 status: instance.status,
                 version: instance.version

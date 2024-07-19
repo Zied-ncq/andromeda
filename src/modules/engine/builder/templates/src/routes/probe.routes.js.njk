@@ -1,4 +1,4 @@
-import {{ normalizedProcessDef }}Controller from "../controllers/{{ normalizedProcessDef }}Controller.js"
+import {{ cnwpid }}Controller from "../controllers/{{ nwpid }}Controller.js"
 
 
 function route (fastify, opts, next) {
@@ -9,14 +9,14 @@ function route (fastify, opts, next) {
         {
             method: '{{ item.verb }}',
             url: '{{ item.path }}',
-            handler: {{ normalizedProcessDef }}Controller.{{ item.method }},
+            handler: {{ cnwpid }}Controller.{{ item.method }},
             consumes: ['multipart/form-data']
         }
     {% else %}
         {
             method: '{{ item.verb }}',
             url: '{{ item.path }}',
-            handler: {{ normalizedProcessDef }}Controller.{{ item.method }}
+            handler: {{ cnwpid }}Controller.{{ item.method }}
         }
     {%  endif %}
     )

@@ -5,6 +5,7 @@ import {fileURLToPath} from "url";
 import {OpenApiGenerator} from "../../utils/open-api.generator.js";
 import {Config} from "../../config/config.js";
 import Utils from "../../utils/utils.js";
+import {ProcessHelper} from "../../modules/engine/builder/processors/process-helper.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,10 +30,10 @@ class ContainerCodegenModel {
 
     /**
     *
-    * @param {string} normalizedProcessDef
+    * @param {string} nwpid
     * @param {ContainerParsingContext} containerParsingContext
     */
-   renderRoutes(normalizedProcessDef, containerParsingContext) {
+   renderRoutes(nwpid, containerParsingContext) {
       nunjucks.configure({
          autoescape: false,
          trimBlocks: true,
@@ -53,7 +54,8 @@ class ContainerCodegenModel {
       const renderedTemplate = nunjucks.renderString(
           template,
           {
-             normalizedProcessDef: normalizedProcessDef,
+             nwpid,
+             cnwpid: ProcessHelper.upperFirstChar(nwpid),
              routes: this.routes
           },
       );

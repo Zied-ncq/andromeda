@@ -26,10 +26,10 @@ export class Stream {
     }
 
 
-    dispatch(event) {
+    async dispatch(event) {
 
         if (event.type in this.projections){
-            this.projections[event.type].process(event)
+            await this.projections[event.type].process(event)
         }
 
     }

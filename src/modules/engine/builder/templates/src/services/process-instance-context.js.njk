@@ -2,7 +2,7 @@ import {Variable} from "../model/variable.js";
 import {PersistenceGateway} from "../modules/persistence/event-store/persistence-gateway.js";
 import ContainerService from "../modules/container/container.service.js";
 
-class {{ ProcessDef }}ProcessInstanceContext {
+class {{ cnwpid }}ProcessInstanceContext {
 
 
     processInstanceService;
@@ -28,7 +28,7 @@ class {{ ProcessDef }}ProcessInstanceContext {
 
     async createVariables(variables) {
 
-        await PersistenceGateway.createProcessVariables(ContainerService.containerId, this.processInstanceService.processInstanceId, variables );
+        await PersistenceGateway.createProcessVariables(ContainerService.containerId, this.processInstanceService.__metaInfo.processInstanceId, variables, '{{wpid}}' );
 
     }
 
@@ -60,4 +60,4 @@ class {{ ProcessDef }}ProcessInstanceContext {
 
 
 }
-export default {{ ProcessDef }}ProcessInstanceContext;
+export default {{ cnwpid }}ProcessInstanceContext;

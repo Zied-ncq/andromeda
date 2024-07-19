@@ -15,9 +15,9 @@ export class WorkflowHelper{
      * @returns {Promise<void>}
      */
     async closeProcessInstanceEvent(){
-        Logger.info(`Completing process Instance id=${this.service.processInstanceId}`)
+        Logger.info(`Completing process Instance id=${this.service.__metaInfo.processInstanceId}`)
         await PersistenceGateway.closeProcessInstance(
-            this.service.processInstanceId,
+            this.service.__metaInfo.processInstanceId,
             ContainerService.containerId);
     }
 

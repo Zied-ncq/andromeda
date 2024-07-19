@@ -19,7 +19,7 @@ class EndNodeProcessor {
 
         let body = `
         this.endNodeIsReached = true;
-        await this.workflowhelper.closeProcessInstanceEvent();`
+        await this.__metaInfo.workflowhelper.closeProcessInstanceEvent();`
         if(process.hasParentProcess){
             body = `
             this.endNodeIsReached = true;

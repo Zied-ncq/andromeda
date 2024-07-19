@@ -85,6 +85,10 @@ export class EmbeddedContainerService {
 
 
         executor = path.join(deploymentPath, "/bootstrap.js")
+        let mode = 'fork'
+        if(process.env.PROFILE === 'test'){
+            mode = 'spawn'
+        }
         try {
             const embeddedLauncher = new EmbeddedLauncher();
             childProcess = await embeddedLauncher.start(executor, {
@@ -96,7 +100,7 @@ export class EmbeddedContainerService {
                     DB_URI: Config.getInstance().dbURI,
                     wpid: wpid
                 },
-                mode: 'spawn',
+                mode,
                 cwd: deploymentPath,
                 args: args
             });

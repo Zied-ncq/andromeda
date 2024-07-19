@@ -1,0 +1,25 @@
+import {WorkflowHelper} from "./workflow-helper.js";
+
+export class MetaInfoJs {
+
+    service
+
+    constructor(service) {
+        this.service = service;
+        this.workflowhelper = new WorkflowHelper(this.service)
+    }
+
+    serviceContext;
+
+    processInstanceId
+
+    // flowModel is the flow used for subprocess to create a sub process instance
+    flowModel
+
+    parentProcessInstance
+
+
+    workflowhelper
+
+    endNodeIsReached = false
+}

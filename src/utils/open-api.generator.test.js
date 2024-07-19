@@ -144,7 +144,7 @@ op.setServer("http://127.0.0.1:5000/", "localhost1")
                 }
         })
     .addPath('/test','post')
-    .addPathVariableParameter('/test','post', 'processDef', 'string')
+    .addPathVariableParameter('/test','post', 'nwpid', 'string')
 
 
 console.log(op.render())

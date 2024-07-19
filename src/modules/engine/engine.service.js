@@ -110,16 +110,7 @@ export class EngineService {
         }
 
         this.generateOpenApiYaml(containerParsingContext, containerCodegenModel);
-        //
-        // await Promise.all(
-        //     Array.from(containerContext.model.keys()).map(async (processDef) => {
-        //         await this.workflowBuilder.generateWorkflow(
-        //             processDef,
-        //             containerContext.model.get(processDef),
-        //             containerContext,
-        //         );
-        //     }),
-        // );
+
     }
 
     addLivelinessProbe(containerCodegenContext) {

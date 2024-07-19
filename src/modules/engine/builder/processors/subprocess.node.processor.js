@@ -42,9 +42,9 @@ export class SubProcessNodeProcessor {
             const workflowBuilder = new WorkflowBuilder(containerCodegenModel)
             await workflowBuilder.generateWorkflow(sub, containerParsingContext, containerCodegenModel);
 
-            const normalizedProcessDef = ProcessHelper.normalizeProcessDefWithoutVersion(sub.id);
+            const normalizedWpid = ProcessHelper.normalizeWpidWithoutVersion(sub.id);
 
-            workflowCodegenContext.addServiceClassImport(`${ProcessHelper.upperFirstChar(normalizedProcessDef)}ProcessInstanceService`,`../services/${normalizedProcessDef.toLowerCase()}.process-instance.service.js`)
+            workflowCodegenContext.addServiceClassImport(`${ProcessHelper.upperFirstChar(normalizedWpid)}ProcessInstanceService`,`../services/${normalizedWpid.toLowerCase()}.process-instance.service.js`)
         }
         await this.buildResumeAfterSubProcessEnds(workflowCodegenContext, currentNode, nodeContext);
 
@@ -67,7 +67,7 @@ export class SubProcessNodeProcessor {
                 bootstrapMethod.addStatements(
                     `
                   try {
-                        const subProcess = new ${ProcessHelper.upperFirstChar(sub.id)}ProcessInstanceService(this.processInstanceId, flowModel, this)
+                        const subProcess = new ${ProcessHelper.upperFirstChar(sub.id)}ProcessInstanceService(this.__metaInfo.processInstanceId, this.__metaInfo.flowModel, this)
                         await subProcess.fn_${startElement.id}(flowModel);
                   } catch (_bpmnProcessorException) {
                     Logger.error(_bpmnProcessorException)

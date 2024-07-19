@@ -26,13 +26,13 @@ class ContainerService{
     // track the process instance until
     lock(processInstance){
         Logger.info(`Locking process instance(${processInstance})`)
-        this.processInstances[processInstance.processInstanceId]= processInstance
+        this.processInstances[processInstance.__metaInfo.processInstanceId]= processInstance
         // call process instance repository to lock process instance
     }
 
     unlock(processInstance){
         Logger.info(`UnLocking process instance(${processInstance})`)
-        delete this.processInstances[processInstance.processInstanceId]
+        delete this.processInstances[processInstance.__metaInfo.processInstanceId]
         // call process instance repository to unlock process instance
     }
 

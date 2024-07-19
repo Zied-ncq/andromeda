@@ -42,6 +42,7 @@ export class PersistenceModule  {
     registerStreams(){
         const stream = new ProcessInstanceStreamBuilder().build()
         this.registerProjections(stream, stream.eventsRegistry.CREATE_PROCESS_INSTANCE, new ProcessInstanceProjection());
+        this.registerProjections(stream, stream.eventsRegistry.CREATE_PROCESS_VARIABLES, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.CLOSE_PROCESS_INSTANCE, new ProcessInstanceProjection());
     }
 
@@ -60,5 +61,3 @@ export class PersistenceModule  {
     }
 
 }
-
-export default PersistenceModule;

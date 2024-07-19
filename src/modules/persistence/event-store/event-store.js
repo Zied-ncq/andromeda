@@ -33,14 +33,14 @@ export class EventStore {
             Logger.error(`cannot validate event with type ${event.streamId}`, JSON.stringify(validate.errors))
             throw validate.errors
         }
-        EventStore.routeEventToCorrespondingStream(event);
+        await EventStore.routeEventToCorrespondingStream(event);
         // save the event
         await new EventStoreRepository().persistEvent(event)
 
     }
 
     //
-    static routeEventToCorrespondingStream(event) {
+    static async routeEventToCorrespondingStream(event) {
         // choose the stream to route the event into
         if (!(event.streamId in EventStore.streamsRegistry)){
             throw new Error(`cannot find am aggregator for the streamId: ${event.streamId}`);
@@ -58,7 +58,7 @@ export class EventStore {
             EventDataPayloadValidator.validate(event, stream.validators[event.type]);
         }
 
-        stream.dispatch(event);
+        await stream.dispatch(event);
     }
 
     static updateStreamPosition(event, stream) {

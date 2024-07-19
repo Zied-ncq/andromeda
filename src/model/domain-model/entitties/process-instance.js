@@ -29,9 +29,4 @@ export class ProcessInstance {
      */
     wpid
 
-    /**
-     * @property {string} processDef
-     * @public
-     */
-    processDef
 }
