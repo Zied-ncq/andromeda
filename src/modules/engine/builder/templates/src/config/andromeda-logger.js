@@ -1,6 +1,7 @@
 import log4js from  "log4js";
 
 import log4jsConfig from "./log4js.config.js";
+import {ContainerInfo} from "../modules/container/container-info.js";
 
 log4js.addLayout('json', function (config) {
     return function (logEvent) {
@@ -12,6 +13,7 @@ log4js.addLayout('json', function (config) {
         if (process.env.ENV) {
             logEvent.ENV = process.env.ENV;
         }
+        logEvent.containerId = ContainerInfo.containerId;
         if (logEvent.data && logEvent.data.length > 0) {
             logEvent.message = logEvent.data[0];
             delete logEvent.data;

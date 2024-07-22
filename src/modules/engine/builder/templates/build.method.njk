@@ -1,11 +1,11 @@
 async fn_{{nodeContext.id}} (flowModel) {
 
-  if(this.endNodeIsReached ){
+  if(this.__metaInfo.endNodeIsReached ){
     Logger.debug(`Process Instance: ${this.__metaInfo.processInstanceId} is either has reached an end node or it was aborted or failure occurred!`);
     return;
   }
 
-  if(this.parentProcessInstance !== undefined &&  this.parentProcessInstance.__metaInfo.endNodeIsReached){
+  if(this.__metaInfo.parentProcessInstance !== undefined &&  this.__metaInfo.parentProcessInstance.__metaInfo.endNodeIsReached){
     Logger.debug(`Parent Process Instance: ${this.parentProcessInstance.__metaInfo.processInstanceId} has reached an end node`);
     return;
   }

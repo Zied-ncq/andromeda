@@ -40,7 +40,7 @@ export class WorkflowHelper{
             return;
         }else{
             let currentlyUsedFunctions= Array.from(processInstance.currentlyUsedFunctions.values());
-            Logger.trace(`process instance ${JSON.stringify(processInstance.currentlyUsedFunctions)} has been cleaned or not found or deleted`);
+            Logger.trace(`process instance ${this.service.__metaInfo.processInstanceId} has been cleaned or not found or deleted, ${context.nodeId}`);
 
             if(!currentlyUsedFunctions.includes(true)){
                 Logger.trace(`process instance ${this.service.__metaInfo.processInstanceId} is not used anymore ==> Deleting process instance '${this.service.__metaInfo.processInstanceId}' reference from registry `);
