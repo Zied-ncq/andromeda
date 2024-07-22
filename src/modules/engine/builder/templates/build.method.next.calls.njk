@@ -20,10 +20,11 @@ if(flows.size > 0){
         let nextFlowModel = flows.get('{{ flow.id }}');
         if(nextFlowModel.executable){
             let $args = {}
+            this.currentlyUsedFunctions.set(nextFlowModel.id,true)
             {{ flow.targetNodeMethodSignature }};
         }
     } catch (error) {
         Logger.error(error);
-        await this.__metaInfo.workflowHelper.failProcessInstance('{{ flow.id }}', __localMethodContext);
+        await this.__metaInfo.workflowHelper.failProcessInstance('{{ flow.id }}');
     }
 {% endfor %}

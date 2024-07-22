@@ -48,7 +48,11 @@ export class EmbeddedLauncher {
         if (options.mode === 'spawn') {
             let executorArgs = [executor, ...args]
             if(process.env.PROFILE === 'test'){
-                executorArgs = ['--inspect', executor, ...args]
+                executorArgs = [
+                    // '--inspect',
+                    executor
+                    , ...args
+                ]
             }
             this.childProcess = spawn('node', executorArgs, executorOptions);
         } else {

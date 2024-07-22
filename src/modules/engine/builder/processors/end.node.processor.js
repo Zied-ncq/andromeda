@@ -23,7 +23,7 @@ class EndNodeProcessor {
         if(process.hasParentProcess){
             body = `
             this.endNodeIsReached = true;
-            await this.parentProcessInstance.fn_resume_sub_process_${process.id}(this.flowModel);
+            await this.__metaInfo.parentProcessInstance.fn_resume_sub_process_${process.id}(this.flowModel);
             `
         }
 

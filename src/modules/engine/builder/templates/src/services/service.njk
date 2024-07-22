@@ -15,9 +15,23 @@ class {{ServiceClassName}} {
 
     variables = new {{cnwpid}}ProcessInstanceContext(this);
 
-    bootstrap(variables){
+    currentlyUsedFunctions  = new Map();
+
+    async bootstrap(variables){
+
+        Object.keys(variables).forEach(v => {
+            this.variables.__metaVariables.forEach(metaVar => {
+                if (v === metaVar.name) {
+                    metaVar.setValue(variables[v]);
+                }
+            });
+        });
+
     }
 
+    /**
+     *  @param  processInstanceId {string | undefined}, if the processInstanceId === null => new process instance
+     */
     constructor(processInstanceId, flowModel, parentProcessInstance)
     {
         if (processInstanceId !== null && processInstanceId !== undefined ) {
@@ -37,13 +51,16 @@ class {{ServiceClassName}} {
 
         if (parentProcessInstance !== null && parentProcessInstance !== undefined ) {
             this.__metaInfo.parentProcessInstance = parentProcessInstance
+        }else{
+            Logger.debug(`Registering Process instance with id= ${this.__metaInfo.processInstanceId} in the current container ${ContainerService.containerId}`)
+            ContainerService.processInstances.set(this.__metaInfo.processInstanceId, this);
         }
 
     }
 
     static async createInstance(processInstanceId, flowModel)
     {
-
+        {# SubProcess we dont need to persist anything #}
         {% if process.hasParentProcess === true %}
             return new {{ServiceClassName}}(processInstanceId, flowModel)
         {% else %}
@@ -55,7 +72,6 @@ class {{ServiceClassName}} {
             instance.__metaInfo.processInstanceId);
         return instance;
         {% endif %}
-
 
     }
 

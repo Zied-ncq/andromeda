@@ -17,16 +17,16 @@ export class Log4jsConfig{
       layout: { type: 'colored' },
     };
 
-    this._log4jsConfig.appenders['file'] = {
-      type: 'file',
-      filename: 'logs/app.log',
-      maxLogSize: 104857600,
-      numBackups: 3,
-    };
+    // this._log4jsConfig.appenders['file'] = {
+    //   type: 'file',
+    //   filename: 'logs/app.log',
+    //   maxLogSize: 104857600,
+    //   numBackups: 3,
+    // };
 
 
     this._log4jsConfig.categories.default.appenders.push('console');
-    this._log4jsConfig.categories.default.appenders.push('file');
+    // this._log4jsConfig.categories.default.appenders.push('file');
 
   }
 

@@ -47,7 +47,7 @@ describe('Engine tests', ()=>{
 
 
         const port = 10002
-        let wpid = "scenario_script";
+        let wpid = "basic_scenario";
 
         function getBpmnTestFile(fileName) {
             let fileContents = [];
@@ -68,7 +68,7 @@ describe('Engine tests', ()=>{
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
-            await new ContainerClient(port).startProcess("scenario_script", version, port, {})
+            await new ContainerClient(port).startProcess("basic_scenario", version, port, {})
 
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
@@ -107,10 +107,11 @@ describe('Engine tests', ()=>{
 
             const containerClient = new ContainerClient(port);
             const res = await containerClient.startProcess("subProcess", version, port, {})
+            const processInstancesId = res.id
+            await ContainerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId, port)
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
 
-            const processInstancesId = res.id
             const repo = new ProcessInstanceRepository();
             let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
             expect(processInstanceEntity).toBeDefined()
@@ -156,10 +157,12 @@ describe('Engine tests', ()=>{
 
             const containerClient = new ContainerClient(port);
             const res = await containerClient.startProcess("subSubProcess", version, port, {})
-            await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
-
 
             const processInstancesId = res.id
+            await ContainerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId, port)
+
+            await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
+
             const repo = new ProcessInstanceRepository();
             let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
             expect(processInstanceEntity).toBeDefined()
@@ -209,10 +212,13 @@ describe('Engine tests', ()=>{
                     d : "string"
                 }
             })
+            const processInstancesId = res.id
+            await ContainerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId, port)
+
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
-            await sleep(1000)
-            const processInstancesId = res.id
+
+
             const repo = new ProcessInstanceRepository();
             let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
             expect(processInstanceEntity).not.toBeNull()

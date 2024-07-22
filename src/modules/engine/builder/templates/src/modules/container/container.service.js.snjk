@@ -1,12 +1,13 @@
 import {v4} from "uuid";
 import  {AndromedaLogger} from "../../config/andromeda-logger.js";
+import {ContainerInfo} from "./container-info.js";
 const Logger = AndromedaLogger;
 
 let instance;
 class ContainerService{
 
-    static containerId = crypto.randomUUID();
-    processInstances= {}
+    static containerId = ContainerInfo.containerId;
+    static processInstances= new Map()
 
     constructor() {
     }
@@ -23,19 +24,41 @@ class ContainerService{
         Logger.info(`Init Container module`)
     }
 
-    // track the process instance until
-    lock(processInstance){
-        Logger.info(`Locking process instance(${processInstance})`)
-        this.processInstances[processInstance.__metaInfo.processInstanceId]= processInstance
-        // call process instance repository to lock process instance
-    }
+    // // track the process instance until
+    // lock(processInstance){
+    //     Logger.info(`Locking process instance(${processInstance})`)
+    //     this.processInstances[processInstance.__metaInfo.processInstanceId]= processInstance
+    //     // call process instance repository to lock process instance
+    // }
+    //
+    // unlock(processInstance){
+    //     Logger.info(`UnLocking process instance(${processInstance})`)
+    //     delete this.processInstances[processInstance.__metaInfo.processInstanceId]
+    //     // call process instance repository to unlock process instance
+    // }
 
-    unlock(processInstance){
-        Logger.info(`UnLocking process instance(${processInstance})`)
-        delete this.processInstances[processInstance.__metaInfo.processInstanceId]
-        // call process instance repository to unlock process instance
-    }
 
+    static processInstanceStatus(processInstanceId) {
+        let processInstance = ContainerService.processInstances.get(processInstanceId);
+        if(!processInstance){
+            Logger.trace(` process instance with id=${processInstanceId}, was not found or deleted`);
+            // throw new Error(`Process instance id ${processInstanceId} was not found or deleted`);
+            return {
+                "status": "deleted"
+            }
+        }else{
+            if(processInstance.currentlyUsedFunctions.size === 0){
+                return { status: 'initializing'};
+            }
+            let currentlyUsedFunctions= Array.from(processInstance.currentlyUsedFunctions.values());
+            if(!currentlyUsedFunctions.includes(true)){
+                Logger.trace(`process instance ${processInstanceId} is idle, ${JSON.stringify(processInstance.currentlyUsedFunctions)}`);
+                return { status: 'idle'};
+            }else{
+                return { status: 'running', details: JSON.stringify(processInstance.currentlyUsedFunctions.values()) };
+            }
+        }
+    }
 }
 
 

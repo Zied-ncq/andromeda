@@ -8,17 +8,17 @@
     <bpmn:property id="content" itemSubjectRef="_contentItem" name="content" />
     <bpmn:property id="ddd" itemSubjectRef="_dddItem" name="ddd" />
     <bpmn:startEvent id="ACT_START_1">
-      <bpmn:outgoing>Flow_1t45tk4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_1t45tk4" sourceRef="ACT_START_1" targetRef="ACT_SCRIPT_1" />
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="ACT_START_1" targetRef="ACT_SCRIPT_1" />
     <bpmn:scriptTask id="ACT_SCRIPT_1" name="scripts">
-      <bpmn:incoming>Flow_1t45tk4</bpmn:incoming>
-      <bpmn:outgoing>Flow_117sm5b</bpmn:outgoing>
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
       <bpmn:script>console.log(`****************************** BASIC SCRIPT ${this.variables.age}***********************`);</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="Flow_117sm5b" sourceRef="ACT_SCRIPT_1" targetRef="END_NODE" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="ACT_SCRIPT_1" targetRef="END_NODE" />
     <bpmn:endEvent id="END_NODE">
-      <bpmn:incoming>Flow_117sm5b</bpmn:incoming>
+      <bpmn:incoming>Flow_2</bpmn:incoming>
     </bpmn:endEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -32,11 +32,11 @@
       <bpmndi:BPMNShape id="Event_137aceb_di" bpmnElement="END_NODE">
         <dc:Bounds x="932" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_1t45tk4_di" bpmnElement="Flow_1t45tk4">
+      <bpmndi:BPMNEdge id="Flow_1t45tk4_di" bpmnElement="Flow_1">
         <di:waypoint x="188" y="120" />
         <di:waypoint x="490" y="120" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_117sm5b_di" bpmnElement="Flow_117sm5b">
+      <bpmndi:BPMNEdge id="Flow_117sm5b_di" bpmnElement="Flow_2">
         <di:waypoint x="590" y="120" />
         <di:waypoint x="932" y="120" />
       </bpmndi:BPMNEdge>

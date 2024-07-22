@@ -25,12 +25,30 @@ export class WorkflowHelper{
     /**
      *
      * @param flowId {string}
-     * @param localMethodContext {{nodeName: string, incomingFlowId: *, nodeSession: `${string}-${string}-${string}-${string}-${string}`, type: string, nodeId: string}}
      * @returns {Promise<void>}
      */
-    async failProcessInstance(flowId, localMethodContext){
+    async failProcessInstance(flowId){
         await PersistenceGateway.failProcessInstance(flowId,  ContainerService.containerId)
 
+    }
+
+    cleanProcessInstanceIfItsNotRunning(context) {
+        Logger.debug(`trying to clean process instance in method ${context.nodeId}, from the container ${ContainerService.containerId}`);
+        let processInstance = ContainerService.processInstances.get(this.service.__metaInfo.processInstanceId);
+        if(!processInstance){
+            Logger.trace(` process instance with id=${this.service.__metaInfo.processInstanceId}, was not found or deleted`);
+            return;
+        }else{
+            let currentlyUsedFunctions= Array.from(processInstance.currentlyUsedFunctions.values());
+            Logger.trace(`process instance ${JSON.stringify(processInstance.currentlyUsedFunctions)} has been cleaned or not found or deleted`);
+
+            if(!currentlyUsedFunctions.includes(true)){
+                Logger.trace(`process instance ${this.service.__metaInfo.processInstanceId} is not used anymore ==> Deleting process instance '${this.service.__metaInfo.processInstanceId}' reference from registry `);
+                ContainerService.processInstances.delete(this.service.__metaInfo.processInstanceId);
+            }else{
+                Logger.trace(`cannot free current process instance ${this.service.__metaInfo.processInstanceId}`);
+            }
+        }
     }
 
     //

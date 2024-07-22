@@ -47,5 +47,14 @@ async fn_{{nodeContext.id}} (flowModel) {
   }
   {% endif %}
 
+    if(__localMethodContext.incomingFlowId !== undefined){
+        {# in the case of start node, incomingFlowId will be  null #}
+        this.currentlyUsedFunctions.set(__localMethodContext.incomingFlowId, false);
+    }
+    if(this.__metaInfo.parentProcessInstance === undefined || this.__metaInfo.parentProcessInstance === null){
+        this.__metaInfo.workflowhelper.cleanProcessInstanceIfItsNotRunning(__localMethodContext);
+    }
+
+
 }
 

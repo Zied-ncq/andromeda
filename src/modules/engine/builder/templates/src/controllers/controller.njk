@@ -1,4 +1,5 @@
 import  {AndromedaLogger} from "../config/andromeda-logger.js";
+import ContainerService from "../modules/container/container.service.js";
 const Logger = AndromedaLogger;
 
 class {{ ControllerClassName }} {
@@ -27,7 +28,7 @@ class {{ ControllerClassName }} {
                 res.send({id: processInstance.__metaInfo.processInstanceId})
             }
             res.status(404)
-            res.send("cannot find wpid")
+            res.send("wpid, wokflow process id is not correct")
 
         } catch (err) {
             Logger.error(err)
@@ -40,6 +41,38 @@ class {{ ControllerClassName }} {
             throw returnError;
         }
     }
+
+    static processInstanceStaus = async (req, res) => {
+
+        try {
+            let variables = {};
+            if(req.body && req.body.variables){
+                variables = JSON.parse(req.body.variables);
+            }
+
+            if(!req.params.processInstanceId){
+                throw new Error(`Process identifier 'processInstanceId' is required`)
+            }
+            const processInstanceId = req.params.processInstanceId;
+
+            const status = ContainerService.processInstanceStatus(processInstanceId)
+            if(status !== undefined){
+                return status
+            }
+
+        } catch (err) {
+            Logger.error(err)
+            const returnError = new Error();
+            returnError.statusCode = 500;
+            returnError.message = err;
+            returnError.stack=err;
+            res.status(500)
+            res.send(returnError)
+            throw returnError;
+        }
+    }
+
+
 }
 
 export default {{ ControllerClassName }};

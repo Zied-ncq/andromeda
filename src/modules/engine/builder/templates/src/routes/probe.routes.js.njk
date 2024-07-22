@@ -22,6 +22,14 @@ function route (fastify, opts, next) {
     )
     {% endfor %}
 
+    fastify.route(
+        {
+            method: 'GET',
+            url: '/process-instance/:processInstanceId/status',
+            handler: {{cnwpid}}Controller.processInstanceStaus
+        }
+    )
+
     next();
 }
 

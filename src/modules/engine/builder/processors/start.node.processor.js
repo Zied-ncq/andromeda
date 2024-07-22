@@ -17,14 +17,13 @@ class StartNodeProcessor {
         const bootstrapMethod =workflowCodegenContext.serviceClass.getMethodOrThrow('bootstrap');
         bootstrapMethod.addStatements(
             `
-            Object.keys(variables).forEach(v => {
-                this.variables.__metaVariables.forEach(metaVar => {
-                    if (v === metaVar.name) {
-                        metaVar.setValue(variables[v]);
-                    }
-                });
-            });
-            this.fn_${currentNode.id}()
+                try {
+                    // async call
+                    this.fn_${currentNode.id}()
+                } catch (error) {
+                    Logger.error(error);
+                    await this.__metaInfo.workflowHelper.failProcessInstance('_start_${currentNode.id}');
+                }
             `,
         );
         return nodeContext;

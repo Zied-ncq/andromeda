@@ -368,7 +368,6 @@ class WorkflowBuilder {
 
         this.codegenContext.containerCodegenModel.openApiCodegen.addPath("/start/process/{wpid}/version/{version}" , "post")
         this.codegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter("/start/process/{wpid}/version/{version}" , "post", 'wpid', 'string')
-
         this.codegenContext.containerCodegenModel.openApiCodegen.addResponse("/start" , "post" , {
             "responses": {
                 "200": {
@@ -392,6 +391,32 @@ class WorkflowBuilder {
             }
         })
         this.codegenContext.containerCodegenModel.routes.push({verb: "POST", path: "/start/process/:wpid/version/:version" , method: "start"})
+
+
+        this.codegenContext.containerCodegenModel.openApiCodegen.addPath("/process-instance/{processInstanceId}/status" , "get")
+        this.codegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter("/process-instance/{processInstanceId}/status" , "get", 'processInstanceId', 'string')
+        this.codegenContext.containerCodegenModel.openApiCodegen.addResponse("/process-instance/{processInstanceId}/status" , "get" , {
+            "responses": {
+                "200": {
+                    "description": "Process instance id"
+                },
+                // "requestBody": {
+                //     "required": true,
+                //     "content": {
+                //         "multipart/form-data": {
+                //             "schema": {
+                //                 "type": "object",
+                //                 "properties": {
+                //                     "wpid": {
+                //                         "type": "string"
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+            }
+        })
 
         const deploymentPath = Utils.getDeploymentPath(containerParsingContext)
         let serviceFilePath = `${deploymentPath}/src/controllers/${controllerName}.js`

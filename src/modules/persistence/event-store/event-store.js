@@ -26,7 +26,7 @@ export class EventStore {
     }
 
     static async apply(event) {
-        Logger.debug(event)
+        // Logger.debug(event)
         const validate = EventStore.ajv.compile(EventStore.eventSchema)
         const valid = validate(event)
         if (!valid){
