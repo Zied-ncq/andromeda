@@ -13,7 +13,7 @@ let flows = new Map();
     flows.set( '{{ flow.id }}' , {{ flow.id }});
 {% endfor %}
 if(flows.size > 0){
- // await this.bulkCreateSequenceFlow(Array.from(flows.values()));
+  await this.__metaInfo.workflowHelper.bulkCreateSequenceFlows(Array.from(flows.values()));
 }
 {% for flow in outgoingSequenceFlows %}
     try {

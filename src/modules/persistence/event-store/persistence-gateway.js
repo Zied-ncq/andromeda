@@ -80,4 +80,27 @@ export class PersistenceGateway {
         })
 
     };
+
+    /**
+     *
+     * @param processInstancesId {string}
+     * @param sequenceFlows {array}
+     * @returns {Promise<void>}
+     */
+    static async bulkCreateSequenceFlows(processInstancesId, sequenceFlows) {
+        await EventStore.apply({
+            id: crypto.randomUUID(),
+            streamId: StreamIds.PROCESS_INSTANCE,
+            type: EventTypes.BULK_CREATE_SEQUENCE_FLOWS,
+            streamPosition: 0,
+            data: {
+                id: processInstancesId,
+                sequenceFlows,
+            },
+            timestamp: new Date().toString()
+        });
+
+    };
+
+
 }

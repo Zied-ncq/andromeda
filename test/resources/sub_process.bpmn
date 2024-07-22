@@ -8,7 +8,6 @@
     <bpmn:scriptTask id="ACT_SCRIPT_1" name="scripts">
       <bpmn:incoming>Flow_1t45tk4</bpmn:incoming>
       <bpmn:outgoing>Flow_117sm5b</bpmn:outgoing>
-      <bpmn:outgoing>Flow_08t5s43</bpmn:outgoing>
       <bpmn:script>console.log("****************************** BASIC SCRIPT ***********************");</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:subProcess id="subi">
@@ -33,10 +32,6 @@
       <bpmn:incoming>Flow_0vagq50</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0vagq50" sourceRef="Activity_039xnsk" targetRef="Event_0qwz1jv" />
-    <bpmn:endEvent id="ACT_END">
-      <bpmn:incoming>Flow_08t5s43</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_08t5s43" sourceRef="ACT_SCRIPT_1" targetRef="ACT_END" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="subProcess">
@@ -65,9 +60,6 @@
       <bpmndi:BPMNShape id="Activity_0e1bxah_di" bpmnElement="Activity_039xnsk">
         <dc:Bounds x="750" y="280" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1o78nmk_di" bpmnElement="ACT_END">
-        <dc:Bounds x="732" y="102" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1t45tk4_di" bpmnElement="Flow_1t45tk4">
         <di:waypoint x="188" y="120" />
         <di:waypoint x="380" y="120" />
@@ -79,10 +71,6 @@
       <bpmndi:BPMNEdge id="Flow_0vat83f_di" bpmnElement="Flow_0vat83f">
         <di:waypoint x="631" y="320" />
         <di:waypoint x="750" y="320" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_08t5s43_di" bpmnElement="Flow_08t5s43">
-        <di:waypoint x="480" y="120" />
-        <di:waypoint x="732" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0vagq50_di" bpmnElement="Flow_0vagq50">
         <di:waypoint x="850" y="320" />

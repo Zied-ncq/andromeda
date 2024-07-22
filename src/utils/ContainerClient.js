@@ -73,7 +73,7 @@ export class ContainerClient {
                 return true;
             } else {
                 Logger.trace(`Waiting for Process instance ${processInstanceId} to complete processing`)
-                await Utils.sleep(500)
+                await Utils.sleep(300)
                 return false;
             }
         };

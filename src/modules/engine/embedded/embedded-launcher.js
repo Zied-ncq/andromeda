@@ -49,7 +49,7 @@ export class EmbeddedLauncher {
             let executorArgs = [executor, ...args]
             if(process.env.PROFILE === 'test'){
                 executorArgs = [
-                    // '--inspect',
+                    '--inspect',
                     executor
                     , ...args
                 ]

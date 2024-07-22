@@ -44,6 +44,7 @@ export class PersistenceModule  {
         this.registerProjections(stream, stream.eventsRegistry.CREATE_PROCESS_INSTANCE, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.CREATE_PROCESS_VARIABLES, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.CLOSE_PROCESS_INSTANCE, new ProcessInstanceProjection());
+        this.registerProjections(stream, stream.eventsRegistry.BULK_CREATE_SEQUENCE_FLOWS, new ProcessInstanceProjection());
     }
 
     /**

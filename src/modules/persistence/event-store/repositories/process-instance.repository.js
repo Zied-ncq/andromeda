@@ -72,7 +72,6 @@ export class ProcessInstanceRepository {
                 id: instance._id,
                 lock: instance.lock,
                 wpid: instance.wpid,
-                wpid:  instance.wpid,
                 status: instance.status,
                 version: instance.version
             }

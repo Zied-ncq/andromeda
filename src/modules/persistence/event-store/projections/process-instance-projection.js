@@ -2,6 +2,7 @@ import AndromedaLogger from "../../../../config/andromeda-logger.js";
 import {ProcessInstanceRepository} from "../repositories/process-instance.repository.js";
 import {EventTypes} from "../event-types.js";
 import {VariableRepository} from "../repositories/variable.repository.js";
+import {SequenceFlowRepository} from "../repositories/sequence-flow.repository.js";
 
 const Logger = AndromedaLogger;
 export class ProcessInstanceProjection {
@@ -12,6 +13,7 @@ export class ProcessInstanceProjection {
      */
     processInstanceRepo = new ProcessInstanceRepository();
     variableRepository = new VariableRepository();
+    sequenceFlowRepository = new SequenceFlowRepository();
 
 
 
@@ -36,6 +38,10 @@ export class ProcessInstanceProjection {
             await this.variableRepository.bulkUpsertVariables(event.data.variables, event.data.processInstanceId, event.data.wpid);
         }
 
+        if (event.type === EventTypes.BULK_CREATE_SEQUENCE_FLOWS) {
+            Logger.trace("Bulk Create sequence flows")
+            await this.sequenceFlowRepository.bulkUpsertSequenceFlows(event.data.sequenceFlows);
+        }
         // console.dir(event)
     }
 }

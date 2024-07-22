@@ -47,6 +47,16 @@ export const failProcessInstanceDataSchema = {
     additionalProperties: false,
 }
 
+export const bulkCreateSequenceFlowsDataSchema = {
+    type: "object",
+    properties: {
+        id: {type: "string"},
+        sequenceFlows: {type: "array"},
+    },
+    required: ["id", "sequenceFlows"],
+    additionalProperties: false,
+}
+
 
 export class ProcessInstanceStreamBuilder {
 
@@ -60,13 +70,15 @@ export class ProcessInstanceStreamBuilder {
             CREATE_PROCESS_INSTANCE : "CREATE_PROCESS_INSTANCE",
             CREATE_PROCESS_VARIABLES: "CREATE_PROCESS_VARIABLES",
             FAIL_PROCESS_INSTANCE   : "FAIL_PROCESS_INSTANCE",
-            CLOSE_PROCESS_INSTANCE  : "CLOSE_PROCESS_INSTANCE"
+            CLOSE_PROCESS_INSTANCE  : "CLOSE_PROCESS_INSTANCE",
+            BULK_CREATE_SEQUENCE_FLOWS  : "BULK_CREATE_SEQUENCE_FLOWS"
         }
         stream.validators ={
             [stream.eventsRegistry.CREATE_PROCESS_INSTANCE] : processInstanceDataSchema,
             [stream.eventsRegistry.CREATE_PROCESS_VARIABLES] : createProcessVariablesDataSchema,
             [stream.eventsRegistry.CLOSE_PROCESS_INSTANCE] : closeProcessInstanceDataSchema,
             [stream.eventsRegistry.FAIL_PROCESS_INSTANCE] : failProcessInstanceDataSchema,
+            [stream.eventsRegistry.BULK_CREATE_SEQUENCE_FLOWS] : bulkCreateSequenceFlowsDataSchema,
         }
 
         EventStore.registerStream(stream.streamId, stream);

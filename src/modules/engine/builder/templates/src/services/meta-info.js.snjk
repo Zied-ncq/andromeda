@@ -6,7 +6,7 @@ export class MetaInfoJs {
 
     constructor(service) {
         this.service = service;
-        this.workflowhelper = new WorkflowHelper(this.service)
+        this.workflowHelper = new WorkflowHelper(this.service)
     }
 
     serviceContext;
@@ -19,7 +19,7 @@ export class MetaInfoJs {
     parentProcessInstance
 
 
-    workflowhelper
+    workflowHelper
 
     endNodeIsReached = false
 }

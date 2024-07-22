@@ -22,7 +22,7 @@ import { expect, test , beforeAll, afterAll, describe } from 'vitest'
 let version = "1.0.0";
 const persistenceModule = new PersistenceModule()
 
-describe('Engine tests', ()=>{
+describe.concurrent('Engine tests', ()=>{
 
 
     beforeAll(async () => {
@@ -263,11 +263,14 @@ describe('Engine tests', ()=>{
 
             const containerClient = new ContainerClient(port);
             const res = await containerClient.startProcess("catchEvent", version, port, {})
+
+            const processInstancesId = res.id
+
+            await ContainerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId, port)
+
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
 
-            await sleep(500)
-            const processInstancesId = res.id
             const repo = new ProcessInstanceRepository();
             let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
             expect(processInstanceEntity).toBeDefined()

@@ -51,6 +51,15 @@ export class WorkflowHelper{
         }
     }
 
+
+    async bulkCreateSequenceFlows(sequenceFlows) {
+        Logger.debug(
+            `Bulk create sequence flows ${JSON.stringify(sequenceFlows)}`,
+        );
+
+        await PersistenceGateway.bulkCreateSequenceFlows(this.service.__metaInfo.processInstanceId, sequenceFlows);
+    }
+
     //
     //
     // async abortProcessInstanceEvent(){
