@@ -1,0 +1,44 @@
+{
+  "type": "IntermediateCatchEvent",
+  "nodes": [
+    {
+      "stopAfterFirstCallToTreatWebhooksLikeNodes": true,
+      "body": {
+        "mode": "static",
+        "content": ""
+      },
+      "flow": {
+        "mode": "simple",
+        "status" : "ProcessInstanceStatus.Active",
+        "suffix": ""
+      }
+    },
+    {
+      "nameSuffix": "_resume",
+        "webController": {
+        "enabled": true,
+        "config": {
+          "path": "/process/:process_id/signal/:event_id",
+          "verb": "post",
+          "secure": true,
+          "secure_roles": ["user"]
+        }
+      },
+      "body": {
+        "mode": "eval",
+        "content": "currentNode.content.script"
+      },
+      "flow": {
+        "mode": "simple",
+        "status" : 1,
+        "suffix": "_resume"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "name": "is-odd",
+      "version": "^1.0.0"
+    }
+  ]
+}

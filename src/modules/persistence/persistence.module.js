@@ -2,7 +2,7 @@
 import {Config} from "../../config/config.js";
 import {AndromedaLogger} from "../../config/andromeda-logger.js";
  import {ProcessInstanceProjection} from "./event-store/projections/process-instance-projection.js";
- import {Stream} from "./event-store/streams/stream.js";
+ import {Stream} from "./event-store/internal/stream.js";
  import {ProcessInstanceStreamBuilder} from "./event-store/streams/process-instance/process-instance.stream-builder.js";
 
 const Logger = AndromedaLogger;
@@ -45,6 +45,8 @@ export class PersistenceModule  {
         this.registerProjections(stream, stream.eventsRegistry.CREATE_PROCESS_VARIABLES, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.CLOSE_PROCESS_INSTANCE, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.BULK_CREATE_SEQUENCE_FLOWS, new ProcessInstanceProjection());
+        this.registerProjections(stream, stream.eventsRegistry.RELEASE_PROCESS_INSTANCE_LOCK, new ProcessInstanceProjection());
+        this.registerProjections(stream, stream.eventsRegistry.CREATE_CATCH_EVENT_TASK, new ProcessInstanceProjection());
     }
 
     /**

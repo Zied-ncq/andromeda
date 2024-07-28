@@ -1,4 +1,4 @@
-import {EventStore} from "../event-store.js";
+import {EventStore} from "./event-store.js";
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 const Logger = AndromedaLogger;
 

@@ -1,5 +1,5 @@
 import {StreamIds} from "../stream-ids.js";
-import {EventStore} from "../../event-store.js";
+import {EventStore} from "../../internal/event-store.js";
 
 
 export const processInstanceDataSchema = {

@@ -22,14 +22,19 @@ class WorkflowBuilder {
 
     codegenContext
 
-    constructor(containerCodegenModel) {
+    nodeDefinitions
+
+    bpmnProcessor
+
+    constructor(containerCodegenModel, nodeDefinitions) {
         if(containerCodegenModel === undefined){
             throw new Error(`containerCodegenModel cannot be null`)
         }
         this.codegenContext = new CodegenContext(containerCodegenModel);
+        this.nodeDefinitions = nodeDefinitions;
+        this.bpmnProcessor = new BpmnProcessor(this.nodeDefinitions || {});
     }
 
-    bpmnProcessor = new BpmnProcessor();
 
 
     normalizeWpidWithoutVersion(wpid) {
@@ -446,6 +451,7 @@ class WorkflowBuilder {
             renderedTemplate,
             {overwrite: true},
         );
+        this.codegenContext.controllerClass  = this.codegenContext.controllerClassFile.getClassOrThrow(controllerName)
 
     }
 

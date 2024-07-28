@@ -1,4 +1,4 @@
-import {EventStore} from "./event-store.js";
+import {EventStore} from "./internal/event-store.js";
 import PersistenceModule from "../persistence.module.js";
 import mongoose from "mongoose";
 import {StreamIds} from "./streams/stream-ids.js";

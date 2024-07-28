@@ -30,6 +30,8 @@ export class Stream {
 
         if (event.type in this.projections){
             await this.projections[event.type].process(event)
+        }else {
+            Logger.warn(`event type:${event.type} not registered in projections `)
         }
 
     }

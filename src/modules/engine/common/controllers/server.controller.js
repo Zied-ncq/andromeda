@@ -3,6 +3,9 @@
 import EngineService from "../../engine.service.js";
 import Utils from "../../../../utils/utils.js";
 import * as fs from "fs";
+import path from "path";
+import AndromedaLogger from "../../../../config/andromeda-logger.js";
+const Logger = AndromedaLogger;
 
 class ServerController {
 
@@ -16,6 +19,12 @@ class ServerController {
 
         if(!req.body.version){
             throw new Error("workflow process version must be specified");
+        }
+
+        let nodeDefinitions = []
+
+        if(req.body.nodeDefinitions){
+            nodeDefinitions = req.body.nodeDefinitions;
         }
         //
         let includeGalaxyModule;
@@ -36,6 +45,7 @@ class ServerController {
                 includeGalaxyModule: true,
                 includePersistenceModule: true,
                 includeWebModule: true,
+                nodeDefinitions
             });
             return {};
         } catch (err) {

@@ -1,4 +1,4 @@
-async fn_{{nodeContext.id}} (flowModel) {
+async fn_{{nodeContext.name}} (flowModel) {
 
   if(this.__metaInfo.endNodeIsReached ){
     Logger.debug(`Process Instance: ${this.__metaInfo.processInstanceId} is either has reached an end node or it was aborted or failure occurred!`);
@@ -17,44 +17,21 @@ async fn_{{nodeContext.id}} (flowModel) {
     type: '{{ nodeContext.type }}',
     incomingFlowId: flowModel?.id
   }
-
   Logger.debug(`visiting node {{ nodeContext.id }}, session: ${__localMethodContext.nodeSession}`);
-    {% if nodeContext.type !== 'SubProcess'%}
+
+{% if nodeContext.stopAfterFirstCallToTreatWebhooksLikeNodes !== true and nodeContext.type !== 'SubProcess'%}
   try {
-{% if nodeContext.args and nodeContext.args.executeBody !== null  %}
-    if(flowModel.executeBody) {
-{% endif %}
 
-      {{ nodeContext.body }}
-      await this.variables.saveContext();
-{% if nodeContext.args and nodeContext.args.resumeExecution !== null  %}
-      if(flowModel.resumeExecution){
-{% endif %}
+    {{ nodeContext.body }}
+    {% include "build.method.next.calls.njk" %}
+    await this.variables.saveContext();
 
-          {% include "build.method.next.calls.njk" %}
-{% if nodeContext.args and nodeContext.args.resumeExecution !== null  %}
-      }
-{% endif %}
-{% if nodeContext.args and nodeContext.args.executeBody !== null %}
-    }else{
-      {{ nodeContext.alternateBody }}
-    }
-{% endif %}
   } catch (_bpmnProcessorException) {
     Logger.error(_bpmnProcessorException)
     const stack = _bpmnProcessorException.stack;
     throw new Error(JSON.stringify({ stacktrace: stack, context: __localMethodContext }));
   }
   {% endif %}
-
-    if(__localMethodContext.incomingFlowId !== undefined){
-        {# in the case of start node, incomingFlowId will be  null #}
-        this.currentlyUsedFunctions.set(__localMethodContext.incomingFlowId, false);
-    }
-    if(this.__metaInfo.parentProcessInstance === undefined || this.__metaInfo.parentProcessInstance === null){
-        this.__metaInfo.workflowHelper.cleanProcessInstanceIfItsNotRunning(__localMethodContext);
-    }
-
 
 }
 

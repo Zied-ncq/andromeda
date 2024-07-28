@@ -21,7 +21,20 @@ if(flows.size > 0){
         if(nextFlowModel.executable){
             let $args = {}
             this.currentlyUsedFunctions.set(nextFlowModel.id,true)
-            {{ flow.targetNodeMethodSignature }};
+
+            this.fn_{{flow.to.id}}(nextFlowModel)
+                .then(e=> {})
+                .catch(async (error)=>{
+                    Logger.error(error);
+                    await this.__metaInfo.workflowHelper.failProcessInstance('{{ flow.id }}');
+                })
+                .finally(async ()=>{
+                    this.currentlyUsedFunctions.set(nextFlowModel.id,false)
+                    if(this.__metaInfo.parentProcessInstance === undefined || this.__metaInfo.parentProcessInstance === null){
+                        await this.__metaInfo.workflowHelper.cleanProcessInstanceIfItsNotRunning(__localMethodContext);
+                    }
+                });
+
         }
     } catch (error) {
         Logger.error(error);

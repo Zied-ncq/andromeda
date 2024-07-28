@@ -1,6 +1,6 @@
-import {Stream} from "../stream.js";
+import {Stream} from "../../internal/stream.js";
 import {StreamIds} from "../stream-ids.js";
-import {EventStore} from "../../event-store.js";
+import {EventStore} from "../../internal/event-store.js";
 
 export const processInstanceDataSchema = {
     type: "object",
@@ -36,6 +36,14 @@ export const closeProcessInstanceDataSchema = {
     required: ["id", "containerId"],
     additionalProperties: false,
 }
+export const releaseProcessInstanceLockDataSchema = {
+    type: "object",
+    properties: {
+        processInstanceId: {type: "string"},
+    },
+    required: ["processInstanceId"],
+    additionalProperties: false,
+}
 
 export const failProcessInstanceDataSchema = {
     type: "object",
@@ -57,6 +65,16 @@ export const bulkCreateSequenceFlowsDataSchema = {
     additionalProperties: false,
 }
 
+export const createCatchEventTaskDataSchema = {
+    type: "object",
+    properties: {
+        processInstanceId: {type: "string"},
+        signalId: {type: "string"},
+    },
+    required: ["processInstanceId", "signalId"],
+    additionalProperties: false,
+}
+
 
 export class ProcessInstanceStreamBuilder {
 
@@ -71,7 +89,8 @@ export class ProcessInstanceStreamBuilder {
             CREATE_PROCESS_VARIABLES: "CREATE_PROCESS_VARIABLES",
             FAIL_PROCESS_INSTANCE   : "FAIL_PROCESS_INSTANCE",
             CLOSE_PROCESS_INSTANCE  : "CLOSE_PROCESS_INSTANCE",
-            BULK_CREATE_SEQUENCE_FLOWS  : "BULK_CREATE_SEQUENCE_FLOWS"
+            BULK_CREATE_SEQUENCE_FLOWS  : "BULK_CREATE_SEQUENCE_FLOWS",
+            RELEASE_PROCESS_INSTANCE_LOCK  : "RELEASE_PROCESS_INSTANCE_LOCK"
         }
         stream.validators ={
             [stream.eventsRegistry.CREATE_PROCESS_INSTANCE] : processInstanceDataSchema,
@@ -79,6 +98,8 @@ export class ProcessInstanceStreamBuilder {
             [stream.eventsRegistry.CLOSE_PROCESS_INSTANCE] : closeProcessInstanceDataSchema,
             [stream.eventsRegistry.FAIL_PROCESS_INSTANCE] : failProcessInstanceDataSchema,
             [stream.eventsRegistry.BULK_CREATE_SEQUENCE_FLOWS] : bulkCreateSequenceFlowsDataSchema,
+            [stream.eventsRegistry.RELEASE_PROCESS_INSTANCE_LOCK] : releaseProcessInstanceLockDataSchema,
+            [stream.eventsRegistry.CREATE_CATCH_EVENT_TASK] : createCatchEventTaskDataSchema,
         }
 
         EventStore.registerStream(stream.streamId, stream);

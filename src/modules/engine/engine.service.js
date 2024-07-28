@@ -60,7 +60,7 @@ export class EngineService {
      * @param fileContents {string[]}
      * @param wpid {string}
      * @param version {string}
-     * @param config {{includeGalaxyModule:boolean}}
+     * @param config {{includeGalaxyModule:boolean,  includeGalaxyModule: boolean,includePersistenceModule: boolean,includeWebModule: boolean,nodeDefinitions: object }}
      * @returns {Promise<void>}
      */
     async generateContainer(fileContents, wpid, version, config) {
@@ -69,6 +69,9 @@ export class EngineService {
         containerParsingContext.includeGalaxyModule = config.includeGalaxyModule;
 
         Logger.debug(`Trying to Generate Container`);
+
+        let definitions = EngineService.prepareNodeDefinitions(config);
+
         const deploymentPath = Utils.getDeploymentPath(containerParsingContext);
         if (!fs.existsSync(deploymentPath)) {
             Logger.debug(`Trying to create deployment folder in path: ${deploymentPath}`);
@@ -102,7 +105,7 @@ export class EngineService {
         const containerCodegenModel = new ContainerCodegenModel();
 
 
-        const workflowBuilder = new WorkflowBuilder(containerCodegenModel)
+        const workflowBuilder = new WorkflowBuilder(containerCodegenModel,definitions)
 
         for (const process of containerParsingContext.workflowParsingContext) {
             await workflowBuilder.generateWorkflow(process, containerParsingContext, containerCodegenModel);
@@ -111,6 +114,25 @@ export class EngineService {
 
         this.generateOpenApiYaml(containerParsingContext, containerCodegenModel);
 
+    }
+
+    static prepareNodeDefinitions(config) {
+        let filesDefinitions = []
+        const directoryPath = path.join(process.cwd(), 'src/modules/engine/builder/processors/definitions');
+
+        const files = fs.readdirSync(directoryPath);
+        for (const file of files) {
+            const filePath = path.join(directoryPath, file);
+            const fileContent = fs.readFileSync(filePath, 'utf8');
+            filesDefinitions.push(JSON.parse(fileContent));
+        }
+
+        let definitions = [...(config.nodeDefinitions || []), ...filesDefinitions]
+        let defs =  {}
+        definitions.forEach( def => {
+            defs[def.type] = def
+        })
+        return defs;
     }
 
     addLivelinessProbe(containerCodegenContext) {

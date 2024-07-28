@@ -1,7 +1,7 @@
 import Ajv from "ajv";
-import {AndromedaLogger} from "../../../config/andromeda-logger.js";
-import {EventDataPayloadValidator} from "./streams/event-data-payload.validator.js";
-import {EventStoreRepository} from "./repositories/event-store.repository.js";
+import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
+import {EventDataPayloadValidator} from "./event-data-payload.validator.js";
+import {EventStoreRepository} from "../repositories/event-store.repository.js";
 const Logger = AndromedaLogger;
 
 export class EventStore {
@@ -26,7 +26,7 @@ export class EventStore {
     }
 
     static async apply(event) {
-        // Logger.debug(event)
+        Logger.debug(event)
         const validate = EventStore.ajv.compile(EventStore.eventSchema)
         const valid = validate(event)
         if (!valid){

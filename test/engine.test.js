@@ -64,7 +64,8 @@ describe.concurrent('Engine tests', ()=>{
             await engineService.generateContainer(fileContents, wpid, version, {
                 includeGalaxyModule : true,
                 includeWebModule : true,
-                includePersistenceModule : true
+                includePersistenceModule : true,
+                nodeDefinitions: []
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
@@ -101,7 +102,8 @@ describe.concurrent('Engine tests', ()=>{
             await engineService.generateContainer(fileContents, wpid, version, {
                 includeGalaxyModule : true,
                 includeWebModule : true,
-                includePersistenceModule : true
+                includePersistenceModule : true,
+                nodeDefinitions: []
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
@@ -151,7 +153,8 @@ describe.concurrent('Engine tests', ()=>{
             await engineService.generateContainer(fileContents, wpid, version, {
                 includeGalaxyModule : true,
                 includeWebModule : true,
-                includePersistenceModule : true
+                includePersistenceModule : true,
+                nodeDefinitions: []
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
@@ -201,7 +204,8 @@ describe.concurrent('Engine tests', ()=>{
             await engineService.generateContainer(fileContents, wpid, version, {
                 includeGalaxyModule : true,
                 includeWebModule : true,
-                includePersistenceModule : true
+                includePersistenceModule : true,
+                nodeDefinitions: []
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
             const containerClient = new ContainerClient(port);
@@ -257,7 +261,8 @@ describe.concurrent('Engine tests', ()=>{
             await engineService.generateContainer(fileContents, wpid, version, {
                 includeGalaxyModule : true,
                 includeWebModule : true,
-                includePersistenceModule : true
+                includePersistenceModule : true,
+                nodeDefinitions: []
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
@@ -270,14 +275,13 @@ describe.concurrent('Engine tests', ()=>{
 
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
-
             const repo = new ProcessInstanceRepository();
             let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
             expect(processInstanceEntity).toBeDefined()
             expect(processInstanceEntity.id).toEqual(processInstancesId)
             expect(processInstanceEntity.wpid).toEqual("catch_event")
             expect(processInstanceEntity.version).toEqual("1.0.0")
-            expect(processInstanceEntity.status).toEqual(1)
+            expect(processInstanceEntity.status).toEqual(0)
             expect(processInstanceEntity.lock).toBeNull()
 
             // expect(true).toBe(true);  // Use global assertion method

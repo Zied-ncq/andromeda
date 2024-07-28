@@ -1,0 +1,31 @@
+{
+  "type": "ScriptTask",
+  "nodes": [
+    {
+      "webController": {
+        "enabled": false,
+        "config": {
+          "path": "/:process_id/signal/:event_id",
+          "verb": "post",
+          "secure": true,
+          "secure_roles": ["user"]
+        }
+      },
+      "body": {
+        "mode": "eval",
+        "content": "currentNode.content.script"
+      },
+      "flow": {
+        "mode": "simple",
+        "status" : 1,
+        "suffix": ""
+      }
+    }
+  ],
+  "imports": [
+    {
+      "name": "is-odd",
+      "version": "^1.0.0"
+    }
+  ]
+}

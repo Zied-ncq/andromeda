@@ -1,4 +1,4 @@
-import {EventStore} from "./event-store.js";
+import {EventStore} from "./internal/event-store.js";
 import {StreamIds} from "./streams/stream-ids.js";
 import {EventTypes} from "./event-types.js";
 
@@ -66,6 +66,24 @@ export class PersistenceGateway {
         })
     };
 
+    /**
+     *
+     * @param processInstanceId {string}
+     * @returns {Promise<void>}
+     */
+    static async releaseLock(processInstanceId ) {
+        await EventStore.apply({
+            id: crypto.randomUUID(),
+            streamId: StreamIds.PROCESS_INSTANCE,
+            type: EventTypes.RELEASE_PROCESS_INSTANCE_LOCK,
+            streamPosition: 0,
+            data: {
+                processInstanceId
+            },
+            timestamp: new Date().toString()
+        })
+    };
+
     static async failProcessInstance(processInstancesId, containerId ) {
         await EventStore.apply({
             id: crypto.randomUUID(),
@@ -96,6 +114,28 @@ export class PersistenceGateway {
             data: {
                 id: processInstancesId,
                 sequenceFlows,
+            },
+            timestamp: new Date().toString()
+        });
+
+    };
+
+    /**
+     *
+     * @param processInstancesId {string}
+     * @param signalId {string}
+     * @returns {Promise<void>}
+     */
+    static async createCatchEvent(processInstancesId, signalId) {
+        await EventStore.apply({
+            id: crypto.randomUUID(),
+            streamId: StreamIds.PROCESS_INSTANCE,
+            type: EventTypes.CREATE_CATCH_EVENT_TASK,
+            streamPosition: 0,
+            data: {
+                processInstancesId,
+                signalId,
+                type: 'catch_event',
             },
             timestamp: new Date().toString()
         });
