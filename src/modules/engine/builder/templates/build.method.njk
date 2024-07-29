@@ -19,11 +19,12 @@ async fn_{{nodeContext.name}} (flowModel) {
   }
   Logger.debug(`visiting node {{ nodeContext.id }}, session: ${__localMethodContext.nodeSession}`);
 
-{% if nodeContext.stopAfterFirstCallToTreatWebhooksLikeNodes !== true and nodeContext.type !== 'SubProcess'%}
   try {
 
     {{ nodeContext.body }}
+    {% if nodeContext.stopAfterFirstCallToTreatWebhooksLikeNodes !== true and nodeContext.type !== 'SubProcess'%}
     {% include "build.method.next.calls.njk" %}
+    {% endif %}
     await this.variables.saveContext();
 
   } catch (_bpmnProcessorException) {
@@ -31,7 +32,6 @@ async fn_{{nodeContext.name}} (flowModel) {
     const stack = _bpmnProcessorException.stack;
     throw new Error(JSON.stringify({ stacktrace: stack, context: __localMethodContext }));
   }
-  {% endif %}
 
 }
 

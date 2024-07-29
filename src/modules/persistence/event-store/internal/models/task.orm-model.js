@@ -7,19 +7,24 @@ const TaskSchema = new mongoose.Schema({
         type: String,
         default: crypto.randomUUID()
     },
-    processInstance: {
+    processInstanceId: {
         type: String,
         ref: 'ProcessInstance',
         required: true,
         createIndexes: true
     },
-    signalName: {
+    signalId: {
         type: String,
         required: false,
         createIndexes: true
     },
     type:{
         type: String,
+        required: true,
+        createIndexes: true
+    },
+    status:{
+        type: Number,
         required: true,
         createIndexes: true
     }

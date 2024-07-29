@@ -1,4 +1,5 @@
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
+import {ProcessHelper} from "./process-helper.js";
 
 const Logger = AndromedaLogger;
 
@@ -71,15 +72,14 @@ class DynamicProcessor {
         Logger.info(`processing ${this.type} Node from Dynamic Processor`);
 
         let nodeContexts = []
-        this.config.nodes.forEach(node => {
-            let body = ''
-            if(node.body.mode === 'static'){
-                body= node.body.content
-            }
+        let vars = DynamicProcessor.getVaras(this.config, currentNode);
 
-            if(node.body.mode === 'eval'){
-                body=eval(node.body.content)
-            }
+        const wpid = containerParsingContext.wpid
+        const cnwpid = ProcessHelper.upperFirstChar(ProcessHelper.snakeToCamel(wpid))
+
+        this.config.nodes.forEach(node => {
+            let body = DynamicProcessor.getBody(node, currentNode, vars);
+
             let nodeRes ={
                 id: currentNode.id,
                 type: this.type,
@@ -103,19 +103,49 @@ class DynamicProcessor {
                     nodeRes.flow.status = node.flow.status;
                     nodeRes.flow.suffix = node.flow.suffix;
             }
+            /**
+
+             */
 
             if(node.webController && node.webController.enabled === true){
                 workflowCodegenContext.controllerClassFile.getClass("")
-                workflowCodegenContext.controllerClass.addMember(`async  ${currentNode.id}(req, res){
+                workflowCodegenContext.controllerClass.addMember(`static async ${currentNode.id}(req, res){
                 try {
+                        const processInstanceId = req.params.process_id;
+                        const signalName = '${vars.signalId}';
+                        let processInstanceService;
+                        
+                        if (ContainerService.processInstances.has(processInstanceId)) {
+                          processInstanceService = ContainerService.processInstances.get(processInstanceId);
+                          Logger.info(\`Resume existing process instance :\${processInstanceService.__metaInfo.processInstanceId} from ${currentNode.type} node\` );
+                        } else {
+                          processInstanceService =await ${cnwpid}ProcessInstanceService.createInstance(processInstanceId);
+                          Logger.info(\`creating a new process instance :\${processInstanceService.__metaInfo.processInstanceId} to resume activity\`);
+                        }
+                        
                         // async call
-                        this.fn_${currentNode.id}()
+                        processInstanceService.fn_${currentNode.id}_resume()
                     } catch (error) {
                         Logger.error(error);
                         await this.__metaInfo.workflowHelper.failProcessInstance('_start_${currentNode.id}');
                     }
             }`);
+
+                workflowCodegenContext.containerCodegenModel.routes.push({verb: "POST", path: `/process/:process_id/signal/${vars.signalId}` , method: currentNode.id})
+
+                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPath(`/process/{process_id}/signal/${vars.signalId}` , "post")
+                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter(`/process/{process_id}/signal/${vars.signalId}` , "post", 'process_id', 'string')
+                workflowCodegenContext.containerCodegenModel.openApiCodegen.addResponse(`/process/{process_id}/signal/${vars.signalId}` , "post" , {
+                    "responses": {
+                        "200": {
+                            "description": "Process instance id"
+                        },
+                    }
+                })
+
+
             }
+            // workflowCodegenContext.addControllerClassImport(`${cnwpid}ProcessInstanceService`)
 
             nodeContexts.push(nodeRes);
 
@@ -123,6 +153,32 @@ class DynamicProcessor {
 
         return nodeContexts;
 
+    }
+
+    static getVaras(node, currentNode) {
+        let vars = {}
+
+        if (node.vars !== undefined) {
+            Object.keys(node.vars).forEach(v => {
+                vars[v] = eval(node.vars[v]);
+            })
+        }
+        return vars;
+    }
+
+    static getBody(node, currentNode,vars) {
+        let body = ''
+
+        body += `let vars = ${JSON.stringify(vars)};`;
+
+        if (node.body.mode === 'static') {
+            body += node.body.content
+        }
+
+        if (node.body.mode === 'eval') {
+            body += eval(node.body.content)
+        }
+        return body;
     }
 }
 

@@ -70,8 +70,9 @@ export const createCatchEventTaskDataSchema = {
     properties: {
         processInstanceId: {type: "string"},
         signalId: {type: "string"},
+        type: {type: "string"},
     },
-    required: ["processInstanceId", "signalId"],
+    required: ["processInstanceId", "signalId", "type"],
     additionalProperties: false,
 }
 
@@ -90,7 +91,8 @@ export class ProcessInstanceStreamBuilder {
             FAIL_PROCESS_INSTANCE   : "FAIL_PROCESS_INSTANCE",
             CLOSE_PROCESS_INSTANCE  : "CLOSE_PROCESS_INSTANCE",
             BULK_CREATE_SEQUENCE_FLOWS  : "BULK_CREATE_SEQUENCE_FLOWS",
-            RELEASE_PROCESS_INSTANCE_LOCK  : "RELEASE_PROCESS_INSTANCE_LOCK"
+            RELEASE_PROCESS_INSTANCE_LOCK  : "RELEASE_PROCESS_INSTANCE_LOCK",
+            CREATE_CATCH_EVENT_TASK  : "CREATE_CATCH_EVENT_TASK"
         }
         stream.validators ={
             [stream.eventsRegistry.CREATE_PROCESS_INSTANCE] : processInstanceDataSchema,

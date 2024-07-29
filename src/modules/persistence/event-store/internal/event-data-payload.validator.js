@@ -8,11 +8,16 @@ export class EventDataPayloadValidator {
 
 
     static validate(event, schema){
-        const validate = EventStore.ajv.compile(schema)
-        const valid = validate(event.data)
-        if (!valid){
-            Logger.error(`cannot validate event with type ${event.streamId}`, JSON.stringify(validate.errors))
-            throw validate.errors
+        try {
+            const validate = EventStore.ajv.compile(schema)
+            const valid = validate(event.data)
+            if (!valid){
+                Logger.error(`cannot validate event with type ${event.streamId}`, JSON.stringify(validate.errors))
+                throw validate.errors
+            }
+        }catch (e) {
+            throw e
         }
+
     }
 }

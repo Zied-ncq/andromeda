@@ -267,7 +267,7 @@ describe.concurrent('Engine tests', ()=>{
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
             const containerClient = new ContainerClient(port);
-            const res = await containerClient.startProcess("catchEvent", version, port, {})
+            const res = await containerClient.startProcess("CatchEvent", version, port, {})
 
             const processInstancesId = res.id
 

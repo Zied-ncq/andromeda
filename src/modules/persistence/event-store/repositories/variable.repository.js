@@ -30,7 +30,7 @@ export class VariableRepository {
             const record = {
                 updateOne: {
                     filter: {
-                        processInstance: processInstanceId,
+                        processInstanceId,
                         name: variable.name,
                     },
                     update: {},
@@ -49,7 +49,7 @@ export class VariableRepository {
                 value: this.isPrimitive(variable.value())
                     ? variable.value()
                     : JSON.stringify(variable.value()),
-                processInstance: processInstanceId,
+                 processInstanceId,
             };
 
             return record;

@@ -371,8 +371,8 @@ class WorkflowBuilder {
             lstripBlocks: true,
         });
 
-        this.codegenContext.containerCodegenModel.openApiCodegen.addPath("/start/process/{wpid}/version/{version}" , "post")
-        this.codegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter("/start/process/{wpid}/version/{version}" , "post", 'wpid', 'string')
+        this.codegenContext.containerCodegenModel.openApiCodegen.addPath("/start/process/{cnwpid}/version/{version}" , "post")
+        this.codegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter("/start/process/{cnwpid}/version/{version}" , "post", 'wpid', 'string')
         this.codegenContext.containerCodegenModel.openApiCodegen.addResponse("/start" , "post" , {
             "responses": {
                 "200": {
@@ -395,7 +395,7 @@ class WorkflowBuilder {
                 // }
             }
         })
-        this.codegenContext.containerCodegenModel.routes.push({verb: "POST", path: "/start/process/:wpid/version/:version" , method: "start"})
+        this.codegenContext.containerCodegenModel.routes.push({verb: "POST", path: "/start/process/:cnwpid/version/:version" , method: "start"})
 
 
         this.codegenContext.containerCodegenModel.openApiCodegen.addPath("/process-instance/{processInstanceId}/status" , "get")
@@ -434,18 +434,21 @@ class WorkflowBuilder {
                 )
                 .toString(),
         ).toString()
+        const cnwpid = ProcessHelper.upperFirstChar(nwpid);
+
         const renderedTemplate = nunjucks.renderString(
             template,
             {
                 ControllerFileName: controllerName,
                 ControllerClassName: controllerName,
-                startMethod : { name: nwpid},
-                Wpid: nwpid,
+                startMethod : { name: cnwpid},
+                wpid: nwpid,
+                cnwpid,
                 containerParsingContext,
                 workflowCodegenContext: this.codegenContext,
             },
         );
-        this.codegenContext.addControllerClassImport(`${nwpid}ProcessInstanceService`,`../services/${nwpid.toLowerCase()}.process-instance.service.js`)
+        this.codegenContext.addControllerClassImport(`${cnwpid}ProcessInstanceService`,`../services/${nwpid.toLowerCase()}.process-instance.service.js`)
         this.codegenContext.controllerClassFile = this.codegenContext.project.createSourceFile(
             serviceFilePath,
             renderedTemplate,

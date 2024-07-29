@@ -23,7 +23,8 @@ if(flows.size > 0){
             this.currentlyUsedFunctions.set(nextFlowModel.id,true)
 
             this.fn_{{flow.to.id}}(nextFlowModel)
-                .then(e=> {})
+                .then(e=> {
+                })
                 .catch(async (error)=>{
                     Logger.error(error);
                     await this.__metaInfo.workflowHelper.failProcessInstance('{{ flow.id }}');

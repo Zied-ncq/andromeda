@@ -6,6 +6,7 @@
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_1t45tk4" sourceRef="ACT_START_1" targetRef="ACT_SCRIPT_1" />
     <bpmn:scriptTask id="ACT_SCRIPT_1" name="scripts">
+      <bpmn:extensionElements />
       <bpmn:incoming>Flow_1t45tk4</bpmn:incoming>
       <bpmn:outgoing>Flow_117sm5b</bpmn:outgoing>
       <bpmn:script>console.log("****************************** BASIC SCRIPT ***********************");</bpmn:script>
@@ -15,12 +16,14 @@
       <bpmn:incoming>Flow_1lnpi4x</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1lnpi4x" sourceRef="CATCH_EVENT" targetRef="END_NODE" />
-    <bpmn:intermediateCatchEvent id="CATCH_EVENT">
+    <bpmn:intermediateCatchEvent id="CATCH_EVENT" name="CATCH_EVENT">
+      <bpmn:extensionElements />
       <bpmn:incoming>Flow_117sm5b</bpmn:incoming>
       <bpmn:outgoing>Flow_1lnpi4x</bpmn:outgoing>
-      <bpmn:signalEventDefinition id="SignalEventDefinition_1xb0bw5" />
+      <bpmn:signalEventDefinition id="SignalEventDefinition_1xb0bw5" signalRef="catchi" />
     </bpmn:intermediateCatchEvent>
   </bpmn:process>
+  <bpmn:signal id="catchi" name="catchi" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="catchEvent">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="ACT_START_1">
@@ -34,6 +37,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0o3swyf_di" bpmnElement="CATCH_EVENT">
         <dc:Bounds x="622" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="600" y="145" width="81" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1t45tk4_di" bpmnElement="Flow_1t45tk4">
         <di:waypoint x="188" y="120" />

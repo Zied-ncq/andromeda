@@ -17,18 +17,18 @@ class {{ ControllerClassName }} {
                 Logger.debug(`storing file ${file} in persistent storage`);
                 });
             }
-            if(!req.params.wpid){
-                throw new Error(`Process identifier wpid is required`)
+            if(!req.params.cnwpid){
+                throw new Error(`Process identifier cnwpid is required`)
             }
 
-            if(req.params.wpid === '{{ startMethod.name }}'){
+            if(req.params.cnwpid === '{{ startMethod.name }}'){
                 const processInstance = await {{ startMethod.name }}ProcessInstanceService.createInstance();
                 await processInstance.bootstrap(variables);
                 res.status(200)
                 res.send({id: processInstance.__metaInfo.processInstanceId})
             }
             res.status(404)
-            res.send("wpid, wokflow process id is not correct")
+            res.send("cnwpid, wokflow process id (normalized, camel case, first letter capital) is not correct")
 
         } catch (err) {
             Logger.error(err)
@@ -42,7 +42,7 @@ class {{ ControllerClassName }} {
         }
     }
 
-    static processInstanceStaus = async (req, res) => {
+    static processInstanceStatus = async (req, res) => {
 
         try {
             let variables = {};

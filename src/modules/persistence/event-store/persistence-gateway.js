@@ -122,18 +122,18 @@ export class PersistenceGateway {
 
     /**
      *
-     * @param processInstancesId {string}
+     * @param processInstanceId {string}
      * @param signalId {string}
      * @returns {Promise<void>}
      */
-    static async createCatchEvent(processInstancesId, signalId) {
+    static async createCatchEvent(processInstanceId, signalId) {
         await EventStore.apply({
             id: crypto.randomUUID(),
             streamId: StreamIds.PROCESS_INSTANCE,
             type: EventTypes.CREATE_CATCH_EVENT_TASK,
             streamPosition: 0,
             data: {
-                processInstancesId,
+                processInstanceId,
                 signalId,
                 type: 'catch_event',
             },

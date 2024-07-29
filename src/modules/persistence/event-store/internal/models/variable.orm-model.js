@@ -23,7 +23,7 @@ const VariableSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    processInstance: {
+    processInstanceId: {
         type: String,
         ref: 'ProcessInstance',
         required: true,

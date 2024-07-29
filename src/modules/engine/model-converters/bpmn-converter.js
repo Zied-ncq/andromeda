@@ -1,5 +1,6 @@
 import {AProcess} from "../../../model/domain-model/bzprocess/a-process.js";
 import {BpmnTypeConverter} from "./bpmn-type-converter.js";
+import {AType} from "../builder/processors/a-node-type.js";
 
 export class BpmnConverter {
 
@@ -90,6 +91,18 @@ export class BpmnConverter {
 
             if (node.$type === "bpmn:ScriptTask" && node.script !== undefined) {
                 modelNode.content.script = node.script
+            }
+
+            if (node.$type === "bpmn:IntermediateCatchEvent") {
+                if(node.eventDefinitions){
+                    const signal =node.eventDefinitions[0]
+                    if(signal){
+                        modelNode.signal = {
+                            id: signal.signalRef.id,
+                            name: signal.signalRef.name
+                        }
+                    }
+                }
             }
 
 

@@ -1,11 +1,15 @@
 {
   "type": "IntermediateCatchEvent",
+  "vars": {
+    "signalId": "currentNode.signal.id"
+  },
   "nodes": [
     {
       "stopAfterFirstCallToTreatWebhooksLikeNodes": true,
       "body": {
         "mode": "static",
-        "content": ""
+        "content": "await PersistenceGateway.createCatchEvent(this.__metaInfo.processInstanceId, vars.signalId);"
+
       },
       "flow": {
         "mode": "simple",
@@ -18,9 +22,21 @@
         "webController": {
         "enabled": true,
         "config": {
-          "path": "/process/:process_id/signal/:event_id",
+          "path": "/process/:process_id/signal/:signal_id",
+          "params": [
+            "process_id",
+            "signal_id"
+          ],
           "verb": "post",
-          "secure": true,
+          "secure": {
+            "enabled": true,
+            "methods": [
+              "jwt",
+              "origin_check",
+              "Unique Tokens",
+              "API_KEY"
+            ]
+          },
           "secure_roles": ["user"]
         }
       },
