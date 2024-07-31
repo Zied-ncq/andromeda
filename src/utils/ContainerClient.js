@@ -7,9 +7,12 @@ export class ContainerClient {
 
     port
 
+    host
+
     Logger = AndromedaLogger;
 
-    constructor(port) {
+    constructor(host, port) {
+        this.host = host;
         this.port = port;
     }
 
@@ -21,14 +24,14 @@ export class ContainerClient {
      * @param variables {object}
      * @returns {Promise<void>}
      */
-    async startProcess(nwpid, version, port, variables) {
+    async startProcess(nwpid, version, variables) {
         const form = new FormData();
         if (variables) {
             form.append('variables', JSON.stringify(variables));
         }
 
         const startReq = await fetch(
-            `http://127.0.0.1:${this.port}/start/process/${nwpid}/version/${version}`,
+            `http://${this.host}:${this.port}/start/process/${nwpid}/version/${version}`,
             {
                 method: 'POST',
                 headers: {
@@ -44,11 +47,40 @@ export class ContainerClient {
     }
 
 
-    static async waitForProcessInstanceToCompleteProcessing(processInstanceId, port) {
+    /**
+     *
+     * @param processInstance {string}
+     * @param eventId {string}
+     * @param variables {object}
+     * @returns {Promise<void>}
+     */
+    async callCatchEvent(processInstance, eventId, variables) {
+        const form = new FormData();
+        if (variables) {
+            form.append('variables', JSON.stringify(variables));
+        }
+
+        const startReq = await fetch(
+            `http://${this.host}:${this.port}/process/${processInstance}/catch-event/${eventId}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*',
+                },
+                body: form,
+            },
+        )
+        if(!startReq.ok){
+            throw new Error(await startReq.text())
+        }
+    }
+
+
+    async waitForProcessInstanceToCompleteProcessing(processInstanceId) {
         const fetchProcessInstanceStatus = async () => {
 
             const startReq = await fetch(
-                `http://127.0.0.1:${port}/process-instance/${processInstanceId}/status`,
+                `http://${this.host}:${this.port}/process-instance/${processInstanceId}/status`,
                 {
                     method: 'GET',
                     headers: {

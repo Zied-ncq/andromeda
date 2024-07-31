@@ -20,6 +20,8 @@ import { expect, test , beforeAll, afterAll, describe } from 'vitest'
 
 
 let version = "1.0.0";
+let host = "127.0.0.1";
+
 const persistenceModule = new PersistenceModule()
 
 describe.concurrent('Engine tests', ()=>{
@@ -47,6 +49,7 @@ describe.concurrent('Engine tests', ()=>{
 
 
         const port = 10002
+        const host = '127.0.0.1'
         let wpid = "basic_scenario";
 
         function getBpmnTestFile(fileName) {
@@ -69,7 +72,7 @@ describe.concurrent('Engine tests', ()=>{
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
-            await new ContainerClient(port).startProcess("basic_scenario", version, port, {})
+            await new ContainerClient(host, port).startProcess("basic_scenario", version, {})
 
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
@@ -107,10 +110,10 @@ describe.concurrent('Engine tests', ()=>{
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
-            const containerClient = new ContainerClient(port);
-            const res = await containerClient.startProcess("subProcess", version, port, {})
+            const containerClient = new ContainerClient(host, port);
+            const res = await containerClient.startProcess("subProcess", version, {})
             const processInstancesId = res.id
-            await ContainerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId, port)
+            await containerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId)
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
 
@@ -158,8 +161,8 @@ describe.concurrent('Engine tests', ()=>{
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
-            const containerClient = new ContainerClient(port);
-            const res = await containerClient.startProcess("subSubProcess", version, port, {})
+            const containerClient = new ContainerClient(host, port);
+            const res = await containerClient.startProcess("subSubProcess", version, {})
 
             const processInstancesId = res.id
             await ContainerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId, port)
@@ -208,8 +211,8 @@ describe.concurrent('Engine tests', ()=>{
                 nodeDefinitions: []
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
-            const containerClient = new ContainerClient(port);
-            const res = await containerClient.startProcess("variables", version, port, {
+            const containerClient = new ContainerClient(host, port);
+            const res = await containerClient.startProcess("variables", version, {
                 age: 5,
                 ddd : "string",
                 content: {   c: 5,
@@ -266,14 +269,14 @@ describe.concurrent('Engine tests', ()=>{
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
-            const containerClient = new ContainerClient(port);
-            const res = await containerClient.startProcess("CatchEvent", version, port, {})
+            const containerClient = new ContainerClient(host, port);
+            const res = await containerClient.startProcess("CatchEvent", version, {})
 
             const processInstancesId = res.id
 
-            await ContainerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId, port)
+            await containerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId)
 
-            await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
+
 
             const repo = new ProcessInstanceRepository();
             let processInstanceEntity = await repo.getProcessInstanceById(processInstancesId)
@@ -284,6 +287,18 @@ describe.concurrent('Engine tests', ()=>{
             expect(processInstanceEntity.status).toEqual(0)
             expect(processInstanceEntity.lock).toBeNull()
 
+            await containerClient.callCatchEvent(processInstancesId, 'CATCH_EVENT', {})
+            await containerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId)
+
+            let processInstanceEntity2 = await repo.getProcessInstanceById(processInstancesId)
+            expect(processInstanceEntity2).toBeDefined()
+            expect(processInstanceEntity2.id).toEqual(processInstancesId)
+            expect(processInstanceEntity2.wpid).toEqual("catch_event")
+            expect(processInstanceEntity2.version).toEqual("1.0.0")
+            expect(processInstanceEntity2.status).toEqual(1)
+            expect(processInstanceEntity2.lock).toBeNull()
+
+            await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
             // expect(true).toBe(true);  // Use global assertion method
         } catch (e) {
             Logger.error(e)

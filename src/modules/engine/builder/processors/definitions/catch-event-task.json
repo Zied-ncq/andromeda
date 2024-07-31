@@ -1,5 +1,6 @@
 {
   "type": "IntermediateCatchEvent",
+  "variant": "signalCatchEvent",
   "vars": {
     "signalId": "currentNode.signal.id"
   },
@@ -13,32 +14,28 @@
       },
       "flow": {
         "mode": "simple",
-        "status" : "ProcessInstanceStatus.Active",
-        "suffix": ""
+        "status" : "ProcessInstanceStatus.Active"
       }
     },
     {
       "nameSuffix": "_resume",
-        "webController": {
+      "http": {
         "enabled": true,
-        "config": {
-          "path": "/process/:process_id/signal/:signal_id",
-          "params": [
-            "process_id",
-            "signal_id"
-          ],
-          "verb": "post",
-          "secure": {
-            "enabled": true,
-            "methods": [
-              "jwt",
-              "origin_check",
-              "Unique Tokens",
-              "API_KEY"
-            ]
-          },
-          "secure_roles": ["user"]
-        }
+        "type": "post",
+        "path": "/process/:process_id/catch-event/${currentNode.id}",
+        "params": [
+          "process_id"
+        ],
+        "secure": {
+          "enabled": true,
+          "methods": [
+            "jwt",
+            "origin_check",
+            "Unique Tokens",
+            "API_KEY"
+          ]
+        },
+        "secure_roles": ["user"]
       },
       "body": {
         "mode": "eval",
@@ -46,8 +43,7 @@
       },
       "flow": {
         "mode": "simple",
-        "status" : 1,
-        "suffix": "_resume"
+        "status" : "ProcessInstanceStatus.Completed"
       }
     }
   ],

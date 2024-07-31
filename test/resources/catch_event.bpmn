@@ -24,6 +24,7 @@
     </bpmn:intermediateCatchEvent>
   </bpmn:process>
   <bpmn:signal id="catchi" name="catchi" />
+  <bpmn:message id="Message_0f3er1s" name="Message_0f3er1s" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="catchEvent">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="ACT_START_1">
@@ -36,9 +37,9 @@
         <dc:Bounds x="932" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0o3swyf_di" bpmnElement="CATCH_EVENT">
-        <dc:Bounds x="622" y="102" width="36" height="36" />
+        <dc:Bounds x="632" y="192" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="600" y="145" width="81" height="14" />
+          <dc:Bounds x="610" y="235" width="81" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1t45tk4_di" bpmnElement="Flow_1t45tk4">
@@ -47,10 +48,14 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_117sm5b_di" bpmnElement="Flow_117sm5b">
         <di:waypoint x="480" y="120" />
-        <di:waypoint x="622" y="120" />
+        <di:waypoint x="561" y="120" />
+        <di:waypoint x="561" y="210" />
+        <di:waypoint x="632" y="210" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1lnpi4x_di" bpmnElement="Flow_1lnpi4x">
-        <di:waypoint x="658" y="120" />
+        <di:waypoint x="668" y="210" />
+        <di:waypoint x="805" y="210" />
+        <di:waypoint x="805" y="120" />
         <di:waypoint x="932" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

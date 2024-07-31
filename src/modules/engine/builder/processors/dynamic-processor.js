@@ -107,7 +107,7 @@ class DynamicProcessor {
 
              */
 
-            if(node.webController && node.webController.enabled === true){
+            if(node.http && node.http.enabled === true){
                 workflowCodegenContext.controllerClassFile.getClass("")
                 workflowCodegenContext.controllerClass.addMember(`static async ${currentNode.id}(req, res){
                 try {
@@ -124,18 +124,20 @@ class DynamicProcessor {
                         }
                         
                         // async call
-                        processInstanceService.fn_${currentNode.id}_resume()
+                        processInstanceService.fn_${currentNode.id}${node.nameSuffix}()
                     } catch (error) {
                         Logger.error(error);
                         await this.__metaInfo.workflowHelper.failProcessInstance('_start_${currentNode.id}');
                     }
             }`);
 
-                workflowCodegenContext.containerCodegenModel.routes.push({verb: "POST", path: `/process/:process_id/signal/${vars.signalId}` , method: currentNode.id})
+                const template = "`"+node.http.path+"`";
+                const path = eval(template)
 
-                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPath(`/process/{process_id}/signal/${vars.signalId}` , "post")
-                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter(`/process/{process_id}/signal/${vars.signalId}` , "post", 'process_id', 'string')
-                workflowCodegenContext.containerCodegenModel.openApiCodegen.addResponse(`/process/{process_id}/signal/${vars.signalId}` , "post" , {
+                workflowCodegenContext.containerCodegenModel.routes.push({verb: node.http.type, path , method: currentNode.id})
+                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPath(path , "post")
+                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter(path , "post", 'process_id', 'string')
+                workflowCodegenContext.containerCodegenModel.openApiCodegen.addResponse(path , "post" , {
                     "responses": {
                         "200": {
                             "description": "Process instance id"
