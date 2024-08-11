@@ -65,11 +65,14 @@ class {{ServiceClassName}} {
             return new {{ServiceClassName}}(processInstanceId, flowModel)
         {% else %}
         const instance = new {{ServiceClassName}}(processInstanceId)
-        // ContainerService.getInstance().lock(instance)
-        await PersistenceGateway.newProcessInstance(ContainerService.containerId,
-            '{{containerParsingContext.wpid}}',
-            '{{containerParsingContext.version}}',
-            instance.__metaInfo.processInstanceId);
+        if(processInstanceId === undefined || processInstanceId === null){
+            // ContainerService.getInstance().lock(instance)
+            await PersistenceGateway.newProcessInstance(ContainerService.containerId,
+                '{{containerParsingContext.wpid}}',
+                '{{containerParsingContext.version}}',
+                instance.__metaInfo.processInstanceId);
+        }
+
         return instance;
         {% endif %}
 

@@ -22,9 +22,10 @@
       "http": {
         "enabled": true,
         "type": "post",
-        "path": "/process/:process_id/catch-event/${currentNode.id}",
+        "path": "/process/:processInstanceId/catch-event/${currentNode.id}",
+        "openApiPath": "/process/{processInstanceId}/catch-event/${currentNode.id}",
         "params": [
-          "process_id"
+          "processInstanceId"
         ],
         "secure": {
           "enabled": true,

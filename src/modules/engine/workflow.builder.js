@@ -67,8 +67,7 @@ class WorkflowBuilder {
      * @returns {Promise<void>}
      */
     async generate(element, containerParsingContext, process) {
-        await
-            this.bpmnProcessor.process(element, this.codegenContext, containerParsingContext, process);
+        await this.bpmnProcessor.process(element, this.codegenContext, containerParsingContext, process);
     }
 
 

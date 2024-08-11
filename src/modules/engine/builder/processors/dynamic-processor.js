@@ -111,7 +111,7 @@ class DynamicProcessor {
                 workflowCodegenContext.controllerClassFile.getClass("")
                 workflowCodegenContext.controllerClass.addMember(`static async ${currentNode.id}(req, res){
                 try {
-                        const processInstanceId = req.params.process_id;
+                        const processInstanceId = req.params.processInstanceId;
                         const signalName = '${vars.signalId}';
                         let processInstanceService;
                         
@@ -131,13 +131,17 @@ class DynamicProcessor {
                     }
             }`);
 
-                const template = "`"+node.http.path+"`";
+                let template = "`"+node.http.path+"`";
                 const path = eval(template)
 
                 workflowCodegenContext.containerCodegenModel.routes.push({verb: node.http.type, path , method: currentNode.id})
-                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPath(path , "post")
-                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter(path , "post", 'process_id', 'string')
-                workflowCodegenContext.containerCodegenModel.openApiCodegen.addResponse(path , "post" , {
+
+                template = "`"+node.http.openApiPath+"`";
+                const openApiPath = eval(template)
+
+                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPath(openApiPath , "post")
+                workflowCodegenContext.containerCodegenModel.openApiCodegen.addPathVariableParameter(openApiPath , "post", 'processInstanceId', 'string')
+                workflowCodegenContext.containerCodegenModel.openApiCodegen.addResponse(openApiPath , "post" , {
                     "responses": {
                         "200": {
                             "description": "Process instance id"
