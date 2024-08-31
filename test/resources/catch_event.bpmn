@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="BasicScenario" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.25.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:itemDefinition id="_ageItem" structureRef="number" />
   <bpmn:process id="catchEvent" isExecutable="true">
+    <bpmn:property id="age" itemSubjectRef="_ageItem" name="age" />
     <bpmn:startEvent id="ACT_START_1">
       <bpmn:outgoing>Flow_1t45tk4</bpmn:outgoing>
     </bpmn:startEvent>
@@ -13,15 +15,21 @@
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="Flow_117sm5b" sourceRef="ACT_SCRIPT_1" targetRef="CATCH_EVENT" />
     <bpmn:endEvent id="END_NODE">
-      <bpmn:incoming>Flow_1lnpi4x</bpmn:incoming>
+      <bpmn:incoming>Flow_078v213</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1lnpi4x" sourceRef="CATCH_EVENT" targetRef="END_NODE" />
+    <bpmn:sequenceFlow id="Flow_1lnpi4x" sourceRef="CATCH_EVENT" targetRef="Activity_0hjxm1w" />
     <bpmn:intermediateCatchEvent id="CATCH_EVENT" name="CATCH_EVENT">
       <bpmn:extensionElements />
       <bpmn:incoming>Flow_117sm5b</bpmn:incoming>
       <bpmn:outgoing>Flow_1lnpi4x</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SignalEventDefinition_1xb0bw5" signalRef="catchi" />
     </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_078v213" sourceRef="Activity_0hjxm1w" targetRef="END_NODE" />
+    <bpmn:scriptTask id="Activity_0hjxm1w" name="plot variable age">
+      <bpmn:incoming>Flow_1lnpi4x</bpmn:incoming>
+      <bpmn:outgoing>Flow_078v213</bpmn:outgoing>
+      <bpmn:script>console.log(`age = ${this.variables.age}`);</bpmn:script>
+    </bpmn:scriptTask>
   </bpmn:process>
   <bpmn:signal id="catchi" name="catchi" />
   <bpmn:message id="Message_0f3er1s" name="Message_0f3er1s" />
@@ -30,32 +38,36 @@
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="ACT_START_1">
         <dc:Bounds x="152" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1me6866_di" bpmnElement="ACT_SCRIPT_1">
-        <dc:Bounds x="380" y="80" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_137aceb_di" bpmnElement="END_NODE">
         <dc:Bounds x="932" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1me6866_di" bpmnElement="ACT_SCRIPT_1">
+        <dc:Bounds x="330" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0o3swyf_di" bpmnElement="CATCH_EVENT">
-        <dc:Bounds x="632" y="192" width="36" height="36" />
+        <dc:Bounds x="552" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="610" y="235" width="81" height="14" />
+          <dc:Bounds x="530" y="145" width="81" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zu7gyq_di" bpmnElement="Activity_0hjxm1w">
+        <dc:Bounds x="700" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1t45tk4_di" bpmnElement="Flow_1t45tk4">
         <di:waypoint x="188" y="120" />
-        <di:waypoint x="380" y="120" />
+        <di:waypoint x="330" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_117sm5b_di" bpmnElement="Flow_117sm5b">
-        <di:waypoint x="480" y="120" />
-        <di:waypoint x="561" y="120" />
-        <di:waypoint x="561" y="210" />
-        <di:waypoint x="632" y="210" />
+        <di:waypoint x="430" y="120" />
+        <di:waypoint x="552" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1lnpi4x_di" bpmnElement="Flow_1lnpi4x">
-        <di:waypoint x="668" y="210" />
-        <di:waypoint x="805" y="210" />
-        <di:waypoint x="805" y="120" />
+        <di:waypoint x="588" y="120" />
+        <di:waypoint x="700" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_078v213_di" bpmnElement="Flow_078v213">
+        <di:waypoint x="800" y="120" />
         <di:waypoint x="932" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

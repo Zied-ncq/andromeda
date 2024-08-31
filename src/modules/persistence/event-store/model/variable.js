@@ -1,4 +1,4 @@
-import  {AndromedaLogger} from "../config/andromeda-logger.js";
+import  {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 const Logger = AndromedaLogger;
 import {VariableEncoder} from "../helpers/variable-encoder.js";
 import { createHash } from 'crypto';
@@ -74,13 +74,13 @@ export class Variable {
      * @param value {unknown}
      */
     setValue(value) {
-        VariableEncoder.transcodeVariable(value, this.type, this.name);
+        let val = VariableEncoder.transcodeVariable(value, this.type, this.name);
         if(this.type !== "object"){
-            Logger.debug(`Set variable ${this.name} to ${value}`)
+            Logger.debug(`Set variable ${this.name} to ${val}`)
         }else {
-            Logger.debug(`set variable '${this.name}' to ${JSON.stringify(value)}`)
+            Logger.debug(`set variable '${this.name}' to ${JSON.stringify(val)}`)
         }
         this.oldValue = this.currentValue;
-        this.currentValue = value;
+        this.currentValue = val;
     }
 }

@@ -12,6 +12,8 @@ export class ContainerClient {
     Logger = AndromedaLogger;
 
     constructor(host, port) {
+        if(host === undefined) throw new Error(`host must be defined`)
+        if(port === undefined) throw new Error(`port must be defined`)
         this.host = host;
         this.port = port;
     }

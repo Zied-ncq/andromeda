@@ -110,10 +110,20 @@ class DynamicProcessor {
             if(node.http && node.http.enabled === true){
                 workflowCodegenContext.controllerClassFile.getClass("")
                 workflowCodegenContext.controllerClass.addMember(`static async ${currentNode.id}(req, res){
+                
+                  let __localMethodContext = {
+                    nodeSession: crypto.randomUUID(),
+                    nodeId: '${currentNode.id}',
+                    nodeName: '${currentNode.name}',
+                    type: '${currentNode.type}',
+                    incomingFlowId: null
+                  }
+  
                 try {
                         const processInstanceId = req.params.processInstanceId;
                         const signalName = '${vars.signalId}';
                         let processInstanceService;
+                       
                         
                         if (ContainerService.processInstances.has(processInstanceId)) {
                           processInstanceService = ContainerService.processInstances.get(processInstanceId);
@@ -123,8 +133,20 @@ class DynamicProcessor {
                           Logger.info(\`creating a new process instance :\${processInstanceService.__metaInfo.processInstanceId} to resume activity\`);
                         }
                         
+                        let variables = JSON.parse(req.body.variables);
+                        if(variables){
+                            Object.keys(variables).forEach(variableName =>{
+                                let metaVar = processInstanceService.variables.__metaVariables.find( e=> e.name === variableName );
+                                if(metaVar !== undefined){
+                                    metaVar.setValue(variables[variableName]);
+                                }    
+                            });
+                        }
+                        
+                        await processInstanceService.variables.saveContext();
+                        processInstanceService.invokeFunction(processInstanceService.fn_${currentNode.id}${node.nameSuffix},__localMethodContext, {})
                         // async call
-                        processInstanceService.fn_${currentNode.id}${node.nameSuffix}()
+                        // processInstanceService.fn_${currentNode.id}${node.nameSuffix}()
                     } catch (error) {
                         Logger.error(error);
                         await this.__metaInfo.workflowHelper.failProcessInstance('_start_${currentNode.id}');

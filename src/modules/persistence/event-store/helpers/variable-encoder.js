@@ -1,4 +1,4 @@
-import {AndromedaLogger} from "../config/andromeda-logger.js";
+import  {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 
 const Logger = AndromedaLogger;
 
@@ -45,6 +45,11 @@ export class  VariableEncoder {
         }
     }
 
+    static transcodeVariableValue(variable) {
+        const val = VariableEncoder.transcodeVariable(variable.value, variable.type, variable.name);
+        variable.value = val;
+    }
+
     static evaluate(expression) {
         let code = ` ${expression}; `;
         try {
@@ -61,4 +66,3 @@ export class  VariableEncoder {
 
 }
 
-export  default VariableEncoder

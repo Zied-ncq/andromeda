@@ -58,6 +58,33 @@ class {{ServiceClassName}} {
 
     }
 
+
+    invokeFunction(fn, __localMethodContext, args)
+    {
+        const self = this;
+        fn.call(this, ...Object.values(args))
+            .catch(async (error) =>
+            {
+                // self.functionProcessing.set(__localMethodContext.functionName, false);
+                // let errorMessage = JSON.parse(error.message);
+                // let context = errorMessage.context;
+                // let stack = errorMessage.stacktrace;
+                // let nodeId;
+                // if (context) {
+                //     nodeId = context.nodeName;
+                // }
+                // if (!stack) {
+                //     stack = error.stack;
+                // }
+                // await new JsflowLogHandler().reportError({ invocationId: self.variables.invocationId.value(), nodeId: nodeId, stacktrace: stack });
+                this.failureDetected = true;
+                await this.failProcessInstance(args.incomingFlowId);
+            }).finally(async () => {
+            await this.__metaInfo.workflowHelper.cleanProcessInstanceIfItsNotRunning(__localMethodContext);
+        });
+
+    }
+
     static async createInstance(processInstanceId, flowModel)
     {
         {# SubProcess we dont need to persist anything #}
@@ -71,6 +98,9 @@ class {{ServiceClassName}} {
                 '{{containerParsingContext.wpid}}',
                 '{{containerParsingContext.version}}',
                 instance.__metaInfo.processInstanceId);
+        }else{
+            await instance.variables.restoreVariableValues();
+
         }
 
         return instance;

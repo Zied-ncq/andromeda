@@ -1,6 +1,9 @@
-import {Variable} from "../model/variable.js";
+import {Variable} from "../modules/persistence/event-store/model/variable.js";
 import {PersistenceGateway} from "../modules/persistence/event-store/persistence-gateway.js";
 import ContainerService from "../modules/container/container.service.js";
+import {VariableRepository} from "../modules/persistence/event-store/repositories/variable.repository.js";
+import  {AndromedaLogger} from "../config/andromeda-logger.js";
+const Logger = AndromedaLogger;
 
 class {{ cnwpid }}ProcessInstanceContext {
 
@@ -33,31 +36,16 @@ class {{ cnwpid }}ProcessInstanceContext {
     }
 
     async restoreVariableValues() {
+        let variables = await new VariableRepository().getProcessInstanceVariables(this.processInstanceService.__metaInfo.processInstanceId);
+        variables.map((variable) => {
+            Logger.info(`restoring ${variable.name} of type ${variable.type}`);
+            let metaVar = this.__metaVariables.find( e=> e.name === variable.name );
+            if(metaVar !== undefined){
+                metaVar.id  = variable.id;
+                metaVar.setValue(variable.value);
+            }
+        });
     }
-
-    evaluate(expression) {
-        let code = ` ${expression}; `;
-        let result = ts.transpile(code); // tslint:disable-next-line:no-eval
-        try {
-            return eval(result);
-        } catch (e) {
-            Logger.error(e);
-            throw e;
-        }
-    }
-
-    transcodeVariable(stringVariableValue, type){
-        let expression = `let value;`;
-        if(type === "string"){
-            expression += `value = \`${stringVariableValue}\`;`;
-        }else{
-            expression += `value= ${stringVariableValue};`
-        }
-        expression += `let variable: ${type} = <${type}> value; variable;`
-
-        return this.evaluate(expression);
-    }
-
 
 }
 export default {{ cnwpid }}ProcessInstanceContext;

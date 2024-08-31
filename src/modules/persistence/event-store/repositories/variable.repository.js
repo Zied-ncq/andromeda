@@ -2,7 +2,8 @@ import {BaseRepository} from "./baseRepository.js";
 
 import {AndromedaLogger} from "../../../../config/andromeda-logger.js";
 import VariableModel from "../internal/models/variable.orm-model.js";
-const Logger = AndromedaLogger;
+import {VariableEncoder} from "../helpers/variable-encoder.js";
+// const Logger = AndromedaLogger;
 
 export class VariableRepository {
 
@@ -72,6 +73,42 @@ export class VariableRepository {
         // });
     }
 
+    /**
+     *
+     * @param processInstanceId {string}
+     * @returns {Variable[]}
+     */
+    async getProcessInstanceVariables(processInstanceId){
+        const variables=  await this.repo.find({processInstanceId: processInstanceId}) || []
+        return variables.map(e=> ({
+            id: e._id,
+            name: e.name,
+            type : e.type,
+            wpid: e.wpid,
+            value: e.value,
+            processInstanceId: processInstanceId,
+        }))
+    }
 
+    /**
+     *
+     * @param processInstanceId {string}
+     * @param name {string}
+     * @returns {Variable}
+     */
+    async getProcessInstanceVariableByName(processInstanceId, name){
+        const variable=  await this.repo.findOne({processInstanceId: processInstanceId, name})
+        let objVar = {
+            id: variable._id,
+            name: variable.name,
+            type : variable.type,
+            wpid: variable.wpid,
+            value: variable.value,
+            processInstanceId: processInstanceId,
+        }
+
+        VariableEncoder.transcodeVariableValue(objVar)
+        return  objVar;
+    }
 
 }

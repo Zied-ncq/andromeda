@@ -45,17 +45,17 @@ export class ProcessInstanceRepository {
      * @returns {Promise<void>}
      */
     async removeLock(processInstanceId){
-        Logger.trace(`updating process instance ${processInstanceId}, set lock to null`);
+        Logger.info(`updating process instance ${processInstanceId}, set lock to null`);
         await this.repo.upsert({_id: processInstanceId}, {lock: null})
     }
 
     async completeProcessInstance(processInstanceId){
-        Logger.warn(`updating process instance ${processInstanceId}, set lock to null and status = ${ ProcessInstanceStatus.Completed}`);
+        Logger.info(`updating process instance ${processInstanceId}, set lock to null and status = ${ ProcessInstanceStatus.Completed}`);
         await this.repo.upsert({_id: processInstanceId}, {status: ProcessInstanceStatus.Completed, lock: null})
     }
 
     async failProcessInstance(processInstanceId){
-        Logger.warn(`Failing process instance ${processInstanceId}, set lock to null and status = ${ ProcessInstanceStatus.Error}`);
+        Logger.info(`Failing process instance ${processInstanceId}, set lock to null and status = ${ ProcessInstanceStatus.Error}`);
         await this.repo.upsert({_id: processInstanceId}, {status: ProcessInstanceStatus.Error, lock: null})
     }
 
