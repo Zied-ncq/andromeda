@@ -22,6 +22,19 @@ snjk = static nunjucks file
   - The service class is generated with a template, then we inject methods into the class
   - We inject also code inside existing methods.
 
+Concept of code generation
+--
+Each node will be translated into a method or more,
+for example a script task will be translated in to a single method  containing the script to execute.
+a signal catch event will be translated into two methods, the first method will initialize the behaviour and stops at that point
+the second method will be linked to a rest route, once the rest controller hit this method it will resume the execution.
+
+- Each method will typically call the next methods (or the next nodes) since each node is translated to a method.
+- Each method will call the next method(s) using a flow, the flow has attributes.
+
+
+
+
 ## variables 
 variables are persisted in the database as string values to ease the debug and for better ops experience.
 the type is persisted along with the variable name and value.

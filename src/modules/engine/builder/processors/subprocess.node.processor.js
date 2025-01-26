@@ -81,6 +81,10 @@ export class SubProcessNodeProcessor {
 
     async buildResumeAfterSubProcessEnds(workflowCodegenContext, currentNode, nodeContext) {
         const fnResumeMethod = workflowCodegenContext.serviceClass.addMember(`async fn_resume_sub_process_${currentNode.id}(flowModel){}`);
+        /*
+            __localMethodContext is a metaObject that will be generated inside every method that represent a bpmn node
+            this object is crucial for the generated code to retrieve data related to the target node.
+        */
         let localContextTemplate = `
           let __localMethodContext = {
             nodeSession: crypto.randomUUID(),

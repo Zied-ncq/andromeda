@@ -70,7 +70,6 @@ export class EngineService {
 
         Logger.debug(`Trying to Generate Container`);
 
-        let definitions = EngineService.prepareNodeDefinitions(config);
 
         const deploymentPath = Utils.getDeploymentPath(containerParsingContext);
         if (!fs.existsSync(deploymentPath)) {
@@ -105,7 +104,7 @@ export class EngineService {
         const containerCodegenModel = new ContainerCodegenModel();
 
 
-        const workflowBuilder = new WorkflowBuilder(containerCodegenModel,definitions)
+        const workflowBuilder = new WorkflowBuilder(containerCodegenModel,config.nodeDefinitions)
 
         for (const process of containerParsingContext.workflowParsingContext) {
             await workflowBuilder.generateWorkflow(process, containerParsingContext, containerCodegenModel);
@@ -114,25 +113,6 @@ export class EngineService {
 
         this.generateOpenApiYaml(containerParsingContext, containerCodegenModel);
 
-    }
-
-    static prepareNodeDefinitions(config) {
-        let filesDefinitions = []
-        const directoryPath = path.join(process.cwd(), 'src/modules/engine/builder/processors/definitions');
-
-        const files = fs.readdirSync(directoryPath);
-        for (const file of files) {
-            const filePath = path.join(directoryPath, file);
-            const fileContent = fs.readFileSync(filePath, 'utf8');
-            filesDefinitions.push(JSON.parse(fileContent));
-        }
-
-        let definitions = [...(config.nodeDefinitions || []), ...filesDefinitions]
-        let defs =  {}
-        definitions.forEach( def => {
-            defs[def.type] = def
-        })
-        return defs;
     }
 
     addLivelinessProbe(containerCodegenContext) {

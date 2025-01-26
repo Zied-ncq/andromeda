@@ -2,7 +2,7 @@
 import BpmnProcessor from "./builder/bpmn.processor.js";
 import {AndromedaLogger} from "../../config/andromeda-logger.js";
 import fs from "fs";
-import nunjucks from "nunjucks";
+import nunjucks, {nodes} from "nunjucks";
 import CodegenContext from "../../model/codegen/codegenContext.js";
 import path from "path";
 import {fileURLToPath} from "url";
@@ -13,6 +13,7 @@ import BPMNModdle from "bpmn-moddle";
 import {AProcess} from "../../model/domain-model/bzprocess/a-process.js";
 import {BpmnConverter} from "./model-converters/bpmn-converter.js";
 import {ProcessHelper} from "./builder/processors/process-helper.js";
+import EngineService from "./engine.service.js";
 
 const Logger = AndromedaLogger;
 const __filename = fileURLToPath(import.meta.url);
@@ -30,8 +31,15 @@ class WorkflowBuilder {
         if(containerCodegenModel === undefined){
             throw new Error(`containerCodegenModel cannot be null`)
         }
+
+        let definitions = WorkflowBuilder.prepareNodeDefinitions(nodeDefinitions);
+
+
         this.codegenContext = new CodegenContext(containerCodegenModel);
-        this.nodeDefinitions = nodeDefinitions;
+        this.nodeDefinitions = definitions;
+        // if(nodeDefinitions === null || nodeDefinitions === undefined){
+        //     this.nodeDefinitions = WorkflowBuilder.prepareNodeDefinitions({nodeDefinitions:[]})
+        // }
         this.bpmnProcessor = new BpmnProcessor(this.nodeDefinitions || {});
     }
 
@@ -43,21 +51,32 @@ class WorkflowBuilder {
         return result.replace(regex, `$1`);
     }
 
+    static prepareNodeDefinitions(nodeDefinitions) {
+        let filesDefinitions = this.loadFilesDefinitions();
 
-
-    async generateContainer(element, containerParsingContext) {
-        let self = this;
-        // search start
-        // generate code
-        const startElements = this.getStartElements(element);
-        startElements.forEach(startElement => {
-            self.generate(startElement.id, containerParsingContext);
+        let definitions = [...(nodeDefinitions || []), ...filesDefinitions]
+        let defs =  {}
+        definitions.forEach( def => {
+            defs[def.type] = def
         })
-        // let embeddedEventSubprocesses = this.getEventSubProcess(element);
-        // embeddedEventSubprocesses.forEach(container => {
-        //     self.generateContainer(container, workflowCodegenContext, containerParsingContext)
-        // })
+        return defs;
     }
+
+    static loadFilesDefinitions() {
+        let filesDefinitions = []
+        const directoryPath = path.join(process.cwd(), 'src/modules/engine/builder/processors/definitions');
+
+        const files = fs.readdirSync(directoryPath);
+        for (const file of files) {
+            const filePath = path.join(directoryPath, file);
+            const fileContent = fs.readFileSync(filePath, 'utf8');
+            filesDefinitions.push(JSON.parse(fileContent));
+        }
+        return filesDefinitions;
+    }
+
+
+
 
     /**
      *

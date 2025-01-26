@@ -15,7 +15,8 @@ async fn_{{nodeContext.name}} (flowModel) {
     nodeId: '{{ nodeContext.id }}',
     nodeName: '{{ nodeContext.name }}',
     type: '{{ nodeContext.type }}',
-    incomingFlowId: flowModel?.id
+    incomingFlowId: flowModel?.id,
+    {% if nodeContext.forceOutgoingFlow != undefined %}forceOutgoingFlow: {{ nodeContext.forceOutgoingFlow.number }} {% endif %}
   }
   Logger.debug(`visiting node {{ nodeContext.id }}, session: ${__localMethodContext.nodeSession}`);
 

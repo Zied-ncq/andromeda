@@ -4,4 +4,5 @@ export const AType ={
     ScriptTask: "ScriptTask",
     CatchEvent: "IntermediateCatchEvent",
     SubProcess: "SubProcess",
+    ExclusiveGateway: "ExclusiveGateway",
 }

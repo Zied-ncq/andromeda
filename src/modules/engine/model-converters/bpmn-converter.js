@@ -106,7 +106,11 @@ export class BpmnConverter {
             }
 
 
+
             const nodeFlow = flows.filter(e => e.sourceRef.id === node.id)
+
+            modelNode.type = BpmnTypeConverter[node.$type]
+
             modelNode.flows = nodeFlow.map(e => ({
                 id: e.id,
                 to: {

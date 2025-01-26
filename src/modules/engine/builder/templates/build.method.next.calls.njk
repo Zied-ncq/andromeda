@@ -1,17 +1,29 @@
 let flows = new Map();
+let nbOfExecutableOutgoingFlows = 0;
 {% for flow in outgoingSequenceFlows %}
     let {{ flow.id }} = await this.{{ flow.to.type }}CreateFlow({{ stringify(flow) }}, __localMethodContext);
-    {% if flow.conditionExpression !== '' and flow.conditionExpression !== undefined %}
-        if (await this.evaluate('{{ flow.conditionExpression.body }}')) {
+    {% if flow.condition !== '' and flow.condition !== undefined %}
+        const flowEvaluation{{ flow.id }} = await this.evaluate('{{ flow.condition }}');
+        Logger.debug(`evaluating conditional flow {{ flow.id }}, result= ${flowEvaluation{{ flow.id }}}`);
+        if (flowEvaluation{{ flow.id }}) {
             {{ flow.id }}.executable = true;
+            nbOfExecutableOutgoingFlows +=1;
         }else{
             {{ flow.id }}.executable = false;
         }
     {% else %}
+       nbOfExecutableOutgoingFlows+=1;
        {{ flow.id }}.executable = true;
     {% endif %}
     flows.set( '{{ flow.id }}' , {{ flow.id }});
 {% endfor %}
+{% if nodeContext.forceOutgoingFlow != undefined %}
+if(nbOfExecutableOutgoingFlows < {{ nodeContext.forceOutgoingFlow.number }}){
+        Logger.error(`Error at least one flow must be executable for the node ${__localMethodContext.type}`);
+        await this.__metaInfo.workflowHelper.failProcessInstance(__localMethodContext.incomingFlowId);
+        return;
+}
+{% endif %}
 if(flows.size > 0){
   await this.__metaInfo.workflowHelper.bulkCreateSequenceFlows(Array.from(flows.values()));
 }

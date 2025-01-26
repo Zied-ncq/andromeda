@@ -74,7 +74,7 @@ describe.concurrent('Engine tests', ()=>{
             });
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
-            await new ContainerClient(host, port).startProcess("basic_scenario", version, {})
+            await new ContainerClient(host, port).startProcess("Basic_scenario", version, {})
 
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
@@ -110,10 +110,10 @@ describe.concurrent('Engine tests', ()=>{
                 includePersistenceModule : true,
                 nodeDefinitions: []
             });
-            await EmbeddedContainerService.startEmbeddedContainer("subProcess", version, { HTTP_PORT: port });
+            await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
             const containerClient = new ContainerClient(host, port);
-            const res = await containerClient.startProcess("subProcess", version, {})
+            const res = await containerClient.startProcess("SubProcess", version, {})
             const processInstancesId = res.id
             await containerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId)
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
@@ -164,7 +164,7 @@ describe.concurrent('Engine tests', ()=>{
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
             const containerClient = new ContainerClient(host, port);
-            const res = await containerClient.startProcess("subSubProcess", version, {
+            const res = await containerClient.startProcess("SubSubProcess", version, {
                 age: 5,
                 ddd : "string",
                 content: {   c: 5,
@@ -173,7 +173,7 @@ describe.concurrent('Engine tests', ()=>{
             })
 
             const processInstancesId = res.id
-            await ContainerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId, port)
+            await new ContainerClient(host, port).waitForProcessInstanceToCompleteProcessing(processInstancesId)
 
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
 
@@ -317,6 +317,65 @@ describe.concurrent('Engine tests', ()=>{
 
             ageVar = await varRepository.getProcessInstanceVariableByName(processInstanceEntity.id, 'age')
             expect(ageVar.value).toEqual(17)
+
+            await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
+            // expect(true).toBe(true);  // Use global assertion method
+        } catch (e) {
+            Logger.error(e)
+            await EmbeddedContainerService.stopEmbeddedContainer(wpid, version, port);
+            throw e;  // Re-throw the error to fail the test
+        }
+    });
+
+    test('conditional_flow', async () => {
+
+
+        const port = 10007
+        let wpid = "conditional_flow";
+
+        function getBpmnTestFile(fileName) {
+            let fileContents = [];
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = path.dirname(__filename);
+            fileContents.push(fs.readFileSync(path.join(__dirname, "resources", fileName), {encoding: 'utf8'}));
+            return fileContents;
+        }
+
+        try {
+            let fileContents = getBpmnTestFile("conditional_flow.bpmn");
+
+            const engineService = new EngineService();
+            await engineService.generateContainer(fileContents, wpid, version, {
+                includeGalaxyModule : true,
+                includeWebModule : true,
+                includePersistenceModule : true,
+                nodeDefinitions: []
+            });
+            await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
+
+            const containerClient = new ContainerClient(host, port);
+            const res = await containerClient.startProcess("Conditional_flow", version, {
+                age: 25
+            })
+
+            const processInstancesId = res.id
+
+            await containerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId)
+
+
+
+            const processInstanceRepository = new ProcessInstanceRepository();
+            const varRepository = new VariableRepository();
+            let processInstanceEntity = await processInstanceRepository.getProcessInstanceById(processInstancesId)
+            let ageVar = await varRepository.getProcessInstanceVariableByName(processInstanceEntity.id, 'age')
+            expect(processInstanceEntity).toBeDefined()
+            expect(processInstanceEntity.id).toEqual(processInstancesId)
+            expect(processInstanceEntity.wpid).toEqual("conditional_flow")
+            expect(processInstanceEntity.version).toEqual("1.0.0")
+            expect(processInstanceEntity.status).toEqual(1)
+            expect(processInstanceEntity.lock).toBeNull()
+            //expect(ageVar.value).toEqual(26)
+
 
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
             // expect(true).toBe(true);  // Use global assertion method

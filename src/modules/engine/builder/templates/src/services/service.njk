@@ -108,6 +108,19 @@ class {{ServiceClassName}} {
 
     }
 
+      async evaluate(expression) {
+            let code = `
+                    ${expression};
+            `;
+            try {
+                return eval(expression);
+                // return await runnable.Run();
+            }catch (e) {
+                Logger.error(e);
+            }
+
+       }
+
 
 }
 

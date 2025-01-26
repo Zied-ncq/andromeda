@@ -78,6 +78,11 @@ export class ContainerClient {
     }
 
 
+    /**
+     *
+     * @param processInstanceId
+     * @returns {Promise<void>}
+     */
     async waitForProcessInstanceToCompleteProcessing(processInstanceId) {
         const fetchProcessInstanceStatus = async () => {
 

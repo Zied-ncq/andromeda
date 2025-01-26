@@ -1,10 +1,10 @@
 import path from "path"
 import {config} from "dotenv";
 import ipc from 'node-ipc';
-import rimraf from "rimraf";
 import psList from "ps-list";
-import {AndromedaLogger} from "./src/config/andromeda-logger.js";
-const Logger = new AndromedaLogger("dev-engine-sidecar.daemon");
+import AndromedaLogger from "./src/config/andromeda-logger.js";
+import {rimraf} from "rimraf";
+const Logger = AndromedaLogger //new AndromedaLogger("dev-engine-sidecar.daemon");
 
 let enginePid
 let containers = []

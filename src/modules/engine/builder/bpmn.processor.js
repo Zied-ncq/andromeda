@@ -10,6 +10,7 @@ import {fileURLToPath} from "url";
 import SubprocessNodeProcessor from "./processors/subprocess.node.processor.js";
 import {FlowHelper} from "./flow-helper.js";
 import DynamicProcessor from "./processors/dynamic-processor.js";
+import ExclusiveGatewayNodeProcessor from "./processors/exclusive-gateway.node.processor.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const Logger = AndromedaLogger;
@@ -30,6 +31,7 @@ class BpmnProcessor {
         this.processors[StartNodeProcessor.type] = new StartNodeProcessor();
         this.processors[EndNodeProcessor.type] = new EndNodeProcessor();
         this.processors[SubprocessNodeProcessor.type] = new SubprocessNodeProcessor();
+        this.processors[ExclusiveGatewayNodeProcessor.type] = new ExclusiveGatewayNodeProcessor();
         this.registerDynamicProcessor(nodeDefinitions)
     }
 

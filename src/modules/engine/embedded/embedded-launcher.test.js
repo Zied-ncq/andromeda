@@ -16,7 +16,10 @@ const Logger = AndromedaLogger;
 // sum.test.js
 import { expect, test } from 'vitest'
 
-test('adds 1 + 2 to equal 3', async () => {
+
+
+
+test('Start Embedded launcher process', async () => {
     const deploymentPath = path.join(Config.getInstance().deploymentPath, 'launch_spawn')
 
     if (!fs.existsSync(deploymentPath)) {
