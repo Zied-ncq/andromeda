@@ -345,6 +345,10 @@ describe.concurrent('Engine tests', ()=>{
         try {
             let fileContents = getBpmnTestFile("conditional_flow.bpmn");
 
+            const processInstanceRepository = new ProcessInstanceRepository();
+            const varRepository = new VariableRepository();
+
+
             const engineService = new EngineService();
             await engineService.generateContainer(fileContents, wpid, version, {
                 includeGalaxyModule : true,
@@ -355,28 +359,29 @@ describe.concurrent('Engine tests', ()=>{
             await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
 
             const containerClient = new ContainerClient(host, port);
-            const res = await containerClient.startProcess("Conditional_flow", version, {
+
+            let res = await containerClient.startProcess("Conditional_flow", version, {
                 age: 10
             })
-
-            const processInstancesId = res.id
-
-            await containerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId)
-
-
-
-            const processInstanceRepository = new ProcessInstanceRepository();
-            const varRepository = new VariableRepository();
-            let processInstanceEntity = await processInstanceRepository.getProcessInstanceById(processInstancesId)
+            const process1InstancesId = res.id
+            await containerClient.waitForProcessInstanceToCompleteProcessing(process1InstancesId)
+            let processInstanceEntity = await processInstanceRepository.getProcessInstanceById(process1InstancesId)
             let ageVar = await varRepository.getProcessInstanceVariableByName(processInstanceEntity.id, 'age')
             expect(processInstanceEntity).toBeDefined()
-            expect(processInstanceEntity.id).toEqual(processInstancesId)
+            expect(processInstanceEntity.id).toEqual(process1InstancesId)
             expect(processInstanceEntity.wpid).toEqual("conditional_flow")
             expect(processInstanceEntity.version).toEqual("1.0.0")
-            expect(processInstanceEntity.status).toEqual(1)
+            expect(processInstanceEntity.status).toEqual(0)
             expect(processInstanceEntity.lock).toBeNull()
             //expect(ageVar.value).toEqual(26)
 
+            res = await containerClient.startProcess("Conditional_flow", version, {
+                age: 12
+            });
+            const process2InstancesId = res.id
+            await containerClient.waitForProcessInstanceToCompleteProcessing(process2InstancesId)
+            let processInstance2 = await processInstanceRepository.getProcessInstanceById(process2InstancesId)
+            expect(processInstance2.status).toEqual(1)
 
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
             // expect(true).toBe(true);  // Use global assertion method
