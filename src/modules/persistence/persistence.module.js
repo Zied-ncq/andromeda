@@ -44,6 +44,7 @@ export class PersistenceModule  {
         this.registerProjections(stream, stream.eventsRegistry.CREATE_PROCESS_INSTANCE, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.CREATE_PROCESS_VARIABLES, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.CLOSE_PROCESS_INSTANCE, new ProcessInstanceProjection());
+        this.registerProjections(stream, stream.eventsRegistry.FAIL_PROCESS_INSTANCE, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.BULK_CREATE_SEQUENCE_FLOWS, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.RELEASE_PROCESS_INSTANCE_LOCK, new ProcessInstanceProjection());
         this.registerProjections(stream, stream.eventsRegistry.CREATE_CATCH_EVENT_TASK, new ProcessInstanceProjection());

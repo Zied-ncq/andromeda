@@ -18,11 +18,19 @@ let nbOfExecutableOutgoingFlows = 0;
     flows.set( '{{ flow.id }}' , {{ flow.id }});
 {% endfor %}
 {% if nodeContext.forceOutgoingFlow != undefined %}
-if(nbOfExecutableOutgoingFlows < {{ nodeContext.forceOutgoingFlow.number }}){
-        Logger.error(`Error at least one flow must be executable for the node ${__localMethodContext.type}`);
+    {% if nodeContext.forceOutgoingFlow.mode != undefined and nodeContext.forceOutgoingFlow.mode =='maximum' %}
+if(nbOfExecutableOutgoingFlows !== {{ nodeContext.forceOutgoingFlow.number }}){
+        Logger.error(`Error at least '{{ nodeContext.forceOutgoingFlow.number }}' flow(s) must be executable for the node '${__localMethodContext.nodeId}' of type${__localMethodContext.type}`);
         await this.__metaInfo.workflowHelper.failProcessInstance(__localMethodContext.incomingFlowId);
         return;
 }
+    {% else %}
+if(nbOfExecutableOutgoingFlows < {{ nodeContext.forceOutgoingFlow.number }}){
+        Logger.error(`Error at least one flow must be executable for the node '${__localMethodContext.nodeId}' of type${__localMethodContext.type}`);
+        await this.__metaInfo.workflowHelper.failProcessInstance(__localMethodContext.incomingFlowId);
+        return;
+}
+    {% endif %}
 {% endif %}
 if(flows.size > 0){
   await this.__metaInfo.workflowHelper.bulkCreateSequenceFlows(Array.from(flows.values()));

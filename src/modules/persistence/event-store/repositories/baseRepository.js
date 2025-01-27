@@ -74,6 +74,15 @@ export class BaseRepository {
     return  this._model.findOneAndUpdate(cond, item, options);
   }
 
+  async update(cond, item){
+    Logger.trace(`Base repository: update: cond:${JSON.stringify(cond)}, item : ${JSON.stringify(item)}`);
+    const options = {
+      upsert: true,
+      new: false,
+    };
+    return  this._model.findOneAndUpdate(cond, item, options);
+  }
+
   async delete(_id) {
     Logger.trace(`Base repository: delete: id:${_id}`);
     return this._model.remove({ _id: _id });

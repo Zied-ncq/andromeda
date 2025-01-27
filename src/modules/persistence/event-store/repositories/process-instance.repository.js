@@ -56,7 +56,7 @@ export class ProcessInstanceRepository {
 
     async failProcessInstance(processInstanceId){
         Logger.info(`Failing process instance ${processInstanceId}, set lock to null and status = ${ ProcessInstanceStatus.Error}`);
-        await this.repo.upsert({_id: processInstanceId}, {status: ProcessInstanceStatus.Error, lock: null})
+        await this.repo.update({_id: processInstanceId}, {status: ProcessInstanceStatus.Error, lock: null})
     }
 
 

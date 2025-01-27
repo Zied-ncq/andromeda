@@ -19,6 +19,7 @@ import {PersistenceModule} from "../src/modules/persistence/persistence.module.j
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const Logger = AndromedaLogger;
 import { expect, test , beforeAll, afterAll, describe } from 'vitest'
+import {SequenceFlowRepository} from "../src/modules/persistence/event-store/repositories/sequence-flow.repository.js";
 
 
 let version = "1.0.0";
@@ -355,7 +356,7 @@ describe.concurrent('Engine tests', ()=>{
 
             const containerClient = new ContainerClient(host, port);
             const res = await containerClient.startProcess("Conditional_flow", version, {
-                age: 25
+                age: 10
             })
 
             const processInstancesId = res.id
@@ -375,6 +376,72 @@ describe.concurrent('Engine tests', ()=>{
             expect(processInstanceEntity.status).toEqual(1)
             expect(processInstanceEntity.lock).toBeNull()
             //expect(ageVar.value).toEqual(26)
+
+
+            await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);
+            // expect(true).toBe(true);  // Use global assertion method
+        } catch (e) {
+            Logger.error(e)
+            await EmbeddedContainerService.stopEmbeddedContainer(wpid, version, port);
+            throw e;  // Re-throw the error to fail the test
+        }
+    });
+
+    test('exclusive gateway should fail when no path is executed', async () => {
+
+
+        const port = 10008
+        let wpid = "exclusive_gateway_with_error";
+
+        function getBpmnTestFile(fileName) {
+            let fileContents = [];
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = path.dirname(__filename);
+            fileContents.push(fs.readFileSync(path.join(__dirname, "resources", fileName), {encoding: 'utf8'}));
+            return fileContents;
+        }
+
+        try {
+            let fileContents = getBpmnTestFile("exclusive_gateway_with_error.bpmn");
+
+            const engineService = new EngineService();
+            await engineService.generateContainer(fileContents, wpid, version, {
+                includeGalaxyModule : true,
+                includeWebModule : true,
+                includePersistenceModule : true,
+                nodeDefinitions: []
+            });
+            await EmbeddedContainerService.startEmbeddedContainer(wpid, version, { HTTP_PORT: port });
+
+            const containerClient = new ContainerClient(host, port);
+            const res = await containerClient.startProcess("Exclusive_gateway_with_error", version, {
+                age: 25
+            })
+
+            const processInstancesId = res.id
+
+            await containerClient.waitForProcessInstanceToCompleteProcessing(processInstancesId)
+
+
+
+            const processInstanceRepository = new ProcessInstanceRepository();
+            const varRepository = new VariableRepository();
+            let processInstanceEntity = await processInstanceRepository.getProcessInstanceById(processInstancesId)
+            let ageVar = await varRepository.getProcessInstanceVariableByName(processInstanceEntity.id, 'age')
+            expect(processInstanceEntity).toBeDefined()
+            expect(processInstanceEntity.id).toEqual(processInstancesId)
+            expect(processInstanceEntity.wpid).toEqual("exclusive_gateway_with_error")
+            expect(processInstanceEntity.version).toEqual("1.0.0")
+            expect(processInstanceEntity.status).toEqual(2)
+            expect(processInstanceEntity.lock).toBeNull()
+            expect(ageVar.value).toEqual(25)
+
+            const sequenceFlowRepository = new SequenceFlowRepository();
+            const flow0 =  await sequenceFlowRepository.getSequenceFlowById('flow_0', processInstancesId)
+            expect(flow0).not.toBeNull()
+            expect(flow0).toBeDefined()
+            expect(flow0.status).toEqual(2)
+
 
 
             await EmbeddedContainerService.stopEmbeddedContainer(wpid, version,  port);

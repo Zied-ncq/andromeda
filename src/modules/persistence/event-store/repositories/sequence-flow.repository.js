@@ -46,6 +46,14 @@ export class SequenceFlowRepository {
 
     }
 
+    async getSequenceFlowById(sequenceFlowId, processInstanceId){
+        return sequenceFlowOrmModel.findOne({processInstanceId: processInstanceId, flowId: sequenceFlowId});
+    }
+
+    async failFlow(sequenceFlowId, processInstanceId){
+        return sequenceFlowOrmModel.updateOne({processInstanceId: processInstanceId, flowId: sequenceFlowId}, {status: 2});
+    }
+
 
 
 }

@@ -24,11 +24,12 @@ export class WorkflowHelper{
 
     /**
      *
-     * @param flowId {string}
+     * @param processInstance {string}
      * @returns {Promise<void>}
      */
     async failProcessInstance(flowId){
-        await PersistenceGateway.failProcessInstance(flowId,  ContainerService.containerId)
+        await PersistenceGateway.failProcessInstance(this.service.__metaInfo.processInstanceId,flowId,  ContainerService.containerId)
+
 
     }
 
@@ -36,7 +37,7 @@ export class WorkflowHelper{
         Logger.debug(`trying to clean process instance in method ${context.nodeId}, from the container ${ContainerService.containerId}`);
         let processInstance = ContainerService.processInstances.get(this.service.__metaInfo.processInstanceId);
         if(!processInstance){
-            Logger.trace(` process instance with id=${this.service.__metaInfo.processInstanceId}, was not found or deleted`);
+            Logger.trace(`Process instance with id=${this.service.__metaInfo.processInstanceId}, was not found or deleted`);
             return;
         }else{
             let currentlyUsedFunctions= Array.from(processInstance.currentlyUsedFunctions.values());

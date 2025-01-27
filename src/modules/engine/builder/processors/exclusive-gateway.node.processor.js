@@ -13,6 +13,7 @@ class ExclusiveGatewayNodeProcessor {
             type: currentNode.type,
             name: currentNode.name || currentNode.id,
             forceOutgoingFlow: {
+                mode: "maximum",
                 number: 1
             },
             body: ``,

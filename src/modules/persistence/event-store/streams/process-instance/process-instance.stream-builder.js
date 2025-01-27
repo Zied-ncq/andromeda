@@ -50,6 +50,7 @@ export const failProcessInstanceDataSchema = {
     properties: {
         id: {type: "string"},
         containerId: {type: "string"},
+        flowId: {type: "string"},
     },
     required: ["id", "containerId"],
     additionalProperties: false,

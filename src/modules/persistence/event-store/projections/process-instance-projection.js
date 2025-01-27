@@ -32,8 +32,9 @@ export class ProcessInstanceProjection {
         }
 
         if (event.type === EventTypes.FAIL_PROCESS_INSTANCE) {
-            // Logger.trace("Failing process instance")
+            Logger.trace(`Failing process instance ${event.data.id}`)
             await this.processInstanceRepo.failProcessInstance(event.data.id);
+            await this.sequenceFlowRepository.failFlow(event.data.flowId, event.data.id);
         }
 
         if (event.type === EventTypes.CREATE_PROCESS_VARIABLES) {
